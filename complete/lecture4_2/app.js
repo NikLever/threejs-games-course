@@ -12,12 +12,20 @@ class App{
         this.loadingBar = new LoadingBar();
         this.loadingBar.visible = false;
 
+        this.clock = new THREE.Clock();
+
 		this.assetsPath = '../../assets/';
         
-		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
-		this.camera.position.set( 0, 0, 5 );
+		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 100 );
+        this.camera.position.set( -4.37, 0, -4.75 );
+        this.camera.lookAt(0, 0, 6);
+
+        this.cameraController = new THREE.Object3D();
+        this.cameraController.add(this.camera);
+        this.cameraTarget = new THREE.Vector3(0,0,6);
         
 		this.scene = new THREE.Scene();
+        this.scene.add(this.cameraController);
 
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
         ambient.position.set( 0.5, 1, 0.25 );
@@ -30,12 +38,15 @@ class App{
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
         
-        const controls = new OrbitControls( this.camera, this.renderer.domElement );
         
         this.load();
 		
 		window.addEventListener('resize', this.resize.bind(this) );
+
+        document.addEventListener('keydown', this.keyDown.bind(this));
+        document.addEventListener('keyup', this.keyUp.bind(this));
         
+        this.keys = { space:false, left:false, right: false };
 	}
 	
     resize(){
@@ -44,6 +55,22 @@ class App{
     	this.renderer.setSize( window.innerWidth, window.innerHeight ); 
     }
     
+    keyDown(evt){
+        switch(evt.keyCode){
+            case 32:
+                this.keys.space = true;
+                break;
+        }
+    }
+    
+    keyUp(evt){
+        switch(evt.keyCode){
+            case 32:
+                this.keys.space = false;
+                break;
+        }
+    }
+
     setEnvironment(){
         const loader = new RGBELoader().setDataType( THREE.UnsignedByteType ).setPath(this.assetsPath);
         const pmremGenerator = new THREE.PMREMGenerator( this.renderer );
@@ -95,6 +122,9 @@ class App{
 
 				self.scene.add( gltf.scene );
                 self.plane = gltf.scene;
+                self.plane.userData.velocity = new THREE.Vector3(0,0,0.1);
+
+                self.propeller = self.plane.getObjectByName("propeller");
         
                 self.loadingBar.visible = false;
                 
@@ -115,7 +145,32 @@ class App{
 		);
 	}			
     
+    updatePlane(time){
+        if (!this.keys.space){
+            this.plane.userData.velocity.y -= 0.001;
+        }else{
+            this.plane.userData.velocity.y += 0.001;
+        }
+        this.plane.translateZ( this.plane.userData.velocity.z );
+        this.plane.translateY( this.plane.userData.velocity.y );
+        this.plane.rotation.z = Math.sin(time*3)*0.2;
+    }
+
+    updateCamera(){
+        this.cameraController.position.copy( this.plane.position );
+        this.cameraController.position.y = 0;
+        this.cameraTarget.copy(this.plane.position);
+        this.cameraTarget.z += 6;
+        this.camera.lookAt( this.cameraTarget );
+    }
+
 	render() {
+        if (this.propeller !== undefined) this.propeller.rotateZ(1);
+
+        const time = this.clock.getElapsedTime();
+
+        this.updatePlane(time);
+        this.updateCamera();
 
         this.renderer.render( this.scene, this.camera );
 
