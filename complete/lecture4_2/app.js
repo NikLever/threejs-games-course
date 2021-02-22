@@ -58,7 +58,7 @@ class App{
     keyDown(evt){
         switch(evt.keyCode){
             case 32:
-                this.keys.space = true; 
+                this.keys.space = true; //hello
                 break;
         }
     }
