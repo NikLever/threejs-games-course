@@ -1,7 +1,6 @@
 import * as THREE from '../../libs/three125/three.module.js';
 import { GLTFLoader } from '../../libs/three125/GLTFLoader.js';
 import { RGBELoader } from '../../libs/three125/RGBELoader.js';
-import { OrbitControls } from '../../libs/three125/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 
 class App{
@@ -38,15 +37,21 @@ class App{
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
         
-        
         this.load();
 		
 		window.addEventListener('resize', this.resize.bind(this) );
 
         document.addEventListener('keydown', this.keyDown.bind(this));
         document.addEventListener('keyup', this.keyUp.bind(this));
+
+        document.addEventListener('touchstart', this.mouseDown.bind(this) );
+        document.addEventListener('touchend', this.mouseUp.bind(this) );
+        document.addEventListener('mousedown', this.mouseDown.bind(this) );
+        document.addEventListener('mouseup', this.mouseUp.bind(this) );
         
         this.keys = { space:false, left:false, right: false };
+        this.gameActive = false;
+
 	}
 	
     resize(){
@@ -55,10 +60,18 @@ class App{
     	this.renderer.setSize( window.innerWidth, window.innerHeight ); 
     }
     
+    mouseDown(evt){
+        this.keys.space = true;
+    }
+
+    mouseUp(evt){
+        this.keys.space = false;
+    }
+
     keyDown(evt){
         switch(evt.keyCode){
             case 32:
-                this.keys.space = true; //hello
+                this.keys.space = true; 
                 break;
         }
     }
@@ -90,7 +103,7 @@ class App{
     }
     
 	load(){
-        this.loadPlane();
+        this.loadStar();
         this.loadSkybox();
     }
 
@@ -107,6 +120,60 @@ class App{
             ] );
     }
 
+    loadStar(){
+    	const loader = new GLTFLoader( ).setPath(this.assetsPath);
+        const self = this;
+        
+        this.loadingBar.visible = true;
+        this.stars = [];
+		
+		// Load a glTF resource
+		loader.load(
+			// resource URL
+			'star.glb',
+			// called when the resource is loaded
+			gltf => {
+
+                const star = gltf.scene.children[0];
+
+                self.scene.add(star);
+                self.stars.push(star);
+                self.starSpawn = { pos: 20, offset: 5, setPos: star =>{
+                    self.starSpawn.pos += 30;
+                    const offset = (Math.random()*2 - 1) * self.starSpawn.offset;
+                    self.starSpawn.offset += 0.1;
+                    star.position.set(0, offset, self.starSpawn.pos );
+                    star.rotation.y = Math.random() * Math.PI * 2;
+                } };
+                self.starSpawn.setPos( star );
+
+                while (self.starSpawn.pos < 100){
+                    
+                    const star1 = star.clone();
+                    
+                    self.scene.add(star1);
+                    self.stars.push(star1);
+
+                    self.starSpawn.setPos( star1 );
+                }
+
+                self.loadPlane();
+			},
+			// called while loading is progressing
+			xhr => {
+
+				self.loadingBar.progress = (xhr.loaded / xhr.total) * 0.5;
+				
+			},
+			// called when loading has errors
+			err => {
+
+				console.error( err.message );
+
+			}
+		);
+	}	
+
     loadPlane(){
     	const loader = new GLTFLoader( ).setPath(this.assetsPath);
         const self = this;
@@ -122,7 +189,7 @@ class App{
 
 				self.scene.add( gltf.scene );
                 self.plane = gltf.scene;
-                self.plane.userData.velocity = new THREE.Vector3(0,0,0.1);
+                self.plane.userData.velocity = new THREE.Vector3();
 
                 self.propeller = self.plane.getObjectByName("propeller");
         
@@ -133,7 +200,7 @@ class App{
 			// called while loading is progressing
 			xhr => {
 
-				self.loadingBar.progress = (xhr.loaded / xhr.total);
+				self.loadingBar.progress = (xhr.loaded / xhr.total) * 0.5 + 0.5;
 				
 			},
 			// called when loading has errors
@@ -146,13 +213,17 @@ class App{
 	}			
     
     updatePlane(time){
-        if (!this.keys.space){
-            this.plane.userData.velocity.y -= 0.001;
+        if (this.gameActive){
+            if (!this.keys.space){
+                this.plane.userData.velocity.y -= 0.001;
+            }else{
+                this.plane.userData.velocity.y += 0.001;
+            }
+            this.plane.translateZ( this.plane.userData.velocity.z );
+            this.plane.translateY( this.plane.userData.velocity.y );
         }else{
-            this.plane.userData.velocity.y += 0.001;
+            this.plane.position.y = Math.cos(time) * 1.5;
         }
-        this.plane.translateZ( this.plane.userData.velocity.z );
-        this.plane.translateY( this.plane.userData.velocity.y );
         this.plane.rotation.z = Math.sin(time*3)*0.2;
     }
 
@@ -164,11 +235,21 @@ class App{
         this.camera.lookAt( this.cameraTarget );
     }
 
+    updateStars(){
+        this.stars.forEach( star =>{
+            star.rotateY(0.01);
+            if ((star.position.z-this.plane.position.z)<-20){
+                this.starSpawn.setPos(star); 
+            }
+        });
+    }
+
 	render() {
         if (this.propeller !== undefined) this.propeller.rotateZ(1);
 
         const time = this.clock.getElapsedTime();
 
+        this.updateStars();
         this.updatePlane(time);
         this.updateCamera();
 
