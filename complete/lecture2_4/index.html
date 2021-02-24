@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!--favicon -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../css/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../css/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../css/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../css/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../css/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>Lecture 2.4</title>
+</head>
+
+<body>
+    <script>
+    function compare(a, b){
+        if (isNaN(a)){
+            console.log('a is not a number');
+        }else if (isNaN(b){
+            console.log('b is not a number');
+        }else if (a<b){
+            console.log('a is less than b');
+        }else if (a==b){
+            console.log('a equals b');
+        }else{
+            console.log('a is greater than b');
+        }
+    }
+
+    function weekend(){
+        const day = new Date().getDay();
+
+        return (day==0 || day==6) ? "It's the weekend" : "It's not the weekend";
+    }
+
+    function today(){
+        const day = new Date().getDay();
+
+        switch(day){
+            case 0:
+                console.log('Today is Sunday');
+                break;
+            case 1:
+                console.log('Today is Monday');
+                break;
+            case 2:
+                console.log('Today is Tuesday');
+                break;
+            case 3:
+                console.log('Today is Wednesday');
+                break;
+            case 4:
+                console.log('Today is Thursday');
+                break;
+            case 5:
+                console.log('Today is Friday');
+                break;
+            case 6:
+                console.log('Today is Saturday');
+                break;
+            default:
+                console.log('getDay returned value out of range');
+                break;
+            
+        }
+    }
+    </script>
+</body>
+
+</html>
