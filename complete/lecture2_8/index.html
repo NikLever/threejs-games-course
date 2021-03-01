@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!--favicon -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../css/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../css/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../css/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../css/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../css/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>Lecture 2.7</title>
+</head>
+
+<body>
+    <script>
+      class Point{
+        constructor(x,y){
+          this.x = x;
+          this.y = y;
+        }
+      }
+
+      class Rectangle{
+        constructor(left, top, width, height){
+          this.left = left;
+          this.top = top;
+          this.width = width;
+          this.height = height;
+        }
+
+        move(x, y){
+          this.left += x;
+          this.top += y;
+        }
+
+        get area(){
+          return this.width * this.height;
+        }
+
+        overlap(rect){
+          const l1 = new Point(this.left, this.top);
+          const r1 = new Point(this.left + this.width, this.top + this.height);
+          const l2 = new Point(rect.left, rect.top);
+          const r2 = new Point(rect.left + rect.width, rect.top + rect.height);
+
+          // If one rectangle is on left side of other 
+          if (l1.x >= r2.x || l2.x >= r1.x){ return false; } 
+  
+          // If one rectangle is above other 
+          if (l1.y <= r2.y || l2.y <= r1.y){ return false; } 
+  
+          return true; 
+        }
+    </script>
+</body>
+
+</html>

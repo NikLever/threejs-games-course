@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!--favicon -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../css/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../css/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../css/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../css/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../css/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>Lecture 2.7</title>
+</head>
+
+<body>
+    <script>
+      const npcs = [];
+      const useWhile = true;
+
+      if (useWhile){
+        for(let i=0; i<10; i++){
+          npcs.push(createNPC());
+        }
+      }else{
+        let i = 0;
+
+        while(i<10){
+          npcs.push(createNPC());
+          i++;
+        }
+      }
+
+      const npc = npcs[0];
+      console.log("npcs[0] has the following properties... ");
+      for(let prop in npc){
+        console.log(prop + ":" + npc[prop]);
+      }
+
+      let i=0;
+      npcs.forEach( npc =>{
+        console.log('NPC no.'+i+' uses a '+npc.weapon+' as its chosen weapon.');
+        i++;
+      })
+      
+      function createNPC(){
+        const weapons = ["sword", "pistol", "axe", "spear"];
+        const weapon = weapons[Math.floor(Math.random() * weapons.length)];
+        const power = Math.random() * 0.5 + 0.5;
+        const strength = Math.random() + 1.0;
+        const damage = 0;
+        return { power, weapon, strength, damage };
+      }
+    </script>
+</body>
+
+</html>
