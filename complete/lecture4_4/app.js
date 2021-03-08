@@ -41,10 +41,6 @@ class App{
 		
 		window.addEventListener('resize', this.resize.bind(this) );
 
-        const self = this;
-        window.addEventListener("gamepadconnected", (e) => { this.gamepadHandler(e, true); }, false);
-        window.addEventListener("gamepaddisconnected", (e) => { self.gamepadHandler(e, false); }, false);
-
         document.addEventListener('keydown', this.keyDown.bind(this));
         document.addEventListener('keyup', this.keyUp.bind(this));
 
@@ -53,41 +49,33 @@ class App{
         document.addEventListener('mousedown', this.mouseDown.bind(this) );
         document.addEventListener('mouseup', this.mouseUp.bind(this) );
         
-        this.keys = { space:false, left:false, right: false };
+        this.spaceKey = false;
         this.gameActive = false;
 
-        //this.control = 
+        const btn = document.getElementById('playBtn');
+        btn.addEventListener('click', this.startGame.bind(this));
 	}
 	
+    startGame(){
+        const instructions = document.getElementById('instructions');
+        const btn = document.getElementById('playBtn');
+
+        instructions.style.display = 'none';
+        btn.style.display = 'none';
+
+        this.gameActive = true;
+    }
+
     resize(){
         this.camera.aspect = window.innerWidth / window.innerHeight;
     	this.camera.updateProjectionMatrix();
     	this.renderer.setSize( window.innerWidth, window.innerHeight ); 
     }
-    
-    gamepadHandler(event, connecting) {
-        const gamepad = event.gamepad;
-      
-        if (connecting) {
-            if (this.gamepads === undefined) this.gamepads = {};
-            this.gamepads[gamepad.index] = gamepad;
-        } else {
-            delete gamepads[gamepad.index];
-        }
-    }
-
-    mouseDown(evt){
-        this.keys.space = true;
-    }
-
-    mouseUp(evt){
-        this.keys.space = false;
-    }
 
     keyDown(evt){
         switch(evt.keyCode){
             case 32:
-                this.keys.space = true; 
+                this.spaceKey = true; 
                 break;
         }
     }
@@ -95,9 +83,17 @@ class App{
     keyUp(evt){
         switch(evt.keyCode){
             case 32:
-                this.keys.space = false;
+                this.spaceKey = false;
                 break;
         }
+    }
+
+    mouseDown(evt){
+        this.spaceKey = true;
+    }
+
+    mouseUp(evt){
+        this.spaceKey = false;
     }
 
     setEnvironment(){
@@ -141,8 +137,7 @@ class App{
         const self = this;
         
         this.loadingBar.visible = true;
-        this.stars = [];
-		
+        
 		// Load a glTF resource
 		loader.load(
 			// resource URL
@@ -150,35 +145,47 @@ class App{
 			// called when the resource is loaded
 			gltf => {
 
-                const star = gltf.scene.children[0];
+                self.star = gltf.scene.children[0];
+                self.loadBomb();
 
-                self.scene.add(star);
-                self.stars.push(star);
-                self.starSpawn = { pos: 20, offset: 5, setPos: star =>{
-                    self.starSpawn.pos += 30;
-                    const offset = (Math.random()*2 - 1) * self.starSpawn.offset;
-                    self.starSpawn.offset += 0.1;
-                    star.position.set(0, offset, self.starSpawn.pos );
-                    star.rotation.y = Math.random() * Math.PI * 2;
-                } };
-                self.starSpawn.setPos( star );
-
-                while (self.starSpawn.pos < 100){
-                    
-                    const star1 = star.clone();
-                    
-                    self.scene.add(star1);
-                    self.stars.push(star1);
-
-                    self.starSpawn.setPos( star1 );
-                }
-
-                self.loadPlane();
 			},
 			// called while loading is progressing
 			xhr => {
 
-				self.loadingBar.progress = (xhr.loaded / xhr.total) * 0.5;
+				self.loadingBar.progress = (xhr.loaded / xhr.total) * 0.33;
+				
+			},
+			// called when loading has errors
+			err => {
+
+				console.error( err.message );
+
+			}
+		);
+	}	
+
+    loadBomb(){
+    	const loader = new GLTFLoader( ).setPath(this.assetsPath);
+        const self = this;
+        
+		// Load a glTF resource
+		loader.load(
+			// resource URL
+			'bomb.glb',
+			// called when the resource is loaded
+			gltf => {
+
+                self.bomb = gltf.scene.children[0];
+
+                self.initObstacles();
+
+                self.loadPlane();
+
+			},
+			// called while loading is progressing
+			xhr => {
+
+				self.loadingBar.progress = (xhr.loaded / xhr.total) * 0.33 + 0.33;
 				
 			},
 			// called when loading has errors
@@ -205,7 +212,8 @@ class App{
 
 				self.scene.add( gltf.scene );
                 self.plane = gltf.scene;
-                self.plane.userData.velocity = new THREE.Vector3();
+                self.plane.userData.velocity = new THREE.Vector3(0,0,0.1);
+                self.plane.userData.heading = 0;
 
                 self.propeller = self.plane.getObjectByName("propeller");
         
@@ -216,7 +224,7 @@ class App{
 			// called while loading is progressing
 			xhr => {
 
-				self.loadingBar.progress = (xhr.loaded / xhr.total) * 0.5 + 0.5;
+				self.loadingBar.progress = (xhr.loaded / xhr.total) * 0.33 + 0.66;
 				
 			},
 			// called when loading has errors
@@ -228,19 +236,71 @@ class App{
 		);
 	}			
     
+    initObstacles(){
+        this.obstacles = [];
+        
+        const obstacle = new THREE.Group();
+        
+        obstacle.add(this.star);
+        
+        this.bomb.rotation.x = -Math.PI*0.5;
+        this.bomb.position.y = 7.5;
+        obstacle.add(this.bomb);
+
+        let rotate=true;
+
+        for(let y=5; y>-7; y-=2.5){
+            rotate = !rotate;
+            if (y==0) continue;
+            const bomb = this.bomb.clone();
+            bomb.rotation.x = (rotate) ? -Math.PI*0.5 : 0;
+            bomb.position.y = y;
+            obstacle.add(bomb);
+        
+        }
+        this.obstacles.push(obstacle);
+
+        this.scene.add(obstacle);
+
+        const self = this;
+
+        this.obstacleSpawn = { pos: 20, offset: 10, setPos: obstacle =>{
+            self.obstacleSpawn.pos += 30;
+            const offset = (Math.random()*2 - 1) * self.obstacleSpawn.offset;
+            self.obstacleSpawn.offset += 0.1;
+            obstacle.position.set(0, offset, self.obstacleSpawn.pos );
+            obstacle.children[0].rotation.y = Math.random() * Math.PI * 2;
+        } };
+        self.obstacleSpawn.setPos( obstacle );
+
+        while (this.obstacleSpawn.pos < 100){
+            
+            const obstacle1 = obstacle.clone();
+            
+            self.scene.add(obstacle1);
+            self.obstacles.push(obstacle1);
+
+            self.obstacleSpawn.setPos( obstacle1 );
+        }
+    }
+
     updatePlane(time){
+        const MAXHEADING = 0.5;
+
         if (this.gameActive){
-            if (!this.keys.space){
+            if (!this.spaceKey){
                 this.plane.userData.velocity.y -= 0.001;
             }else{
                 this.plane.userData.velocity.y += 0.001;
             }
+            this.plane.rotation.set(0, 0, Math.sin(time*3)*0.2, 'XYZ');
             this.plane.translateZ( this.plane.userData.velocity.z );
             this.plane.translateY( this.plane.userData.velocity.y );
         }else{
+            this.plane.rotation.set(0, 0, Math.sin(time*3)*0.2, 'XYZ');
             this.plane.position.y = Math.cos(time) * 1.5;
         }
-        this.plane.rotation.z = Math.sin(time*3)*0.2;
+
     }
 
     updateCamera(){
@@ -251,11 +311,11 @@ class App{
         this.camera.lookAt( this.cameraTarget );
     }
 
-    updateStars(){
-        this.stars.forEach( star =>{
-            star.rotateY(0.01);
-            if ((star.position.z-this.plane.position.z)<-20){
-                this.starSpawn.setPos(star); 
+    updateObstacles(){
+        this.obstacles.forEach( obstacle =>{
+            obstacle.children[0].rotateY(0.01);
+            if ((obstacle.position.z-this.plane.position.z)<-20){
+                this.obstacleSpawn.setPos(obstacle); 
             }
         });
     }
@@ -265,7 +325,7 @@ class App{
 
         const time = this.clock.getElapsedTime();
 
-        this.updateStars();
+        this.updateObstacles();
         this.updatePlane(time);
         this.updateCamera();
 
