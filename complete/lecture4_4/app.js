@@ -249,7 +249,7 @@ class App{
 
         let rotate=true;
 
-        for(let y=5; y>-7; y-=2.5){
+        for(let y=5; y>-8; y-=2.5){
             rotate = !rotate;
             if (y==0) continue;
             const bomb = this.bomb.clone();
@@ -312,12 +312,31 @@ class App{
     }
 
     updateObstacles(){
+        let collisionObstacle;
+
         this.obstacles.forEach( obstacle =>{
             obstacle.children[0].rotateY(0.01);
-            if ((obstacle.position.z-this.plane.position.z)<-20){
+            const relativePosZ = obstacle.position.z-this.plane.position.z;
+            if (Math.abs(relativePosZ)<2){
+                collisionObstacle = obstacle;
+            }
+            if (relativePosZ<-20){
                 this.obstacleSpawn.setPos(obstacle); 
             }
         });
+
+       
+        if (collisionObstacle!==undefined){
+            const v = new THREE.Vector3();
+            let first = true;
+            collisionObstacle.children.forEach( child => {
+                v.subVectors(child.position - this.plane.position);
+                if (v.length()<1){
+                    
+                }
+            })
+            
+        }
     }
 
 	render() {

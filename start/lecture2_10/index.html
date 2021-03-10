@@ -23,25 +23,10 @@
 
       const name = "Nik Lever";
 
-      console.log(`name=${name}`);
-      myFunc();
-
       function myFunc(){
-        console.log(`Inside myFunc name=${name}`);
-  
         if (true){
           let course = "The beginners guide to 3D web game development with ThreeJS";
           const section = 2;
-          console.log(`course='${course}' inside if statement`);  
-          console.log(`section=${section} inside if statement`);  
-          
-        }
-
-        try{
-          console.log(`course='${course}' outside if statement`);  
-          console.log(`section=${section} outside if statement`);  
-        }catch(err){
-          console.error(`myFunc:${err.message}`);
         }
       }
 
@@ -50,48 +35,20 @@
           this.days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
           this.name = name;
           this.mouse = {x:0, y:0};
-
-          document.addEventListener('mousemove', this.mouseMove.bind(this));
         }
 
         mouseMove(evt){
-          console.log(this.name);
           this.x = evt.clientX;
           this.y = evt.clientY;
         }
 
         showDays(){
-          try{
-            this.days.forEach( function(day){
-              console.log(`global name: '${name}' game name:'${this.name}' day:'${day}'`);
-            });
-          }catch(err){
-            console.error(`showDays: ${err.message}`);
-          }
-        }
-
-        showDaysSelf(){
-          try{
-            const self = this;
-            this.days.forEach( function(day){
-              console.log(`global name: '${name}' game name:'${self.name}' day:'${day}'`);
-            });
-          }catch(err){
-            console.error(`showDays: ${err.message}`);
-          }
-        }
-
-        showDaysArrow(){
-          this.days.forEach( day => {
-            console.log(`global name: '${name}' game name:'${this.name}' day :'${day}'`);
-          })
+          this.days.forEach( function(day){
+            console.log(`global name: '${name}' game name:'${this.name}' day:'${day}'`);
+          });
         }
       }
       
-      const myGame = new game("Scope example");
-      myGame.showDays();
-      myGame.showDaysSelf();
-      myGame.showDaysArrow();
     </script>
 </body>
 

@@ -49,10 +49,22 @@ class App{
         document.addEventListener('mousedown', this.mouseDown.bind(this) );
         document.addEventListener('mouseup', this.mouseUp.bind(this) );
         
-        this.keys = { space:false, left:false, right: false };
+        this.spaceKey = false;
         this.gameActive = false;
 
+        const btn = document.getElementById('playBtn');
+        btn.addEventListener('click', this.startGame.bind(this));
 	}
+
+    startGame(){
+        const instructions = document.getElementById('instructions');
+        const btn = document.getElementById('playBtn');
+
+        instructions.style.display = 'none';
+        btn.style.display = 'none';
+
+        this.gameActive = true;
+    }
 	
     resize(){
         this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -61,17 +73,17 @@ class App{
     }
     
     mouseDown(evt){
-        this.keys.space = true;
+        this.spaceKey = true;
     }
 
     mouseUp(evt){
-        this.keys.space = false;
+        this.spaceKey = false;
     }
 
     keyDown(evt){
         switch(evt.keyCode){
             case 32:
-                this.keys.space = true; 
+                this.spaceKey = true; 
                 break;
         }
     }
@@ -79,7 +91,7 @@ class App{
     keyUp(evt){
         switch(evt.keyCode){
             case 32:
-                this.keys.space = false;
+                this.spaceKey = false;
                 break;
         }
     }
@@ -189,7 +201,7 @@ class App{
 
 				self.scene.add( gltf.scene );
                 self.plane = gltf.scene;
-                self.plane.userData.velocity = new THREE.Vector3();
+                self.plane.userData.velocity = new THREE.Vector3(0,0,0.1);
 
                 self.propeller = self.plane.getObjectByName("propeller");
         
@@ -214,7 +226,7 @@ class App{
     
     updatePlane(time){
         if (this.gameActive){
-            if (!this.keys.space){
+            if (!this.spaceKey){
                 this.plane.userData.velocity.y -= 0.001;
             }else{
                 this.plane.userData.velocity.y += 0.001;
