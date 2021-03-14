@@ -23,9 +23,6 @@
 
       const name = "Nik Lever";
       
-      console.log(`name=${name}`);
-      myFunc();
-
       function myFunc(){
         console.log(`Inside myFunc name=${name}`);
   
@@ -35,13 +32,6 @@
           console.log(`course='${course}' inside if statement`);  
           console.log(`section=${section} inside if statement`);  
         }
-
-        try{
-          console.log(`course='${course}' outside if statement`);  
-          console.log(`section=${section} outside if statement`);  
-        }catch(err){
-          console.error(`myFunc:${err.message}`);
-        }
       }
 
       class game{
@@ -49,26 +39,19 @@
           this.days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
           this.name = name;
           this.mouse = {x:0, y:0};
-
-          document.addEventListener('mousemove', this.mouseMove.bind(this));
         }
 
         mouseMove(evt){
-          console.log(this.name);
-          this.mouse.x = evt.clientX;
-          this.mouse.y = evt.clientY;
+          this.x = evt.clientX;
+          this.y = evt.clientY;
         }
 
         showDays(){
-          const self = this;
           this.days.forEach( function(day){
-            console.log(`global name: '${name}' game name:'${self.name}' day:'${day}'`);
+            console.log(`global name: '${name}' game name:'${this.name}' day:'${day}'`);
           });
         }
       }
-      
-      const myGame = new game("Scope example");
-      myGame.showDays();
       
     </script>
 </body>
