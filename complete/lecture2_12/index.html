@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!--favicon -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../css/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../css/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../css/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../css/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../css/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>Lecture 2.12</title>
+</head>
+
+<body>
+    <script>
+      console.clear();
+      
+      fetch('./characters.json')
+            .then(response => response.json())
+            .then(obj =>{
+                obj.forEach( character => console.log( character ));
+            }).catch( err => console.error(err) );
+
+      fetch('./planets.json')
+            .then(response => response.json())
+            .then(obj =>{
+                displayFacts(obj.planets);
+            }).catch( err => console.error(err) );
+
+      function displayFacts(planets){
+        const smallest = planets.reduce( (acc, loc) => acc.radius < loc.radius ? acc : loc );
+        const largest = planets.reduce( (acc, loc) => acc.radius > loc.radius ? acc : loc );
+        const moons = planets.reduce( (acc, loc) =>{
+          const accMoons = acc.moons.length - 1 + acc.moons[acc.moons.length-1];
+          const locMoons = loc.moons.length - 1 + loc.moons[loc.moons.length-1];
+          return accMoons > locMoons ? acc : loc;
+        });
+
+        console.log(`The smallest planet is ${smallest.name}`);
+        console.log(`The largest planet is ${largest.name}`);
+        console.log(`The planet with the most moons is ${moons.name}`);
+      }
+    </script>
+</body>
+
+</html>

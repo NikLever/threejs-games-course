@@ -14,65 +14,53 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
 
-  <title>Lecture 2.7</title>
+  <title>Lecture 2.11</title>
+  <style>
+    #star{
+      position:absolute;
+      left: 200px;
+      top: 150px;
+    }
+  </style>
 </head>
 
 <body>
-    <script>
-      class Point{
-        constructor(x,y){
-          this.x = x;
-          this.y = y;
-        }
-      }
+    <div id="star">
+      <img src="../../assets/star-icon.png" />
+    </div>
+    <script type="module">
+      import {Vec} from './Vec.js';
 
-      const pt = new Point(20, 65);
-
-      class Rectangle{
-        constructor(left, top, width, height){
-          this.left = left;
-          this.top = top;
-          this.width = width;
-          this.height = height;
-        }
-
-        move(x, y){
-          this.left += x;
-          this.top += y;
-        }
-
-        get area(){
-          return this.width * this.height;
-        }
-
-        overlap(rect){
-          const l1 = new Point(this.left, this.top);
-          const r1 = new Point(this.left + this.width, this.top - this.height);
-          const l2 = new Point(rect.left, rect.top);
-          const r2 = new Point(rect.left + rect.width, rect.top - rect.height);
-
-          // If one rectangle is on left side of other 
-          if (l1.x >= r2.x || l2.x >= r1.x){ return false; } 
-  
-          // If one rectangle is below the other 
-          if (l1.y <= r2.y || l2.y <= r1.y){ return false; } 
-  
-          return true; 
-        }
-      }
-
-      const rect1 = new Rectangle(10, 10, 100, 50);
-      const rect2 = new Rectangle(50, 20, 200, 80);
-
-      console.log('The area of rect1 is ' + rect1.area);
-
-      console.log('rect1 overlaps rect2 ' + rect1.overlap(rect2));
-
-      rect1.move(0, 100);
-
-      console.log('rect1 overlaps rect2 ' + rect1.overlap(rect2));
-
+      console.clear();
       
+      const a = new Vec();
+      const b = new Vec(4, 0);
+      const c = new Vec(4, 3);
+
+      console.log(`The distance from a to c is ${a.distanceTo(c).toFixed(2)}`);
+      console.log(`The angle between b and c is ${b.angleBetween(c).toFixed(2)} degrees`);
+
+      const centre = new Vec(150, 150);
+      const radius = 100;
+      let theta = 0;
+
+      const star = document.getElementById('star');
+
+      rotateStar();
+
+      function rotateStar(){
+        requestAnimationFrame(rotateStar);
+
+        theta += 0.05;
+
+        const x = Math.cos(theta) * radius + centre.x;
+        const y = Math.sin(theta) * radius + centre.y;
+
+        star.style.left = `${x}px`;
+        star.style.top = `${y}px`;
+      }
+
+
     </script>
 </body>
 
