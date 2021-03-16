@@ -1,0 +1,61 @@
+{
+  "description": "Planets in the solar system",
+  "planets": [
+    {
+      "name": "Mercury",
+      "aphelion": 69.8,
+      "perihelion": 46.0,
+      "radius": 2439,
+      "moons": [0]
+    },
+    {
+      "name": "Venus",
+      "aphelion": 108.9,
+      "perihelion": 107.5,
+      "radius": 6052,
+      "moons": [0]
+    },
+    {
+      "name": "Earth",
+      "aphelion": 152.1,
+      "perihelion": 147.1,
+      "radius": 6371,
+      "moons": ["The Moon", 0]
+    },
+    {
+      "name": "Mars",
+      "aphelion": 249.2,
+      "perihelion": 206.7,
+      "radius": 3389,
+      "moons": ["Phobos", "Deimos", 0] 
+    },
+    {
+      "name": "Jupiter",
+      "aphelion": 816.6,
+      "perihelion": 740.5,
+      "radius": 69911,
+      "moons": ["Io", "Europa", "Ganymede", "Callisto", 90] 
+    },
+    {
+      "name": "Saturn",
+      "aphelion": 1514,
+      "perihelion": 1352,
+      "radius": 58232,
+      "moons": ["Titan", "Rhea", "Iapetus", "Dione", "Tethys", 75] 
+    },
+    {
+      "name": "Uranus",
+      "aphelion": 3008,
+      "perihelion": 2742,
+      "radius": 25362,
+      "moons": ["Miranda", "Ariel", "Umbriel", "Titania", "Oberon", 22] 
+    },
+    {
+      "name": "Neptune",
+      "aphelion": 4540,
+      "perihelion": 4460,
+      "radius": 24622,
+      "moons": ["Triton", "Proteus", "Naiad", "Thalassa", "Despina", "Galatea", 8] 
+    }
+  ]
+}
