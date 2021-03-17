@@ -39,20 +39,27 @@
           this.days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
           this.name = name;
           this.mouse = {x:0, y:0};
+
+          document.addEventListener('mousemove', this.mouseMove.bind(this));
         }
 
         mouseMove(evt){
+          console.log(this.name);
           this.x = evt.clientX;
           this.y = evt.clientY;
         }
 
         showDays(){
+          const self = this;
+
           this.days.forEach( function(day){
-            console.log(`global name: '${name}' game name:'${this.name}' day:'${day}'`);
+            console.log(`global name: '${name}' game name:'${self.name}' day:'${day}'`);
           });
         }
       }
       
+      const myGame = new game('Scope example');
+      myGame.showDays();
     </script>
 </body>
 
