@@ -1,10 +1,13 @@
 import * as THREE from '../../libs/three126/three.module.js';
+import * as CANNON from '../../libs/cannon-es.js';
+import { addCannonVisual } from './CannonUtils.js';
+
 
 class Ball{
     static RADIUS = 0.05715 / 2;
     static MASS = 0.17;
-    //Ball.contactMaterial = new CANNON.Material("ballMaterial");
-  
+    static CONTACT_MATERIAL = new CANNON.Material("ballMaterial");
+    
     constructor(game, x, z, id=0) {
         this.id = id;
     
@@ -12,10 +15,14 @@ class Ball{
         this.mesh = this.createMesh(game.scene);
         this.reset();
         
-        //this.sphere = new THREE.Sphere(this.mesh.position, Ball.RADIUS); //used for guiding line intersection detecting
-        
-        //this.rigidBody = this.createBody(x,y,z);
-        //world.addBody(this.rigidBody);
+        this.world = game.world;
+        this.game = game;
+
+        this.rigidBody = this.createBody(x, Ball.RADIUS, z);
+        this.world.addBody(this.rigidBody);
+
+        if (game.debug) addCannonVisual(this.rigidBody, game.scene);
+
         this.name = `ball${id}`;
     }
 
@@ -24,7 +31,32 @@ class Ball{
         this.mesh.rotation.set(0,0,0);
         this.fallen = false;
     }
-  
+
+    onEnterHole() {
+      this.rigidBody.velocity = new CANNON.Vec3(0);
+      this.rigidBody.angularVelocity = new CANNON.Vec3(0);
+      this.world.removeBody(this.rigidBody);
+      this.game.updateUI({event: 'balldrop', id: this.id } );
+    }
+    
+    createBody(x,y,z) {
+      const body = new CANNON.Body({
+        mass: Ball.MASS, // kg
+        position: new CANNON.Vec3(x,y,z), // m
+        shape: new CANNON.Sphere(Ball.RADIUS),
+        material: Ball.CONTACT_MATERIAL
+      });
+    
+      body.linearDamping = body.angularDamping = 0.5; // Hardcode
+      body.allowSleep = true;
+    
+      // Sleep parameters
+      body.sleepSpeedLimit = 2; // Body will feel sleepy if speed< 1 (speed == norm of velocity)
+      body.sleepTimeLimit = 0.1; // Body falls asleep after 0.1s of sleepiness
+    
+      return body;
+    }
+
     createMesh (scene) {
         const geometry = new THREE.SphereBufferGeometry(Ball.RADIUS, 16, 16);
         const material = new THREE.MeshStandardMaterial({
@@ -51,42 +83,15 @@ class Ball{
     };
  
     update(dt){
-        /*this.mesh.position.copy(this.rigidBody.position);
+        this.mesh.position.copy(this.rigidBody.position);
         this.mesh.quaternion.copy(this.rigidBody.quaternion);
       
         // Has the ball fallen into a hole?
-        if (this.rigidBody.position.y < -4 * Ball.RADIUS && !this.fallen) {
+        if (this.rigidBody.position.y < -Ball.RADIUS && !this.fallen) {
           this.fallen = true;
           this.onEnterHole();
-        }*/
+        }
     }
 }
 
 export { Ball };
-
-/*
-  
-  Ball.prototype.onEnterHole = function () {
-    this.rigidBody.velocity = new CANNON.Vec3(0);
-    this.rigidBody.angularVelocity = new CANNON.Vec3(0);
-    world.removeBody(this.rigidBody);
-    eightballgame.coloredBallEnteredHole(this.name);
-  };
-  
-  Ball.prototype.createBody = function (x,y,z) {
-    var sphereBody = new CANNON.Body({
-      mass: Ball.MASS, // kg
-      position: new CANNON.Vec3(x,y,z), // m
-      shape: new CANNON.Sphere(Ball.RADIUS),
-      material: Ball.contactMaterial
-    });
-  
-    sphereBody.linearDamping = sphereBody.angularDamping = 0.5; // Hardcode
-    sphereBody.allowSleep = true;
-  
-    // Sleep parameters
-    sphereBody.sleepSpeedLimit = 0.5; // Body will feel sleepy if speed< 0.05 (speed == norm of velocity)
-    sphereBody.sleepTimeLimit = 0.1; // Body falls asleep after 1s of sleepiness
-  
-    return sphereBody;
-  };*/
