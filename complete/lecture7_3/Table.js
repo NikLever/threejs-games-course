@@ -1,4 +1,4 @@
-//import * as CANNON from '../../libs/cannon-es.js';
+import * as CANNON from '../../libs/cannon-es.js';
 import * as THREE from '../../libs/three126/three.module.js';
 import { createQuaternionFromAxisAngle, addCannonVisual } from './CannonUtils.js';
 import { Ball } from './Ball.js';

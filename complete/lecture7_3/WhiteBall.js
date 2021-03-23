@@ -1,6 +1,6 @@
 import { Ball } from './Ball.js';
 import * as THREE from '../../libs/three126/three.module.js';
-//import * as CANNON from '../../libs/cannon-es.js';
+import * as CANNON from '../../libs/cannon-es.js';
 
 class WhiteBall extends Ball{
     constructor(game, x, z){
@@ -106,7 +106,7 @@ class WhiteBall extends Ball{
         const force = new CANNON.Vec3();
         force.copy(this.forward.normalize());
         force.scale(strength, force);
-        this.rigidBody.applyImpulse(force, position);
+        this.rigidBody.applyImpulse(force, new CANNON.Vec3());
     }
       
     //Resets the position to this.startPosition 

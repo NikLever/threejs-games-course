@@ -1,5 +1,5 @@
 import * as THREE from '../../libs/three126/three.module.js';
-//import * as CANNON from '../../libs/cannon-es.js';
+import * as CANNON from '../../libs/cannon-es.js';
 import { addCannonVisual } from './CannonUtils.js';
 
 

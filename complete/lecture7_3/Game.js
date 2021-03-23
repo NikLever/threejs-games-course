@@ -6,15 +6,15 @@ import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Ball } from './Ball.js';
 import { WhiteBall } from './WhiteBall.js';
 import { Table } from './Table.js';
-//import * as CANNON from '../../libs/cannon-es.js';
-import { StrengthBar } from './StrengthBar.js';
+import * as CANNON from '../../libs/cannon-es.js';
+import { GameState } from './GameState.js';
 
 class Game{
 	constructor(){
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
         
-        this.debug = true;
+        this.debug = false;
 
         this.loadingBar = new LoadingBar();
 
@@ -50,30 +50,14 @@ class Game{
         this.createBalls();
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+    
+        this.gameState = new GameState(this);
 
-        this.strengthBar = new StrengthBar();
-        
         window.addEventListener('resize', this.resize.bind(this) );
-
-        document.addEventListener( 'keydown', this.keydown.bind(this));
-        document.addEventListener( 'keyup', this.keyup.bind(this));
 	}	
 
-    keydown( evt ){
-        if (evt.keyCode == 32){
-            this.strengthBar.visible = true;
-        }
-    }
-
-    keyup( evt ){
-        if (evt.keyCode == 32){
-            this.strengthBar.visible = false;
-            this.strikeCueball()
-        }
-    }
-
-    strikeCueball(){
-        if (this.cueball.isSleeping) this.cueball.hit(this.strengthBar.strength);
+    strikeCueball(strength){
+        his.cueball.hit(strength);
     }
     
     createPhysicsWorld(){
@@ -243,7 +227,7 @@ class Game{
 	render( ) {   
         this.controls.target.copy(this.balls[0].mesh.position);
         this.controls.update();
-        if (this.strengthBar.visible) this.strengthBar.update();
+        this.gameState.update();
         const dt = this.clock.getDelta();
         this.world.step(this.world.fixedTimeStep);
         this.balls.forEach( ball => ball.update(dt) );
