@@ -13,15 +13,61 @@
         <meta name="msapplication-TileColor" content="#da532c">
         <meta name="theme-color" content="#ffffff">
 
-        <title>Lecture 3.6</title>
+        <title>Lecture 7.3</title>
         <style>
             body{
                 margin: 0;
                 padding: 0;
             }
         </style>
+        <link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
+        <div id="controlsHud" class="hide">
+            <div class="player player1 unknown">
+              <h5>Player 1 (<span></span>)</h5>
+    
+              <ul>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+              </ul>
+            </div>
+    
+            <div class="player player2 unknown">
+              <h5>Player 2 (<span></span>)</h5>
+    
+              <ul>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+                <li>?</li>
+              </ul>
+            </div>
+    
+            <ul class="gamelog list-unstyled">
+    
+            </ul>
+    
+            <div class="timer">
+              30
+            </div>
+            <div id="fps_stats_container"></div>
+          </div>
+    
+          <div id="message" class="hide">
+            <h1>Player won!</h1>
+            <h2>Thank you for playing.</h2>
+          </div>
+
+        </div>
         <script type="module">
             import { Game } from './Game.js';
 
