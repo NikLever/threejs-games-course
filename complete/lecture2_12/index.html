@@ -27,7 +27,7 @@
                 obj.forEach( character => console.log( character ));
             }).catch( err => console.error(err) );
 
-      fetch('./planets.json')
+      fetch('./planetinfo.json')
             .then(response => response.json())
             .then(obj =>{
                 displayFacts(obj.planets);

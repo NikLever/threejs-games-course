@@ -21,7 +21,27 @@
     <script>
       console.clear();
       
-      
+      fetch('./characters.json')
+        .then( response => response.json())
+        .then( obj => {
+          obj.forEach(character => {
+            console.log( character );
+          });
+        }).catch( err => console.error( err ));
+
+        fetch('./planetinfo.json')
+        .then( response => response.json())
+        .then( obj => {
+          displayFacts(obj.planets);
+        }).catch( err => console.error( err ));
+
+        function displayFacts( planets ){
+          const largest = planets.reduce( ( acc, loc ) => acc.radius > loc.radius ? acc : loc );
+          console.log(`The largest planet in the solar system is ${largest.name}`);
+
+          const smallest = planets.reduce( ( acc, loc ) => acc.radius < loc.radius ? acc : loc );
+          console.log(`The smallest planet in the solar system is ${smallest.name}`);
+        }
     </script>
 </body>
 
