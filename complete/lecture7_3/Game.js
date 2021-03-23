@@ -57,7 +57,7 @@ class Game{
 	}	
 
     strikeCueball(strength){
-        his.cueball.hit(strength);
+        this.cueball.hit(strength);
     }
     
     createPhysicsWorld(){
@@ -212,8 +212,10 @@ class Game{
     updateUI( evt ){
         switch(evt.event){
             case 'balldrop':
+                this.gameState.coloredBallEnteredHole(evt.id);
                 break;
             case 'whitedrop':
+                this.gameState.whiteBallEnteredHole();
                 break;
         }
     }

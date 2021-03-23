@@ -21,11 +21,13 @@ class GameUI{
     }
   };
 
-  show(node) {
+  show(elmId) {
+    const node = document.getElementById(elmId);
     this.removeClass(node, 'hide');
   }
 
-  hide(node) {
+  hide(elmId) {
+    const node = document.getElementById(elmId);
     this.addClass(node, 'hide');
   }
 
@@ -45,9 +47,9 @@ class GameUI{
     this.addClass(document.getElementsByClassName(str)[0], 'active');
   }
 
-  updateBalls(ballArr, p1side, p2side) {
-    p1side = p1side == '?' ? 'unknown' : p1side;
-    p2side = p2side == '?' ? 'unknown' : p2side;
+  updateBalls(ballArr, sides) {
+    const p1side = sides.player1 == '?' ? 'unknown' : sides.player1;
+    const p2side = sides.player2 == '?' ? 'unknown' : sides.player2;
 
     this.removeClass(document.getElementsByClassName('player1')[0], 'solid');
     this.removeClass(document.getElementsByClassName('player2')[0], 'solid');
@@ -96,7 +98,7 @@ class GameUI{
   showMessage(title, body) {
     document.getElementById("message").children[0].textContent = title;
     document.getElementById("message").children[1].textContent = body;
-    this.show(document.getElementById('message'));
+    this.show('message');
   }
 
   update(){

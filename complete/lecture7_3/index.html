@@ -14,67 +14,65 @@
         <meta name="theme-color" content="#ffffff">
 
         <title>Lecture 7.3</title>
-        <style>
-            body{
-                margin: 0;
-                padding: 0;
-            }
-        </style>
+        
         <link rel="stylesheet" href="styles.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
 	</head>
 	<body>
-        <div id="controlsHud" class="hide">
-            <div class="player player1 unknown">
-              <h5>Player 1 (<span></span>)</h5>
-    
-              <ul>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-              </ul>
-            </div>
-    
-            <div class="player player2 unknown">
-              <h5>Player 2 (<span></span>)</h5>
-    
-              <ul>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-                <li>?</li>
-              </ul>
-            </div>
-    
-            <ul class="gamelog list-unstyled">
-    
+    <button type="button" id="playBtn">Play 8-ball</button>
+         
+    <div id="gameHud" class="hide">
+          <div class="player player1 unknown">
+            <h5>Player 1 (<span></span>)</h5>
+  
+            <ul>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
             </ul>
-    
-            <div class="timer">
-              30
-            </div>
-            <div id="fps_stats_container"></div>
           </div>
-    
-          <div id="message" class="hide">
-            <h1>Player won!</h1>
-            <h2>Thank you for playing.</h2>
+  
+          <div class="player player2 unknown">
+            <h5>Player 2 (<span></span>)</h5>
+  
+            <ul>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
+              <li>?</li>
+            </ul>
           </div>
+  
+          <ul class="gamelog list-unstyled">
+  
+          </ul>
+  
+          <div class="timer">
+            30
+          </div>
+          <div id="fps_stats_container"></div>
+    </div>
 
-        </div>
-        <script type="module">
-            import { Game } from './Game.js';
+    <div id="message" class="hide">
+      <h1>Player won!</h1>
+      <h2>Thank you for playing.</h2>
+    </div>
 
-            document.addEventListener("DOMContentLoaded", function(){
-                const game = new Game();
-                window.game = game;
-            });
-        </script>
+    <script type="module">
+        import { Game } from './Game.js';
+
+        document.addEventListener("DOMContentLoaded", function(){
+            const game = new Game();
+            window.game = game;
+        });
+    </script>
 	</body>
 </html>

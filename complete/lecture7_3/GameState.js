@@ -6,10 +6,19 @@ class GameState{
       this.game = game;
       this.ui = new GameUI();
       this.initGame();
+      const btn = document.getElementById('playBtn');
+      btn.onclick = this.startGame.bind(this);
       document.addEventListener( 'keydown', this.keydown.bind(this));
       document.addEventListener( 'keyup', this.keyup.bind(this));
     }
   
+    startGame(){
+      this.ui.hide('playBtn');
+      this.ui.show('gameHud');
+      this.turn = 'player1';
+      this.startTurn();
+    }
+
     keydown( evt ){
       if (this.state !== 'turn') return;
 
@@ -23,7 +32,7 @@ class GameState{
       
       if (evt.keyCode == 32){
           this.ui.strengthBar.visible = false;
-          this.strikeCueball()
+          this.game.strikeCueball(this.ui.strengthBar.strength);
       }
     }
 
@@ -48,9 +57,10 @@ class GameState{
       if (this.state == 'gameover') return;
       // enable movement
       this.timer = 30;
+      this.tickTimer();
       this.state = 'turn';
-      this.ui.updateTurn();
-      this.ui.updateBalls();
+      this.ui.updateTurn(this.turn);
+      this.ui.updateBalls(this.numberedBallsOnTable, this.sides);
     }
   
     whiteBallEnteredHole() {
@@ -94,7 +104,7 @@ class GameState{
   }
   
   tickTimer() {
-    this.ui.UpdateTimer(this.timer);
+    this.ui.updateTimer(this.timer);
     if (this.timer == 0) {
       this.ui.log(`${this.turn} ran out of time`);
       this.state = "outoftime";
