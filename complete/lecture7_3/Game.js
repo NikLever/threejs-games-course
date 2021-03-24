@@ -50,11 +50,23 @@ class Game{
         this.createBalls();
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+        this.controls.enableZoom = true;
+        this.controls.enablePan = true;
+
+        this.controls.minDistance = 0.35;
+        this.controls.maxDistance = 1.65;
+
+        // Don't let the camera go below the ground
+        this.controls.maxPolarAngle = 0.49 * Math.PI;
     
         this.gameState = new GameState(this);
 
         window.addEventListener('resize', this.resize.bind(this) );
 	}	
+
+    reset(){
+        this.balls.forEach( ball => ball.reset() );
+    }
 
     strikeCueball(strength){
         this.cueball.hit(strength);
@@ -168,6 +180,8 @@ class Game{
 				this.scene.add( gltf.scene );
                 
                 this.loadingBar.visible = false;
+
+                this.gameState.showPlayBtn();
 				
 				this.renderer.setAnimationLoop( this.render.bind(this));
 			},

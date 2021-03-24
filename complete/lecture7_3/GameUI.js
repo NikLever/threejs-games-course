@@ -95,6 +95,22 @@ class GameUI{
     document.getElementsByClassName(p1side == 'striped' ? 'player1' : 'player2')[0].replaceChild(elem, document.getElementsByClassName(p1side == 'striped' ? 'player1' : 'player2')[0].children[1]);
   }
 
+  showGameHud(mode){
+    if (mode){
+      this.hide('playBtn');
+      this.show('player1');
+      this.show('player2');
+      this.show('timer');
+      this.show('gamelog');
+    }else{
+      this.show('playBtn');
+      this.hide('player1');
+      this.hide('player2');
+      this.hide('timer');
+      this.hide('gamelog');
+    }
+  }
+
   showMessage(title, body) {
     document.getElementById("message").children[0].textContent = title;
     document.getElementById("message").children[1].textContent = body;

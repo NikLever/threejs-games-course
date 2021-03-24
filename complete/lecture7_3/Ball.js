@@ -28,11 +28,18 @@ class Ball{
         this.name = `ball${id}`;
     }
 
+    get isSleeping(){
+      return this.rigidBody.sleepState == CANNON.Body.SLEEPING;
+    }
+
     reset(){
       this.rigidBody.velocity = new CANNON.Vec3(0);
       this.rigidBody.angularVelocity = new CANNON.Vec3(0);
+      this.world.removeBody(this.rigidBody);
+      this.world.addBody(this.rigidBody);
       this.mesh.position.copy( this.startPosition );
       this.mesh.rotation.set(0,0,0);
+      this.mesh.visible = true;
       this.fallen = false;
     }
 
@@ -40,6 +47,8 @@ class Ball{
       this.rigidBody.velocity = new CANNON.Vec3(0);
       this.rigidBody.angularVelocity = new CANNON.Vec3(0);
       this.world.removeBody(this.rigidBody);
+      this.fallen = true;
+      this.mesh.visible = false;
       this.game.updateUI({event: 'balldrop', id: this.id } );
     }
     
@@ -87,6 +96,8 @@ class Ball{
     };
  
     update(dt){
+        if (this.fallen) return;
+
         this.mesh.position.copy(this.rigidBody.position);
         this.mesh.quaternion.copy(this.rigidBody.quaternion);
 
@@ -97,7 +108,6 @@ class Ball{
       
         // Has the ball fallen into a hole?
         if (this.rigidBody.position.y < -Ball.RADIUS && !this.fallen) {
-          this.fallen = true;
           this.onEnterHole();
         }
     }

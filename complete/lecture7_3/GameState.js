@@ -12,10 +12,14 @@ class GameState{
       document.addEventListener( 'keyup', this.keyup.bind(this));
     }
   
+    showPlayBtn(){
+      this.ui.show('playBtn');
+    }
+
     startGame(){
-      this.ui.hide('playBtn');
-      this.ui.show('gameHud');
-      this.turn = 'player1';
+      this.ui.showGameHud(true);
+      this.game.reset();
+      this.initGame();
       this.startTurn();
     }
 
@@ -32,7 +36,7 @@ class GameState{
       
       if (evt.keyCode == 32){
           this.ui.strengthBar.visible = false;
-          this.game.strikeCueball(this.ui.strengthBar.strength);
+          this.hit(this.ui.strengthBar.strength);
       }
     }
 
@@ -61,6 +65,8 @@ class GameState{
       this.state = 'turn';
       this.ui.updateTurn(this.turn);
       this.ui.updateBalls(this.numberedBallsOnTable, this.sides);
+      const str = this.turn == 'player1' ? 'Player 1' : 'Player 2';
+      this.ui.log(`${str} to play`);
     }
   
     whiteBallEnteredHole() {
@@ -109,6 +115,7 @@ class GameState{
       this.ui.log(`${this.turn} ran out of time`);
       this.state = "outoftime";
       this.switchSides();
+      setTimeout( this.startTurn.bind(this), 1000);
     } else {
       this.timer--;
       this.ticker = setTimeout(this.tickTimer.bind(this), 1000);
@@ -117,8 +124,6 @@ class GameState{
   
   switchSides() {
     this.turn = this.turn == 'player1' ? 'player2': 'player1';
-  
-    setTimeout(this.startTurn.bind(this), 1000);
   }
   
   endGame() {
@@ -129,32 +134,31 @@ class GameState{
   }
   
   hit(strength) {
-    if (this.game.cueball.rigidBody.sleepState == CANNON.Body.SLEEPING && this.state == 'turn') {
-      clearTimeout(this.ticker);
-      this.state = 'turnwaiting';
-      let tmp = setInterval( () => {
-        if (this.game.cueball.rigidBody.sleepState != CANNON.Body.SLEEPING) return;
+    this.game.strikeCueball(strength);
+    clearTimeout(this.ticker);
+    this.state = 'turnwaiting';
+  }
 
-        for (let i=1; i<this.game.balls.length; i++) {
-          if (this.game.balls[i].rigidBody.sleepState != CANNON.Body.SLEEPING && this.numberedBallsOnTable.indexOf(Number(game.balls[i].name.split('ball')[0])) > -1) {
-            return;
-          }
-        }
-  
-        if (this.pocketingOccurred) {
-          setTimeout(this.startTurn.bind(this), 1000);
-        } else {
-          this.switchSides();
-        }
-  
-        this.pocketingOccurred = false;
-  
-        clearInterval(tmp);
-      }, 30);
+  checkSleeping(){
+    if (!this.game.cueball.isSleeping) return;
+
+    for (let i=1; i<this.game.balls.length; i++) {
+      if (!this.game.balls[i].isSleeping && this.numberedBallsOnTable.indexOf(Number(game.balls[i].name.split('ball')[0])) > -1) {
+        return;
+      }
     }
+
+    if (!this.pocketingOccurred) this.switchSides();
+
+    this.pocketingOccurred = false;
+
+    setTimeout( this.startTurn.bind(this), 1000);
+
+    this.state = 'paused';
   }
 
   update(dt){
+    if (this.state == 'turnwaiting') this.checkSleeping();
     this.ui.update();
   }
 }

@@ -20,47 +20,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
 	</head>
 	<body>
-    <button type="button" id="playBtn">Play 8-ball</button>
+    <button type="button" id="playBtn" class="hide">Play 8-ball</button>
          
-    <div id="gameHud" class="hide">
-          <div class="player player1 unknown">
-            <h5>Player 1 (<span></span>)</h5>
-  
-            <ul>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-            </ul>
-          </div>
-  
-          <div class="player player2 unknown">
-            <h5>Player 2 (<span></span>)</h5>
-  
-            <ul>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-              <li>?</li>
-            </ul>
-          </div>
-  
-          <ul class="gamelog list-unstyled">
-  
-          </ul>
-  
-          <div class="timer">
-            30
-          </div>
-          <div id="fps_stats_container"></div>
+    <div id="player1" class="player player1 unknown hide">
+    <h5>Player 1 (<span></span>)</h5>
+
+    <ul>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+    </ul>
     </div>
 
+    <div id="player2" class="player player2 unknown hide">
+    <h5>Player 2 (<span></span>)</h5>
+
+    <ul>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+        <li>?</li>
+    </ul>
+    </div>
+
+    <ul id="gamelog" class="gamelog list-unstyled hide">
+
+    </ul>
+
+    <div id="timer" class="timer hide">
+        30
+    </div>
+    
     <div id="message" class="hide">
       <h1>Player won!</h1>
       <h2>Thank you for playing.</h2>

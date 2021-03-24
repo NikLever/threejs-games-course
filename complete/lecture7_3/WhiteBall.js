@@ -48,10 +48,8 @@ class WhiteBall extends Ball{
       
         //update intersection dot if we're not moving
         if (this.rigidBody.sleepState == CANNON.Body.SLEEPING) {
-            this.isSleeping = true;
             this.updateGuideLine();
         } else {
-            this.isSleeping = false;
             this.guideLine.visible = false;
             this.dot.visible = false;
         }
