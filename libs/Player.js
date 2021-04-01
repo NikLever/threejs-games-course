@@ -1,10 +1,9 @@
-import * as THREE from './three/three.module.js';
+import * as THREE from './three126/three.module.js';
 
 class Player{
 	constructor(options){
 		const fps = options.fps || 30; //default fps
 		
-		this.assetsPath = options.assetsPath;
 		this.name = options.name | 'Player';
 		
 		this.animations = {};	
@@ -15,6 +14,8 @@ class Player{
 		this.pathLines = new THREE.Object3D();
 		this.pathColor = new THREE.Color(0xFFFFFF);
 		options.app.scene.add(this.pathLines);
+
+        this.waypoints = options.waypoints;
 		
 		this.npc = options.npc;
         
@@ -25,7 +26,7 @@ class Player{
         
         if (options.app.pathfinder){
             this.pathfinder = options.app.pathfinder;
-            this.ZONE = options.app.ZONE;
+            this.ZONE = options.zone;
             this.navMeshGroup = this.pathfinder.getGroup(this.ZONE, this.object.position);	
         }
 		
@@ -51,6 +52,11 @@ class Player{
                 self.animations[animation.name.toLowerCase()] = animation;
             })
         }
+	}
+
+    get randomWaypoint(){
+		const index = Math.floor(Math.random()*this.waypoints.length);
+		return this.waypoints[index];
 	}
 	
 	newPath(pt){
@@ -189,7 +195,7 @@ class Player{
                 this.calculatedPath.shift();
                 if (this.calculatedPath.length==0){
                     if (this.npc){
-                        this.newPath(this.app.randomWaypoint);
+                        this.newPath(this.randomWaypoint);
                     }else{
                         player.position.copy( targetPosition );
                         this.action = 'idle';
@@ -204,7 +210,7 @@ class Player{
                 }
             }
         }else{
-            if (this.npc && !this.dead) this.newPath(this.app.randomWaypoint);
+            if (this.npc && !this.dead) this.newPath(this.randomWaypoint);
         }
     }
 }
