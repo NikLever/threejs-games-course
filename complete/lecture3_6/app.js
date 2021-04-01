@@ -22,13 +22,11 @@ class App{
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
 		container.appendChild( this.renderer.domElement );
 		
         //Replace Box with Circle, Cone, Cylinder, Dodecahedron, Icosahedron, Octahedron, Plane, Sphere, Tetrahedron, Torus or TorusKnot
-        const geometry = new THREE.TorusKnotBufferGeometry(); 
-        
-        const material = new THREE.MeshBasicMaterial( { color: 0xFF0000 });
+        const geometry = new THREE.CircleBufferGeometry(1, 32, 0, Math.PI);
+        const material = new THREE.MeshStandardMaterial( { color: 0xFF0000 });
 
         this.mesh = new THREE.Mesh( geometry, material );
         
@@ -49,7 +47,6 @@ class App{
     
 	render( ) {   
         this.mesh.rotateY( 0.01 );
-        this.mesh.rotateX( 0.005 );
         this.renderer.render( this.scene, this.camera );
     }
 }
