@@ -23,11 +23,11 @@ class App{
 	}	
     
     resize(){
-          
+
     }
     
 	render( ) {   
-        this.renderer.render( this.scene, this.camera );
+		this.renderer.render( this.scene, this.camera );
     }
 }
 
