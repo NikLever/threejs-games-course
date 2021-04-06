@@ -80,15 +80,13 @@ class Utils {
     for ( let i = 0; i < vertexCount; i ++ ) {
       const index = (indices) ? indices.getX(i) : i;	
       const pos = { x:positions.getX(index), y:positions.getY(index), z:positions.getZ(index), index:newVertices.length};
-      let found = false;
-      newVertices.some( p => {
-        if ( Utils.distanceToSquared(p, pos)<tolerance ){
-          newIndices.push(p.index);
-          found = true;
-          return true;
-        }
-      });
-      if (!found){
+    
+      if (!newVertices.some( p => {
+          if (Utils.distanceToSquared(p, pos)<tolerance ){
+            newIndices.push(p.index);
+            return true;
+          }
+        })){
         newIndices.push(pos.index);
         newVertices.push(pos);
       }
