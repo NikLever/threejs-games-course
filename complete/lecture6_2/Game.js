@@ -105,7 +105,8 @@ class Game{
 					if (child.isMesh){
 						if (child.name == 'NavMesh'){
 							this.navmesh = child;
-							child.material.visible = false;
+							child.material.transparent = true;
+							child.material.opacity = 0.5;
 						}else if (child.name.includes('fan')){
 							this.fans.push( child );
 						}else if (child.parent.name.includes('main')){
@@ -115,6 +116,11 @@ class Game{
 					}
 				});
 	
+				this.scene.add(this.navmesh);
+				this.navmesh.geometry.rotateX( Math.PI/2 );
+				this.navmesh.quaternion.identity();
+				this.navmesh.position.set(0,0,0);
+
 				this.waypointHelper = new WaypointHelper(this.navmesh, this.camera);
 
                 this.loadingBar.visible = false;

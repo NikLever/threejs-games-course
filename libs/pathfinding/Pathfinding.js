@@ -22,8 +22,8 @@ class Pathfinding {
 	 * @param  {BufferGeometry} geometry
 	 * @return {Zone}
 	 */
-	static createZone (geometry) {
-		return Builder.buildZone(geometry);
+	static createZone (geometry, tolerance = 1e-4) {
+		return Builder.buildZone(geometry, tolerance);
 	}
 
 	/**

@@ -1,4 +1,4 @@
-import { BufferAttribute } from '../three126/three.module.js';
+import { BufferAttribute, BufferGeometry, Float32BufferAttribute } from '../three126/three.module.js';
 
 class Utils {
 
@@ -62,6 +62,52 @@ class Utils {
 
   static vequal (a, b) {
     return this.distanceToSquared(a, b) < 0.00001;
+  }
+
+  static prepGeometry( geometry, tolerance = 1e-4 ){
+  	tolerance = Math.max( tolerance, Number.EPSILON );
+    tolerance *= tolerance;
+    
+    // Generate an index buffer if the geometry doesn't have one, or optimize it
+    // if it's already available.
+    const indices = geometry.getIndex();
+    const positions = geometry.getAttribute( 'position' );
+    let vertexCount = (indices) ? indices.count : positions.count;
+
+    const newVertices = [];
+    const newIndices = [];
+
+    for ( let i = 0; i < vertexCount; i ++ ) {
+      const index = (indices) ? indices.getX(i) : i;	
+      const pos = { x:positions.getX(index), y:positions.getY(index), z:positions.getZ(index), index:newVertices.length};
+      let found = false;
+      newVertices.some( p => {
+        if ( Utils.distanceToSquared(p, pos)<tolerance ){
+          newIndices.push(p.index);
+          found = true;
+          return true;
+        }
+      });
+      if (!found){
+        newIndices.push(pos.index);
+        newVertices.push(pos);
+      }
+    }
+
+    const vertices = [];
+    
+    newVertices.forEach( p => {
+      vertices.push(p.x);
+      vertices.push(p.y);
+      vertices.push(p.z);
+    });
+    
+    const result = new BufferGeometry();
+    
+    result.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );	
+    result.setIndex( newIndices );
+
+    return result;
   }
 
   /**

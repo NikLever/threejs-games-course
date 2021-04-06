@@ -15,6 +15,8 @@ class NPC{
 		this.pathColor = new THREE.Color(0xFFFFFF);
 		options.app.scene.add(this.pathLines);
 
+		this.showPath = options.showPath | false;
+
         this.waypoints = options.waypoints;
 
         this.dead = false;
@@ -57,7 +59,7 @@ class NPC{
             player.lookAt(pt);
             this.quaternion = player.quaternion.clone();
             player.quaternion.copy(quaternion); 
-            this.action = 'walk';
+            this.action = 'walking';
             return;
         }
         
@@ -70,7 +72,7 @@ class NPC{
 		this.calculatedPath = this.pathfinder.findPath(player.position, pt, this.ZONE, this.navMeshGroup);
 
 		if (this.calculatedPath && this.calculatedPath.length) {
-			this.action = 'walk';
+			this.action = 'walking';
 			
 			const pt = this.calculatedPath[0].clone();
 			pt.y = player.position.y;
@@ -79,21 +81,22 @@ class NPC{
 			this.quaternion = player.quaternion.clone();
 			player.quaternion.copy(quaternion);
 			
-			if (this.app.debug.showPath && !this.npc){
+			if (this.showPath){
 				if (this.pathLines) this.app.scene.remove(this.pathLines);
 
 				const material = new THREE.LineBasicMaterial({
-					color: self.pathColor,
+					color: this.pathColor,
 					linewidth: 2
 				});
 
-				let geometry = new THREE.Geometry();
-				geometry.vertices.push(player.position);
-
+				const points = [player.position];
+				
 				// Draw debug lines
 				this.calculatedPath.forEach( function(vertex){
-					geometry.vertices.push(vertex.clone().add(new THREE.Vector3(0, self.app.debug.offset, 0)));
+					points.push(vertex.clone());
 				});
+
+				let geometry = new THREE.BufferGeometry().setFromPoints( points );
 
 				this.pathLines = new THREE.Line( geometry, material );
 				this.app.scene.add( this.pathLines );
@@ -102,8 +105,8 @@ class NPC{
 				const debugPath = [player.position].concat(this.calculatedPath);
 
 				debugPath.forEach(vertex => {
-					geometry = new THREE.SphereBufferGeometry( 0.2 );
-					const material = new THREE.MeshBasicMaterial( {color: self.pathColor} );
+					geometry = new THREE.SphereGeometry( 0.2 );
+					const material = new THREE.MeshBasicMaterial( {color: this.pathColor} );
 					const node = new THREE.Mesh( geometry, material );
 					node.position.copy(vertex);
 					node.position.y += this.app.debug.offset;
@@ -113,8 +116,8 @@ class NPC{
 		} else {
 			this.action = 'idle';
 			
-            if (self.pathfinder){
-                const closestPlayerNode = self.pathfinder.getClosestNode(player.position, this.ZONE, this.navMeshGroup);
+            if (this.pathfinder){
+                const closestPlayerNode = this.pathfinder.getClosestNode(player.position, this.ZONE, this.navMeshGroup);
                 const clamped = new THREE.Vector3();
                 this.pathfinder.clampStep(
                     player.position, 
@@ -130,23 +133,28 @@ class NPC{
 	}
 	
 	set action(name){
-		//Make a copy of the clip if this is a remote player
 		if (this.actionName == name.toLowerCase()) return;
-		
+				
 		const clip = this.animations[name.toLowerCase()];
-		
-        delete this.curAction;
-        
+
 		if (clip!==undefined){
 			const action = this.mixer.clipAction( clip );
-			action.loop = clip.loop;
-			action.time = 0;
-			this.mixer.stopAllAction();
+			if (name=='shot'){
+				action.clampWhenFinished = true;
+				action.setLoop( THREE.LoopOnce );
+			}
+			action.reset();
+			const nofade = this.actionName == 'shot';
 			this.actionName = name.toLowerCase();
-			this.actionTime = Date.now();
-			action.fadeIn(0.5);	
 			action.play();
-            this.curAction = action;
+			if (this.curAction){
+				if (nofade){
+					this.curAction.enabled = false;
+				}else{
+					this.curAction.crossFadeTo(action, 0.5);
+				}
+			}
+			this.curAction = action;
 		}
 	}
 	
@@ -179,7 +187,7 @@ class NPC{
                 // Remove node from the path we calculated
                 this.calculatedPath.shift();
                 if (this.calculatedPath.length==0){
-                    if (this.npc){
+                    if (this.waypoints!==undefined){
                         this.newPath(this.randomWaypoint);
                     }else{
                         player.position.copy( targetPosition );
@@ -195,9 +203,9 @@ class NPC{
                 }
             }
         }else{
-            if (this.npc && !this.dead) this.newPath(this.randomWaypoint);
+            if (!this.dead && this.waypoints!==undefined) this.newPath(this.randomWaypoint);
         }
     }
 }
 
-export { Player };
+export { NPC };

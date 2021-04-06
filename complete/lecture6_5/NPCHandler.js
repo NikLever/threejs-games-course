@@ -1,6 +1,6 @@
-import {Player} from './NPC.js';
+import {NPC} from './NPC.js';
 import {GLTFLoader} from '../../libs/three126/GLTFLoader.js';
-import {Skeleton} from '../../libs/three126/three.module.js';
+import {Skeleton, Raycaster} from '../../libs/three126/three.module.js';
 
 class NPCHandler{
     constructor( game ){
@@ -8,6 +8,30 @@ class NPCHandler{
 		this.loadingBar = this.game.loadingBar;
         this.waypoints = game.waypoints;
         this.load();
+
+		const raycaster = new Raycaster();
+    	game.renderer.domElement.addEventListener( 'click', raycast, false );
+			
+    	const self = this;
+    	const mouse = { x:0, y:0 };
+    	
+    	function raycast(e){
+    		
+			mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+			mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+
+			//2. set the picking ray from the camera position and mouse coordinates
+			raycaster.setFromCamera( mouse, self.game.camera );    
+
+			//3. compute intersections
+			const intersects = raycaster.intersectObject( self.game.navmesh );
+			
+			if (intersects.length>0){
+				const pt = intersects[0].point;
+				console.log(pt);
+				self.npcs[0].newPath(pt, true);
+			}	
+		}
     }
 
     load(){
@@ -22,12 +46,12 @@ class NPCHandler{
 			gltf => {
 				const gltfs = [gltf];
 				
-                for(let i=0; i<3; i++) gltfs.push(this.cloneGLTF(gltf));
+                //for(let i=0; i<3; i++) gltfs.push(this.cloneGLTF(gltf));
 				
 				this.npcs = [];
 				
 				gltfs.forEach(gltf => {
-					const object = gltf.scene.children[0];
+					const object = gltf.scene;
 
 					object.traverse(function(child){
 						if (child.isMesh){
@@ -39,21 +63,17 @@ class NPCHandler{
 						object: object,
 						speed: 0.8,
 						animations: gltf.animations,
-						clip: gltf.animations[0],
 						app: this.game,
 						waypoints: this.waypoints,
+						showPath: true,
 						zone: 'factory',
 						name: 'swat-guy',
-						npc: true
 					};
 
-					const npc = new Player(options);
+					const npc = new NPC(options);
 
-					const scale = 1;
-					npc.object.scale.set(scale, scale, scale);
-
-					npc.object.position.copy(this.randomWaypoint);
-					npc.newPath(this.randomWaypoint);
+					//Vector3 {x: -7.606942177636164, y: 0.01697407692483921, z: -7.71322920095254}
+					npc.object.position.set(-7.607, 0.017, -7.713);
 					
 					this.npcs.push(npc);
 					

@@ -8,9 +8,9 @@ class Builder {
    * @param  {BufferGeometry} geometry
    * @return {Zone}
    */
-  static buildZone (geometry) {
+  static buildZone (geometry, tolerance = 1e-4) {
 
-    const navMesh = this._buildNavigationMesh(geometry);
+    const navMesh = this._buildNavigationMesh(geometry, tolerance);
 
     const zone = {};
 
@@ -72,8 +72,8 @@ class Builder {
    * @param {BufferGeometry} geometry
    * @return {Object}
    */
-  static _buildNavigationMesh (geometry) {
-    geometry = Utils.mergeVertices(geometry);
+  static _buildNavigationMesh (geometry, tolerance) {
+    geometry = Utils.prepGeometry(geometry, tolerance);
     return this._buildPolygonsFromGeometry(geometry);
   }
 
