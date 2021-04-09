@@ -37,10 +37,10 @@ class Rifle{
 			gltf => {
 				this.root.add( gltf.scene );
                 this.rifle = gltf.scene;
-                this.rifle.position.y = 1.2;
+                this.rifle.position.y = 1.0;
                 this.rifle.rotateY( Math.PI/2 );
                 this.rifle.rotateX( -Math.PI/2 );
-                this.rifle.scale.set(0.15, 0.15, 0.15);
+                this.rifle.scale.set(0.1, 0.1, 0.1);
     		},
 			// called while loading is progressing
 			xhr => {

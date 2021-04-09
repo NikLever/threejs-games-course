@@ -82,7 +82,7 @@ class Game{
 		// Load a glTF resource
 		loader.load(
 			// resource URL
-			'swat-guy-rifle.glb',
+			'eve.glb',
 			// called when the resource is loaded
 			gltf => {
 
