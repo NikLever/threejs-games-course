@@ -53,12 +53,12 @@ class NPCHandler{
 				gltfs.forEach(gltf => {
 					const object = gltf.scene;
 
-					object.frustrumCulled = false;
+					object.frustumCulled = false;
 
 					object.traverse(function(child){
 						if (child.isMesh){
 							child.castShadow = true;
-							child.frustrumCulled = false;
+							child.frustumCulled = false;
 						}
 					});
 
