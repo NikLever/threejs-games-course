@@ -21,15 +21,16 @@
       }  
   </style>
 
-  <title>Lecture 4.2</title>
+  <title>Lecture 5.2</title>
+</head>
 
 <body>
     <script type="module">
-        import { App } from './app.js';
+        import { Game } from './Game.js';
 
-        document.addEventListener("DOMContentLoaded", function(){
-            const app = new App();
-            window.app = app;  
+        document.addEventListener("DOMContentLoaded", () => {
+            const game = new Game();
+            window.game = game;  
         });
     </script>
 </body>
