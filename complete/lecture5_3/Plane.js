@@ -16,6 +16,10 @@ class Plane{
         return this.tmpPos;
     }
 
+    set visible(mode){
+        this.plane.visible = mode;
+    }
+
     load(){
     	const loader = new GLTFLoader( ).setPath(`${this.assetsPath}plane/`);
         this.ready = false;
@@ -39,7 +43,7 @@ class Plane{
 			// called while loading is progressing
 			xhr => {
 
-				this.loadingBar.update('plane', xhr.loaded, xhr.total );
+				this.loadingBar.update('star', xhr.loaded, xhr.total );
 				
 			},
 			// called when loading has errors
@@ -51,11 +55,6 @@ class Plane{
 		);
 	}	
 
-    reset(){
-        this.plane.position.set(0, 0, 0);
-        this.velocity.set(0,0,0.1);
-    }
-
     update(time){
         if (this.propeller !== undefined) this.propeller.rotateZ(1);
 
@@ -65,6 +64,7 @@ class Plane{
             }else{
                 this.velocity.y += 0.001;
             }
+            this.velocity.z += 0.0001;
             this.plane.rotation.set(0, 0, Math.sin(time*3)*0.2, 'XYZ');
             this.plane.translateZ( this.velocity.z );
             this.plane.translateY( this.velocity.y );

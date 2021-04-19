@@ -13,7 +13,7 @@ class Obstacles{
     }
 
     loadStar(){
-    	const loader = new GLTFLoader( ).setPath(this.assetsPath);
+    	const loader = new GLTFLoader( ).setPath(`${this.assetsPath}plane/`);
         this.ready = false;
         
 		// Load a glTF resource
@@ -46,7 +46,7 @@ class Obstacles{
 	}	
 
     loadBomb(){
-    	const loader = new GLTFLoader( ).setPath(this.assetsPath);
+    	const loader = new GLTFLoader( ).setPath(`${this.assetsPath}plane/`);
         
 		// Load a glTF resource
 		loader.load(

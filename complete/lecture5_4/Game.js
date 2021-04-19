@@ -140,7 +140,7 @@ class Game{
 
     loadSkybox(){
         this.scene.background = new THREE.CubeTextureLoader()
-	        .setPath( `${this.assetsPath}skybox/paintedsky/` )
+	        .setPath( `${this.assetsPath}plane/paintedsky/` )
             .load( [
                 'px.jpg',
                 'nx.jpg',

@@ -1,9 +1,9 @@
 import * as THREE from '../../libs/three125/three.module.js';
-import { GLTFLoader } from '../../libs/three125/GLTFLoader.js';
 import { RGBELoader } from '../../libs/three125/RGBELoader.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
+import { Plane } from './Plane.js';
 
-class App{
+class Game{
 	constructor(){
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
@@ -63,7 +63,7 @@ class App{
         instructions.style.display = 'none';
         btn.style.display = 'none';
 
-        this.gameActive = true;
+        this.active = true;
     }
 	
     resize(){
@@ -115,13 +115,16 @@ class App{
     }
     
 	load(){
-        this.loadStar();
         this.loadSkybox();
+        this.loading = true;
+        this.loadingBar.visible = true;
+
+        this.plane = new Plane(this);
     }
 
     loadSkybox(){
         this.scene.background = new THREE.CubeTextureLoader()
-	        .setPath( `${this.assetsPath}skybox/paintedsky/` )
+	        .setPath( `${this.assetsPath}plane/paintedsky/` )
             .load( [
                 'px.jpg',
                 'nx.jpg',
@@ -129,115 +132,10 @@ class App{
                 'ny.jpg',
                 'pz.jpg',
                 'nz.jpg'
-            ] );
-    }
-
-    loadStar(){
-    	const loader = new GLTFLoader( ).setPath(this.assetsPath);
-        const self = this;
-        
-        this.loadingBar.visible = true;
-        this.stars = [];
-		
-		// Load a glTF resource
-		loader.load(
-			// resource URL
-			'star.glb',
-			// called when the resource is loaded
-			gltf => {
-
-                const star = gltf.scene.children[0];
-
-                self.scene.add(star);
-                self.stars.push(star);
-                self.starSpawn = { pos: 20, offset: 5, setPos: star =>{
-                    self.starSpawn.pos += 30;
-                    const offset = (Math.random()*2 - 1) * self.starSpawn.offset;
-                    self.starSpawn.offset += 0.1;
-                    star.position.set(0, offset, self.starSpawn.pos );
-                    star.rotation.y = Math.random() * Math.PI * 2;
-                } };
-                self.starSpawn.setPos( star );
-
-                while (self.starSpawn.pos < 100){
-                    
-                    const star1 = star.clone();
-                    
-                    self.scene.add(star1);
-                    self.stars.push(star1);
-
-                    self.starSpawn.setPos( star1 );
-                }
-
-                self.loadPlane();
-			},
-			// called while loading is progressing
-			xhr => {
-
-				self.loadingBar.progress = (xhr.loaded / xhr.total) * 0.5;
-				
-			},
-			// called when loading has errors
-			err => {
-
-				console.error( err.message );
-
-			}
-		);
-	}	
-
-    loadPlane(){
-    	const loader = new GLTFLoader( ).setPath(this.assetsPath);
-        const self = this;
-        
-        this.loadingBar.visible = true;
-		
-		// Load a glTF resource
-		loader.load(
-			// resource URL
-			'microplane.glb',
-			// called when the resource is loaded
-			gltf => {
-
-				self.scene.add( gltf.scene );
-                self.plane = gltf.scene;
-                self.plane.userData.velocity = new THREE.Vector3(0,0,0.1);
-
-                self.propeller = self.plane.getObjectByName("propeller");
-        
-                self.loadingBar.visible = false;
-                
-                self.renderer.setAnimationLoop( self.render.bind(self) );
-			},
-			// called while loading is progressing
-			xhr => {
-
-				self.loadingBar.progress = (xhr.loaded / xhr.total) * 0.5 + 0.5;
-				
-			},
-			// called when loading has errors
-			err => {
-
-				console.error( err.message );
-
-			}
-		);
-	}			
-    
-    updatePlane(time){
-        if (this.gameActive){
-            if (!this.spaceKey){
-                this.plane.userData.velocity.y -= 0.001;
-            }else{
-                this.plane.userData.velocity.y += 0.001;
-            }
-            this.plane.translateZ( this.plane.userData.velocity.z );
-            this.plane.translateY( this.plane.userData.velocity.y );
-        }else{
-            this.plane.position.y = Math.cos(time) * 1.5;
-        }
-        this.plane.rotation.z = Math.sin(time*3)*0.2;
-    }
+            ], () => {
+                this.renderer.setAnimationLoop(this.render.bind(this));
+            } );
+    }		
 
     updateCamera(){
         this.cameraController.position.copy( this.plane.position );
@@ -247,27 +145,25 @@ class App{
         this.camera.lookAt( this.cameraTarget );
     }
 
-    updateStars(){
-        this.stars.forEach( star =>{
-            star.rotateY(0.01);
-            if ((star.position.z-this.plane.position.z)<-20){
-                this.starSpawn.setPos(star); 
-            }
-        });
-    }
-
 	render() {
-        if (this.propeller !== undefined) this.propeller.rotateZ(1);
+        if (this.loading){
+            if (this.plane.ready){
+                this.loading = false;
+                this.loadingBar.visible = false;
+            }else{
+                return;
+            }
+        }
 
         const time = this.clock.getElapsedTime();
 
-        this.updateStars();
-        this.updatePlane(time);
+        this.plane.update(time);
+    
         this.updateCamera();
-
+    
         this.renderer.render( this.scene, this.camera );
 
     }
 }
 
-export { App };
+export { Game };

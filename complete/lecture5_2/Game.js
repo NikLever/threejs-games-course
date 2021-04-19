@@ -1,10 +1,9 @@
-import * as THREE from '../../libs/three125/three.module.js';
-import { GLTFLoader } from '../../libs/three125/GLTFLoader.js';
-import { RGBELoader } from '../../libs/three125/RGBELoader.js';
-import { OrbitControls } from '../../libs/three125/OrbitControls.js';
+import * as THREE from '../../libs/three126/three.module.js';
+import { RGBELoader } from '../../libs/three126/RGBELoader.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
+import { Plane } from './Plane.js';
 
-class App{
+class Game{
 	constructor(){
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
@@ -12,12 +11,20 @@ class App{
         this.loadingBar = new LoadingBar();
         this.loadingBar.visible = false;
 
+        this.clock = new THREE.Clock();
+
 		this.assetsPath = '../../assets/';
         
-		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
-		this.camera.position.set( 0, 0, 5 );
+		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 100 );
+        this.camera.position.set( -4.37, 0, -4.75 );
+        this.camera.lookAt(0, 0, 6);
+
+        this.cameraController = new THREE.Object3D();
+        this.cameraController.add(this.camera);
+        this.cameraTarget = new THREE.Vector3(0,0,6);
         
 		this.scene = new THREE.Scene();
+        this.scene.add(this.cameraController);
 
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
         ambient.position.set( 0.5, 1, 0.25 );
@@ -30,12 +37,9 @@ class App{
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
         
-        const controls = new OrbitControls( this.camera, this.renderer.domElement );
-        
         this.load();
 		
 		window.addEventListener('resize', this.resize.bind(this) );
-        
 	}
 	
     resize(){
@@ -43,19 +47,17 @@ class App{
     	this.camera.updateProjectionMatrix();
     	this.renderer.setSize( window.innerWidth, window.innerHeight ); 
     }
-    
+
     setEnvironment(){
         const loader = new RGBELoader().setDataType( THREE.UnsignedByteType ).setPath(this.assetsPath);
         const pmremGenerator = new THREE.PMREMGenerator( this.renderer );
         pmremGenerator.compileEquirectangularShader();
         
-        const self = this;
-        
         loader.load( 'hdr/venice_sunset_1k.hdr', ( texture ) => {
           const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
           pmremGenerator.dispose();
 
-          self.scene.environment = envMap;
+          this.scene.environment = envMap;
 
         }, undefined, (err)=>{
             console.error( err.message );
@@ -63,13 +65,16 @@ class App{
     }
     
 	load(){
-        this.loadPlane();
         this.loadSkybox();
+        this.loading = true;
+        this.loadingBar.visible = true;
+
+        this.plane = new Plane(this);
     }
 
     loadSkybox(){
         this.scene.background = new THREE.CubeTextureLoader()
-	        .setPath( `${this.assetsPath}skybox/paintedsky/` )
+	        .setPath( `${this.assetsPath}plane/paintedsky/` )
             .load( [
                 'px.jpg',
                 'nx.jpg',
@@ -77,49 +82,37 @@ class App{
                 'ny.jpg',
                 'pz.jpg',
                 'nz.jpg'
-            ] );
+            ], () => {
+                this.renderer.setAnimationLoop(this.render.bind(this));
+            } );
+    }		
+
+    updateCamera(){
+        this.cameraController.position.copy( this.plane.position );
+        this.cameraController.position.y = 0;
+        this.cameraTarget.copy(this.plane.position);
+        this.cameraTarget.z += 6;
+        this.camera.lookAt( this.cameraTarget );
     }
 
-    loadPlane(){
-    	const loader = new GLTFLoader( ).setPath(this.assetsPath);
-        const self = this;
-        
-        this.loadingBar.visible = true;
-		
-		// Load a glTF resource
-		loader.load(
-			// resource URL
-			'microplane.glb',
-			// called when the resource is loaded
-			gltf => {
-
-				self.scene.add( gltf.scene );
-                self.plane = gltf.scene;
-        
-                self.loadingBar.visible = false;
-                
-                self.renderer.setAnimationLoop( self.render.bind(self) );
-			},
-			// called while loading is progressing
-			xhr => {
-
-				self.loadingBar.progress = (xhr.loaded / xhr.total);
-				
-			},
-			// called when loading has errors
-			err => {
-
-				console.error( err.message );
-
-			}
-		);
-	}			
-    
 	render() {
+        if (this.loading){
+            if (this.plane.ready){
+                this.loading = false;
+                this.loadingBar.visible = false;
+            }else{
+                return;
+            }
+        }
+
+        const time = this.clock.getElapsedTime();
+
+        this.plane.update(time);
+        this.updateCamera();
 
         this.renderer.render( this.scene, this.camera );
 
     }
 }
 
-export { App };
+export { Game };

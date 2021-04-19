@@ -43,7 +43,7 @@ class Plane{
 			// called while loading is progressing
 			xhr => {
 
-				this.loadingBar.update('star', xhr.loaded, xhr.total );
+				this.loadingBar.update('plane', xhr.loaded, xhr.total );
 				
 			},
 			// called when loading has errors
