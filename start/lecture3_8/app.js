@@ -26,14 +26,11 @@ class App{
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.outputEncoding = THREE.sRGBEncoding;
-        this.renderer.physicallyCorrectLights = true;
         container.appendChild( this.renderer.domElement );
 		this.setEnvironment();
 		
-        this.loadingBar = new LoadingBar();
-        
-        this.loadGLTF();
-        
+        //Add code here to code-along with the video
+
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
         
         window.addEventListener('resize', this.resize.bind(this) );
@@ -58,38 +55,7 @@ class App{
     }
     
     loadGLTF(){
-        const loader = new GLTFLoader( ).setPath('../../assets/');
         
-		// Load a glTF resource
-		loader.load(
-			// resource URL
-			'microplane.glb',
-			// called when the resource is loaded
-			gltf => {
-                const bbox = new THREE.Box3().setFromObject( gltf.scene );
-                console.log(`min:${bbox.min.x.toFixed(2)},${bbox.min.y.toFixed(2)},${bbox.min.z.toFixed(2)} -  max:${bbox.max.x.toFixed(2)},${bbox.max.y.toFixed(2)},${bbox.max.z.toFixed(2)}`);
-                
-                this.plane = gltf.scene;
-                
-				this.scene.add( gltf.scene );
-                
-                this.loadingBar.visible = false;
-				
-				this.renderer.setAnimationLoop( this.render.bind(this));
-			},
-			// called while loading is progressing
-			xhr => {
-
-				this.loadingBar.progress = (xhr.loaded / xhr.total);
-				
-			},
-			// called when loading has errors
-			err => {
-
-				console.error( err );
-
-			}  
-        );
     }
     
     resize(){
