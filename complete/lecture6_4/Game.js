@@ -1,8 +1,11 @@
-import * as THREE from '../../libs/three125/three.module.js';
-import { GLTFLoader } from '../../libs/three125/GLTFLoader.js';
-import { RGBELoader } from '../../libs/three125/RGBELoader.js';
-import { OrbitControls } from '../../libs/three125/OrbitControls.js';
+import * as THREE from '../../libs/three126/three.module.js';
+import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
+import { RGBELoader } from '../../libs/three126/RGBELoader.js';
+import { Controller } from './Controller.js';
+import { Rifle } from './Rifle.js';
+import { NPCHandler } from './NPCHandler.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
+import { Pathfinding } from '../../libs/pathfinding/Pathfinding.js';
 
 class Game{
 	constructor(){
@@ -16,34 +19,72 @@ class Game{
 
 		this.assetsPath = '../../assets/';
         
-		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 50 );
-		this.camera.position.set( 1, 1.7, 2.8 );
-        
+		this.debug = true;
+
+		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 500 );
+
+		if (this.debug){
+			this.camera.position.set( 0, 60, 20 );
+        	this.camera.lookAt(0, 0, 0);
+		}else{
+			this.camera.position.set( -6.25, 1.6, -2 );
+		}
+
 		let col = 0x201510;
 		this.scene = new THREE.Scene();
 		this.scene.background = new THREE.Color( col );
-		
+		this.scene.fog = new THREE.Fog( col, 100, 200 );
+
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 		this.scene.add(ambient);
 
         const light = new THREE.DirectionalLight();
-        light.position.set( 0.2, 1, 1 );
+        light.position.set( 4, 20, 20 );
+		light.castShadow = true;
+		//Set up shadow properties for the light
+		light.shadow.mapSize.width = 1024; 
+		light.shadow.mapSize.height = 1024; 
+		light.shadow.camera.near = 0.5; 
+		light.shadow.camera.far = 50;
+		const d = 10; 
+		light.shadow.camera.left = light.shadow.camera.bottom = -d;
+		light.shadow.camera.right = light.shadow.camera.top = d;
+		this.scene.add(light);
+		this.light = light;
+
+		const helper = new THREE.CameraHelper( light.shadow.camera );
+		this.scene.add( helper );
 			
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
+		this.renderer.shadowMap.enabled = true;
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.outputEncoding = THREE.sRGBEncoding;
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
-        
-        const controls = new OrbitControls( this.camera, this.renderer.domElement );
-        controls.target.set(0, 1, 0);
-		controls.update();
+		
+		if (!this.debug) this.player = new Rifle(this, new THREE.Vector3( -6.4, 0.056, -3.07), 0);
 
         this.load();
 		
 		window.addEventListener('resize', this.resize.bind(this) );
         
+	}
+
+	initPathfinding(navmesh){
+		/*this.waypoints = [
+			new THREE.Vector3(17.73372016326552, 0.39953298254866443, -0.7466724607286782),
+			new THREE.Vector3(20.649478054772402, 0.04232912113775987, -18.282935518174437),
+			new THREE.Vector3(11.7688416798274, 0.11264635905666916, -23.23102176233945),
+			new THREE.Vector3(-3.111551689570482, 0.18245423057147991, -22.687392486867505),
+			new THREE.Vector3(-13.772447796604245, 0.1260277454451636, -23.12237117145656),
+			new THREE.Vector3(-20.53385139415452, 0.0904175187063471, -12.467546107992108),
+			new THREE.Vector3(-18.195950790753532, 0.17323640676321908, -0.9593366354062719),
+			new THREE.Vector3(-6.603208729295872, 0.015786387893574227, -12.265553884212125)
+		];*/
+
+		this.pathfinder = new Pathfinding();
+        this.pathfinder.setZoneData('factory', Pathfinding.createZone(navmesh.geometry, 0.02));
 	}
 	
     resize(){
@@ -57,13 +98,11 @@ class Game{
         const pmremGenerator = new THREE.PMREMGenerator( this.renderer );
         pmremGenerator.compileEquirectangularShader();
         
-        const self = this;
-        
         loader.load( 'hdr/factory.hdr', ( texture ) => {
           const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
           pmremGenerator.dispose();
 
-          self.scene.environment = envMap;
+          this.scene.environment = envMap;
 
         }, undefined, (err)=>{
             console.error( err.message );
@@ -71,10 +110,10 @@ class Game{
     }
     
 	load(){
-        this.loadNPC();
+        this.loadEnvironment();
     }
 
-    loadNPC(){
+    loadEnvironment(){
     	const loader = new GLTFLoader( ).setPath(`${this.assetsPath}factory/`);
         
         this.loadingBar.visible = true;
@@ -82,31 +121,45 @@ class Game{
 		// Load a glTF resource
 		loader.load(
 			// resource URL
-			'eve.glb',
+			'factory.glb',
 			// called when the resource is loaded
 			gltf => {
 
 				this.scene.add( gltf.scene );
-                this.guy = gltf.scene;
-				this.mixer = new THREE.AnimationMixer( gltf.scene );
+                this.factory = gltf.scene;
+				this.fans = [];
 
-				this.animations = {};
-
-				gltf.animations.forEach( animation => {
-					this.animations[animation.name.toLowerCase()] = animation;
+				gltf.scene.traverse( child => {
+					if (child.isMesh){
+						if (child.name == 'NavMesh'){
+							this.navmesh = child;
+							this.navmesh.geometry.rotateX( Math.PI/2 );
+							this.navmesh.quaternion.identity();
+							this.navmesh.position.set(0,0,0);
+							child.material.transparent = true;
+							child.material.opacity = 0.5;
+						}else if (child.name.includes('fan')){
+							this.fans.push( child );
+						}else if (child.parent.name.includes('main')){
+							child.castShadow = true;
+							child.receiveShadow = true;
+						}
+					}
 				});
+
+				this.scene.add(this.navmesh);
 				
-				this.actionName = '';
-				this.newAnim();
-				
-                this.loadingBar.visible = false;
-                
-                this.renderer.setAnimationLoop( this.render.bind(this) );
+				if (!this.debug) this.controller = new Controller(this);
+
+				this.initPathfinding(this.navmesh);
+
+				this.npcHandler = new NPCHandler(this);
+
 			},
 			// called while loading is progressing
 			xhr => {
 
-				this.loadingBar.progress = (xhr.loaded / xhr.total);
+				this.loadingBar.progress = (xhr.loaded / xhr.total) * 0.5;
 				
 			},
 			// called when loading has errors
@@ -118,50 +171,22 @@ class Game{
 		);
 	}			
     
-	newAnim(){
-		const keys = Object.keys(this.animations);
-		let index;
-
-		do{
-			index = Math.floor( Math.random() * keys.length );
-		}while(keys[index]==this.actionName);
-
-		this.action = keys[index];
-
-		setTimeout( this.newAnim.bind(this), 3000 );
-	}
-
-	set action(name){
-		//Make a copy of the clip if this is a remote player
-		if (this.actionName == name.toLowerCase()) return;
-				
-		const clip = this.animations[name.toLowerCase()];
-
-		if (clip!==undefined){
-			const action = this.mixer.clipAction( clip );
-			if (name=='shot'){
-				action.clampWhenFinished = true;
-				action.setLoop( THREE.LoopOnce );
-			}
-			action.reset();
-			const nofade = this.actionName == 'shot';
-			this.actionName = name.toLowerCase();
-			action.play();
-			if (this.curAction){
-				if (nofade){
-					this.curAction.enabled = false;
-				}else{
-					this.curAction.crossFadeTo(action, 0.5);
-				}
-			}
-			this.curAction = action;
-		}
+	startRendering(){
+		this.renderer.setAnimationLoop( this.render.bind(this) );
 	}
 
 	render() {
 		const dt = this.clock.getDelta();
 
-		if (this.mixer !== undefined) this.mixer.update(dt);
+		if (this.fans !== undefined){
+            this.fans.forEach(fan => {
+                fan.rotateY(dt); 
+            });
+        }
+
+		if (this.controller !== undefined) this.controller.update(dt);
+
+		if (this.npcHandler !== undefined ) this.npcHandler.update(dt);
 
         this.renderer.render( this.scene, this.camera );
 

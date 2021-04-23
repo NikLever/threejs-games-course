@@ -46,37 +46,34 @@ class NPCHandler{
 			gltf => {
 				const gltfs = [gltf];
 				
-                for(let i=0; i<3; i++) gltfs.push(this.cloneGLTF(gltf));
+                //for(let i=0; i<3; i++) gltfs.push(this.cloneGLTF(gltf));
 				
 				this.npcs = [];
 				
 				gltfs.forEach(gltf => {
 					const object = gltf.scene;
 
-					object.frustumCulled = false;
-
 					object.traverse(function(child){
 						if (child.isMesh){
 							child.castShadow = true;
-							child.frustumCulled = false;
 						}
 					});
 
 					const options = {
 						object: object,
-						speed: 1.2,
+						speed: 0.8,
 						animations: gltf.animations,
 						app: this.game,
 						waypoints: this.waypoints,
-						showPath: false,
+						showPath: true,
 						zone: 'factory',
 						name: 'swat-guy',
 					};
 
 					const npc = new NPC(options);
 
-					npc.object.position.copy(this.randomWaypoint);
-					npc.newPath(this.randomWaypoint);
+					//Vector3 {x: -7.606942177636164, y: 0.01697407692483921, z: -7.71322920095254}
+					npc.object.position.set(-7.607, 0.017, -7.713);
 					
 					this.npcs.push(npc);
 					
