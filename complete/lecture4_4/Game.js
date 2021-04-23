@@ -71,10 +71,10 @@ class Game{
     }
     
 	load(){
-        this.loadNPC();
+        this.loadEve();
     }
 
-    loadNPC(){
+    loadEve(){
     	const loader = new GLTFLoader( ).setPath(`${this.assetsPath}factory/`);
         
         this.loadingBar.visible = true;
@@ -132,7 +132,6 @@ class Game{
 	}
 
 	set action(name){
-		//Make a copy of the clip if this is a remote player
 		if (this.actionName == name.toLowerCase()) return;
 				
 		const clip = this.animations[name.toLowerCase()];
