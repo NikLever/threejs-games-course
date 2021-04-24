@@ -23,12 +23,7 @@ class Game{
 
 		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 500 );
 
-		if (this.debug){
-			this.camera.position.set( 0, 60, 20 );
-        	this.camera.lookAt(0, 0, 0);
-		}else{
-			this.camera.position.set( -6.25, 1.6, -2 );
-		}
+		this.camera.position.set( -6.25, 1.6, -2 );
 
 		let col = 0x201510;
 		this.scene = new THREE.Scene();
@@ -63,7 +58,7 @@ class Game{
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
 		
-		if (!this.debug) this.player = new Rifle(this, new THREE.Vector3( -6.4, 0.056, -3.07), 0);
+		this.player = new Rifle(this, new THREE.Vector3( -6.4, 0.056, -3.07), 0);
 
         this.load();
 		
@@ -72,7 +67,7 @@ class Game{
 	}
 
 	initPathfinding(navmesh){
-		/*this.waypoints = [
+		this.waypoints = [
 			new THREE.Vector3(17.73372016326552, 0.39953298254866443, -0.7466724607286782),
 			new THREE.Vector3(20.649478054772402, 0.04232912113775987, -18.282935518174437),
 			new THREE.Vector3(11.7688416798274, 0.11264635905666916, -23.23102176233945),
@@ -81,7 +76,7 @@ class Game{
 			new THREE.Vector3(-20.53385139415452, 0.0904175187063471, -12.467546107992108),
 			new THREE.Vector3(-18.195950790753532, 0.17323640676321908, -0.9593366354062719),
 			new THREE.Vector3(-6.603208729295872, 0.015786387893574227, -12.265553884212125)
-		];*/
+		];
 
 		this.pathfinder = new Pathfinding();
         this.pathfinder.setZoneData('factory', Pathfinding.createZone(navmesh.geometry, 0.02));
@@ -136,8 +131,7 @@ class Game{
 							this.navmesh.geometry.rotateX( Math.PI/2 );
 							this.navmesh.quaternion.identity();
 							this.navmesh.position.set(0,0,0);
-							child.material.transparent = true;
-							child.material.opacity = 0.5;
+							child.material.visible = false;
 						}else if (child.name.includes('fan')){
 							this.fans.push( child );
 						}else if (child.parent.name.includes('main')){
@@ -149,7 +143,7 @@ class Game{
 
 				this.scene.add(this.navmesh);
 				
-				if (!this.debug) this.controller = new Controller(this);
+				this.controller = new Controller(this);
 
 				this.initPathfinding(this.navmesh);
 

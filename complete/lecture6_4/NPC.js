@@ -11,7 +11,6 @@ class NPC{
 		options.app.scene.add(options.object);
 		
 		this.object = options.object;
-		
 		this.pathLines = new THREE.Object3D();
 		this.pathColor = new THREE.Color(0xFFFFFF);
 		options.app.scene.add(this.pathLines);
