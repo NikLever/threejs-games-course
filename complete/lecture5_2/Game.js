@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three126/three.module.js';
-import { RGBELoader } from '../../libs/three126/RGBELoader.js';
+import * as THREE from '../../libs/three125/three.module.js';
+import { RGBELoader } from '../../libs/three125/RGBELoader.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Plane } from './Plane.js';
 
@@ -40,12 +40,60 @@ class Game{
         this.load();
 		
 		window.addEventListener('resize', this.resize.bind(this) );
+
+        document.addEventListener('keydown', this.keyDown.bind(this));
+        document.addEventListener('keyup', this.keyUp.bind(this));
+
+        document.addEventListener('touchstart', this.mouseDown.bind(this) );
+        document.addEventListener('touchend', this.mouseUp.bind(this) );
+        document.addEventListener('mousedown', this.mouseDown.bind(this) );
+        document.addEventListener('mouseup', this.mouseUp.bind(this) );
+        
+        this.spaceKey = false;
+        this.gameActive = false;
+
+        const btn = document.getElementById('playBtn');
+        btn.addEventListener('click', this.startGame.bind(this));
 	}
+
+    startGame(){
+        const instructions = document.getElementById('instructions');
+        const btn = document.getElementById('playBtn');
+
+        instructions.style.display = 'none';
+        btn.style.display = 'none';
+
+        this.active = true;
+    }
 	
     resize(){
         this.camera.aspect = window.innerWidth / window.innerHeight;
     	this.camera.updateProjectionMatrix();
     	this.renderer.setSize( window.innerWidth, window.innerHeight ); 
+    }
+    
+    mouseDown(evt){
+        this.spaceKey = true;
+    }
+
+    mouseUp(evt){
+        this.spaceKey = false;
+    }
+
+    keyDown(evt){
+        switch(evt.keyCode){
+            case 32:
+                this.spaceKey = true; 
+                break;
+        }
+    }
+    
+    keyUp(evt){
+        switch(evt.keyCode){
+            case 32:
+                this.spaceKey = false;
+                break;
+        }
     }
 
     setEnvironment(){
@@ -53,11 +101,13 @@ class Game{
         const pmremGenerator = new THREE.PMREMGenerator( this.renderer );
         pmremGenerator.compileEquirectangularShader();
         
+        const self = this;
+        
         loader.load( 'hdr/venice_sunset_1k.hdr', ( texture ) => {
           const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
           pmremGenerator.dispose();
 
-          this.scene.environment = envMap;
+          self.scene.environment = envMap;
 
         }, undefined, (err)=>{
             console.error( err.message );
@@ -108,8 +158,9 @@ class Game{
         const time = this.clock.getElapsedTime();
 
         this.plane.update(time);
+    
         this.updateCamera();
-
+    
         this.renderer.render( this.scene, this.camera );
 
     }
