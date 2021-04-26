@@ -19,7 +19,7 @@ class Game{
 		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 50 );
 		this.camera.position.set( 1, 1.7, 2.8 );
         
-		let col = 0x201510;
+		let col = 0x605550;
 		this.scene = new THREE.Scene();
 		this.scene.background = new THREE.Color( col );
 		
