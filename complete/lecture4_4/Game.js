@@ -1,7 +1,8 @@
-import * as THREE from '../../libs/three126/three.module.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
-import { RGBELoader } from '../../libs/three126/RGBELoader.js';
-import { OrbitControls } from '../../libs/three126/OrbitControls.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
+import { DRACOLoader } from '../../libs/three128/DRACOLoader.js';
+import { RGBELoader } from '../../libs/three128/RGBELoader.js';
+import { OrbitControls } from '../../libs/three128/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 
 class Game{
@@ -40,7 +41,7 @@ class Game{
         controls.target.set(0, 1, 0);
 		controls.update();
 
-        this.load();
+        this.loadEve();
 		
 		window.addEventListener('resize', this.resize.bind(this) );
         
@@ -69,14 +70,12 @@ class Game{
             console.error( err.message );
         } );
     }
-    
-	load(){
-        this.loadEve();
-    }
 
     loadEve(){
     	const loader = new GLTFLoader( ).setPath(`${this.assetsPath}factory/`);
-        
+		const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath( '../../libs/three128/draco/' );
+        loader.setDRACOLoader( dracoLoader );
         this.loadingBar.visible = true;
 		
 		// Load a glTF resource
@@ -87,7 +86,7 @@ class Game{
 			gltf => {
 
 				this.scene.add( gltf.scene );
-                this.guy = gltf.scene;
+                this.eve = gltf.scene;
 				this.mixer = new THREE.AnimationMixer( gltf.scene );
 
 				this.animations = {};

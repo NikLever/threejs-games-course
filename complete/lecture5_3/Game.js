@@ -1,7 +1,8 @@
-import * as THREE from '../../libs/three125/three.module.js';
-import { RGBELoader } from '../../libs/three125/RGBELoader.js';
+import * as THREE from '../../libs/three126/three.module.js';
+import { RGBELoader } from '../../libs/three126/RGBELoader.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Plane } from './Plane.js';
+import { Obstacles } from './Obstacles.js';
 
 class Game{
 	constructor(){
@@ -37,9 +38,10 @@ class Game{
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
         
+        this.active = false;
         this.load();
-		
-		window.addEventListener('resize', this.resize.bind(this) );
+
+        window.addEventListener('resize', this.resize.bind(this) );
 
         document.addEventListener('keydown', this.keyDown.bind(this));
         document.addEventListener('keyup', this.keyUp.bind(this));
@@ -50,34 +52,39 @@ class Game{
         document.addEventListener('mouseup', this.mouseUp.bind(this) );
         
         this.spaceKey = false;
-        this.gameActive = false;
 
         const btn = document.getElementById('playBtn');
         btn.addEventListener('click', this.startGame.bind(this));
 	}
-
+	
     startGame(){
+        const gameover = document.getElementById('gameover');
         const instructions = document.getElementById('instructions');
         const btn = document.getElementById('playBtn');
 
+        gameover.style.display = 'none';
         instructions.style.display = 'none';
         btn.style.display = 'none';
 
+        this.score = 0;
+        this.lives = 3;
+
+        let elm = document.getElementById('score');
+        elm.innerHTML = this.score;
+        
+        elm = document.getElementById('lives');
+        elm.innerHTML = this.lives;
+
+        this.plane.reset();
+        this.obstacles.reset();
+
         this.active = true;
     }
-	
+
     resize(){
         this.camera.aspect = window.innerWidth / window.innerHeight;
     	this.camera.updateProjectionMatrix();
     	this.renderer.setSize( window.innerWidth, window.innerHeight ); 
-    }
-    
-    mouseDown(evt){
-        this.spaceKey = true;
-    }
-
-    mouseUp(evt){
-        this.spaceKey = false;
     }
 
     keyDown(evt){
@@ -94,6 +101,14 @@ class Game{
                 this.spaceKey = false;
                 break;
         }
+    }
+
+    mouseDown(evt){
+        this.spaceKey = true;
+    }
+
+    mouseUp(evt){
+        this.spaceKey = false;
     }
 
     setEnvironment(){
@@ -120,6 +135,7 @@ class Game{
         this.loadingBar.visible = true;
 
         this.plane = new Plane(this);
+        this.obstacles = new Obstacles(this);
     }
 
     loadSkybox(){
@@ -135,7 +151,35 @@ class Game{
             ], () => {
                 this.renderer.setAnimationLoop(this.render.bind(this));
             } );
-    }		
+    }
+    
+    gameOver(){
+        this.active = false;
+
+        const gameover = document.getElementById('gameover');
+        const btn = document.getElementById('playBtn');
+
+        gameover.style.display = 'block';
+        btn.style.display = 'block';
+    }
+
+    incScore(){
+        this.score++;
+
+        const elm = document.getElementById('score');
+
+        elm.innerHTML = this.score;
+    }
+
+    decLives(){
+        this.lives--;
+
+        const elm = document.getElementById('lives');
+
+        elm.innerHTML = this.lives;
+
+        if (this.lives==0) this.gameOver();
+    }
 
     updateCamera(){
         this.cameraController.position.copy( this.plane.position );
@@ -147,7 +191,7 @@ class Game{
 
 	render() {
         if (this.loading){
-            if (this.plane.ready){
+            if (this.plane.ready && this.obstacles.ready){
                 this.loading = false;
                 this.loadingBar.visible = false;
             }else{
@@ -158,6 +202,10 @@ class Game{
         const time = this.clock.getElapsedTime();
 
         this.plane.update(time);
+
+        if (this.active){
+            this.obstacles.update(this.plane.position);
+        }
     
         this.updateCamera();
     
