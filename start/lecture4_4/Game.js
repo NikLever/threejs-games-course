@@ -87,7 +87,6 @@ class Game{
 		const dt = this.clock.getDelta();
 
         this.renderer.render( this.scene, this.camera );
-
     }
 }
 
