@@ -1,5 +1,5 @@
-import { Vector3 } from '../../libs/three126/three.module.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
+import { Vector3 } from '../../libs/three128/three.module.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 
 class Plane{
     constructor(game){
@@ -58,20 +58,8 @@ class Plane{
     update(time){
         if (this.propeller !== undefined) this.propeller.rotateZ(1);
 
-        if (this.game.active){
-            if (!this.game.spaceKey){
-                this.velocity.y -= 0.001;
-            }else{
-                this.velocity.y += 0.001;
-            }
-            this.velocity.z += 0.0001;
-            this.plane.rotation.set(0, 0, Math.sin(time*3)*0.2, 'XYZ');
-            this.plane.translateZ( this.velocity.z );
-            this.plane.translateY( this.velocity.y );
-        }else{
-            this.plane.rotation.set(0, 0, Math.sin(time*3)*0.2, 'XYZ');
-            this.plane.position.y = Math.cos(time) * 1.5;
-        }
+        this.plane.rotation.set(0, 0, Math.sin(time*3)*0.2, 'XYZ');
+        this.plane.position.y = Math.cos(time) * 1.5;
 
     }
 }

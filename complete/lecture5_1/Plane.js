@@ -1,5 +1,5 @@
-import { Vector3 } from '../../libs/three126/three.module.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
+import { Vector3 } from '../../libs/three128/three.module.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 
 class Plane{
     constructor(game){
@@ -43,7 +43,7 @@ class Plane{
 			// called while loading is progressing
 			xhr => {
 
-				this.loadingBar.update('star', xhr.loaded, xhr.total );
+				this.loadingBar.update('plane', xhr.loaded, xhr.total );
 				
 			},
 			// called when loading has errors

@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three125/three.module.js';
-import { RGBELoader } from '../../libs/three125/RGBELoader.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import { RGBELoader } from '../../libs/three128/RGBELoader.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Plane } from './Plane.js';
 
@@ -39,61 +39,16 @@ class Game{
         
         this.load();
 		
-		window.addEventListener('resize', this.resize.bind(this) );
-
-        document.addEventListener('keydown', this.keyDown.bind(this));
-        document.addEventListener('keyup', this.keyUp.bind(this));
-
-        document.addEventListener('touchstart', this.mouseDown.bind(this) );
-        document.addEventListener('touchend', this.mouseUp.bind(this) );
-        document.addEventListener('mousedown', this.mouseDown.bind(this) );
-        document.addEventListener('mouseup', this.mouseUp.bind(this) );
-        
-        this.spaceKey = false;
-        this.gameActive = false;
-
-        const btn = document.getElementById('playBtn');
-        btn.addEventListener('click', this.startGame.bind(this));
 	}
 
     startGame(){
-        const instructions = document.getElementById('instructions');
-        const btn = document.getElementById('playBtn');
-
-        instructions.style.display = 'none';
-        btn.style.display = 'none';
-
-        this.active = true;
+        
     }
 	
     resize(){
         this.camera.aspect = window.innerWidth / window.innerHeight;
     	this.camera.updateProjectionMatrix();
     	this.renderer.setSize( window.innerWidth, window.innerHeight ); 
-    }
-    
-    mouseDown(evt){
-        this.spaceKey = true;
-    }
-
-    mouseUp(evt){
-        this.spaceKey = false;
-    }
-
-    keyDown(evt){
-        switch(evt.keyCode){
-            case 32:
-                this.spaceKey = true; 
-                break;
-        }
-    }
-    
-    keyUp(evt){
-        switch(evt.keyCode){
-            case 32:
-                this.spaceKey = false;
-                break;
-        }
     }
 
     setEnvironment(){

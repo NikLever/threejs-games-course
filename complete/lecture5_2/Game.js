@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three125/three.module.js';
-import { RGBELoader } from '../../libs/three125/RGBELoader.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import { RGBELoader } from '../../libs/three128/RGBELoader.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Plane } from './Plane.js';
 
@@ -50,7 +50,7 @@ class Game{
         document.addEventListener('mouseup', this.mouseUp.bind(this) );
         
         this.spaceKey = false;
-        this.gameActive = false;
+        this.active = false;
 
         const btn = document.getElementById('playBtn');
         btn.addEventListener('click', this.startGame.bind(this));
