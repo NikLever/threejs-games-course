@@ -150,7 +150,7 @@ class Obstacles{
         this.obstacles.forEach( obstacle =>{
             obstacle.children[0].rotateY(0.01);
             const relativePosZ = obstacle.position.z-pos.z;
-            if (Math.abs(relativePosZ)<2){
+            if (Math.abs(relativePosZ)<2 && !obstacle.userData.hit){
                 collisionObstacle = obstacle;
             }
             if (relativePosZ<-20){
@@ -160,12 +160,10 @@ class Obstacles{
 
        
         if (collisionObstacle!==undefined){
-			let minDist = Infinity;
 			collisionObstacle.children.some( child => {
 				child.getWorldPosition(this.tmpPos);
 				const dist = this.tmpPos.distanceToSquared(pos);
-				if (dist<minDist) minDist = dist;
-                if (dist<5 && !collisionObstacle.userData.hit){
+				if (dist<5){
 					collisionObstacle.userData.hit = true;
 					console.log(`Closest obstacle is ${minDist.toFixed(2)}`);
 					this.hit(child);

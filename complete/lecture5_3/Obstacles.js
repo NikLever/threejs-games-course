@@ -88,7 +88,7 @@ class Obstacles{
 
         let rotate=true;
 
-        for(let y=5; y>-8; y-=2.5){
+        for(let y=7.5; y>-8; y-=2.5){
             rotate = !rotate;
             if (y==0) continue;
             const bomb = this.bomb.clone();
@@ -138,7 +138,7 @@ class Obstacles{
         this.obstacles.forEach( obstacle =>{
             obstacle.children[0].rotateY(0.01);
             const relativePosZ = obstacle.position.z-pos.z;
-            if (Math.abs(relativePosZ)<2){
+            if (Math.abs(relativePosZ)<2 && !obstacle.userData.hit){
                 collisionObstacle = obstacle;
             }
             if (relativePosZ<-20){
@@ -149,12 +149,10 @@ class Obstacles{
        
         if (collisionObstacle!==undefined){
 			const planePos = this.game.plane.position;
-			let minDist = Infinity;
 			collisionObstacle.children.some( child => {
 				child.getWorldPosition(this.tmpPos);
 				const dist = this.tmpPos.distanceToSquared(planePos);
-				if (dist<minDist) minDist = dist;
-                if (dist<5 && !collisionObstacle.userData.hit){
+				if (dist<5){
 					collisionObstacle.userData.hit = true;
 					console.log(`Closest obstacle is ${minDist.toFixed(2)}`);
 					this.hit(child);
@@ -167,11 +165,11 @@ class Obstacles{
 
 	hit(obj){
 		if (obj.name=='star'){
-			obj.visible = false;
 			this.game.incScore();
         }else{
 			this.game.decLives();
         }
+        obj.visible = false;
 	}
 }
 
