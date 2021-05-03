@@ -76,102 +76,23 @@ class Obstacles{
 	}
 
 	initialize(){
-        this.obstacles = [];
         
-        const obstacle = new Group();
-        
-        obstacle.add(this.star);
-        
-        this.bomb.rotation.x = -Math.PI*0.5;
-        this.bomb.position.y = 7.5;
-        obstacle.add(this.bomb);
-
-        let rotate=true;
-
-        for(let y=5; y>-8; y-=2.5){
-            rotate = !rotate;
-            if (y==0) continue;
-            const bomb = this.bomb.clone();
-            bomb.rotation.x = (rotate) ? -Math.PI*0.5 : 0;
-            bomb.position.y = y;
-            obstacle.add(bomb);
-        
-        }
-        this.obstacles.push(obstacle);
-
-        this.scene.add(obstacle);
-
-        for(let i=0; i<3; i++){
-            
-            const obstacle1 = obstacle.clone();
-            
-            this.scene.add(obstacle1);
-            this.obstacles.push(obstacle1);
-
-        }
-
-        this.reset();
-
-		this.ready = true;
     }
 
     reset(){
-        this.obstacleSpawn = { pos: 20, offset: 5 };
-        this.obstacles.forEach( obstacle => this.respawnObstacle(obstacle) );
+        
     }
 
     respawnObstacle( obstacle ){
-        this.obstacleSpawn.pos += 30;
-        const offset = (Math.random()*2 - 1) * this.obstacleSpawn.offset;
-        this.obstacleSpawn.offset += 0.2;
-        obstacle.position.set(0, offset, this.obstacleSpawn.pos );
-        obstacle.children[0].rotation.y = Math.random() * Math.PI * 2;
-		obstacle.userData.hit = false;
-		obstacle.children.forEach( child => {
-			child.visible = true;
-		});
+        
     }
 
 	update(pos){
-        let collisionObstacle;
-
-        this.obstacles.forEach( obstacle =>{
-            obstacle.children[0].rotateY(0.01);
-            const relativePosZ = obstacle.position.z-pos.z;
-            if (Math.abs(relativePosZ)<2){
-                collisionObstacle = obstacle;
-            }
-            if (relativePosZ<-20){
-                this.respawnObstacle(obstacle); 
-            }
-        });
-
-       
-        if (collisionObstacle!==undefined){
-			const planePos = this.game.plane.position;
-			let minDist = Infinity;
-			collisionObstacle.children.some( child => {
-				child.getWorldPosition(this.tmpPos);
-				const dist = this.tmpPos.distanceToSquared(planePos);
-				if (dist<minDist) minDist = dist;
-                if (dist<5 && !collisionObstacle.userData.hit){
-					collisionObstacle.userData.hit = true;
-					console.log(`Closest obstacle is ${minDist.toFixed(2)}`);
-					this.hit(child);
-                    return true;
-                }
-            })
-            
-        }
+        
     }
 
 	hit(obj){
-		if (obj.name=='star'){
-			obj.visible = false;
-			this.game.incScore();
-        }else{
-			this.game.decLives();
-        }
+		
 	}
 }
 
