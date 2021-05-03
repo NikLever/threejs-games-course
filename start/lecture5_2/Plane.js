@@ -60,7 +60,6 @@ class Plane{
 
         this.plane.rotation.set(0, 0, Math.sin(time*3)*0.2, 'XYZ');
         this.plane.position.y = Math.cos(time) * 1.5;
-
     }
 }
 

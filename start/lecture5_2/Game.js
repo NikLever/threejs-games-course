@@ -38,13 +38,12 @@ class Game{
         this.setEnvironment();
         
         this.load();
-		
 	}
 
     startGame(){
         
     }
-	
+
     resize(){
         this.camera.aspect = window.innerWidth / window.innerHeight;
     	this.camera.updateProjectionMatrix();
