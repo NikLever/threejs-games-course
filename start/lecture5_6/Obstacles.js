@@ -1,5 +1,6 @@
 import { Group, Vector3 } from '../../libs/three126/three.module.js';
 import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
+import { Explosion } from './Explosion.js';
 
 class Obstacles{
     constructor(game){
@@ -10,6 +11,7 @@ class Obstacles{
         this.loadStar();
 		this.loadBomb();
 		this.tmpPos = new Vector3();
+        this.explosions = [];
     }
 
     loadStar(){
@@ -88,7 +90,7 @@ class Obstacles{
 
         let rotate=true;
 
-        for(let y=7.5; y>-8; y-=2.5){
+        for(let y=5; y>-8; y-=2.5){
             rotate = !rotate;
             if (y==0) continue;
             const bomb = this.bomb.clone();
@@ -115,9 +117,19 @@ class Obstacles{
 		this.ready = true;
     }
 
+    removeExplosion( explosion ){
+        const index = this.explosions.indexOf( explosion );
+        if (index != -1) this.explosions.indexOf(index, 1);
+    }
+
     reset(){
         this.obstacleSpawn = { pos: 20, offset: 5 };
         this.obstacles.forEach( obstacle => this.respawnObstacle(obstacle) );
+        let count;
+        while( this.explosions.length>0 && count<100){
+            this.explosions[0].onComplete();
+            count++;
+        }
     }
 
     respawnObstacle( obstacle ){
@@ -132,13 +144,13 @@ class Obstacles{
 		});
     }
 
-	update(pos){
+	update(pos, time){
         let collisionObstacle;
 
         this.obstacles.forEach( obstacle =>{
             obstacle.children[0].rotateY(0.01);
             const relativePosZ = obstacle.position.z-pos.z;
-            if (Math.abs(relativePosZ)<2 && !obstacle.userData.hit){
+            if (Math.abs(relativePosZ)<2){
                 collisionObstacle = obstacle;
             }
             if (relativePosZ<-20){
@@ -148,11 +160,12 @@ class Obstacles{
 
        
         if (collisionObstacle!==undefined){
-			const planePos = this.game.plane.position;
+			let minDist = Infinity;
 			collisionObstacle.children.some( child => {
 				child.getWorldPosition(this.tmpPos);
-				const dist = this.tmpPos.distanceToSquared(planePos);
-				if (dist<5){
+				const dist = this.tmpPos.distanceToSquared(pos);
+				if (dist<minDist) minDist = dist;
+                if (dist<5 && !collisionObstacle.userData.hit){
 					collisionObstacle.userData.hit = true;
 					console.log(`Closest obstacle is ${minDist.toFixed(2)}`);
 					this.hit(child);
@@ -161,15 +174,20 @@ class Obstacles{
             })
             
         }
+
+        this.explosions.forEach( explosion => {
+            explosion.update( time );
+        });
     }
 
 	hit(obj){
 		if (obj.name=='star'){
+			obj.visible = false;
 			this.game.incScore();
         }else{
+            this.explosions.push( new Explosion(obj, this) );
 			this.game.decLives();
         }
-        obj.visible = false;
 	}
 }
 

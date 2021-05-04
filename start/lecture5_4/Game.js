@@ -140,7 +140,7 @@ class Game{
 
     loadSkybox(){
         this.scene.background = new THREE.CubeTextureLoader()
-	        .setPath( `${this.assetsPath}/plane/paintedsky/` )
+	        .setPath( `${this.assetsPath}plane/paintedsky/` )
             .load( [
                 'px.jpg',
                 'nx.jpg',
@@ -161,8 +161,6 @@ class Game{
 
         gameover.style.display = 'block';
         btn.style.display = 'block';
-
-        this.plane.visible = false;
     }
 
     incScore(){
@@ -180,7 +178,7 @@ class Game{
 
         elm.innerHTML = this.lives;
 
-        if (this.lives==0) setTimeout(this.gameOver.bind(this), 1200);
+        if (this.lives==0) this.gameOver();
     }
 
     updateCamera(){
@@ -201,13 +199,12 @@ class Game{
             }
         }
 
-        const dt = this.clock.getDelta();
         const time = this.clock.getElapsedTime();
 
         this.plane.update(time);
 
         if (this.active){
-            this.obstacles.update(this.plane.position, dt);
+            this.obstacles.update(this.plane.position);
         }
     
         this.updateCamera();

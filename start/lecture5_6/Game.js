@@ -3,6 +3,7 @@ import { RGBELoader } from '../../libs/three126/RGBELoader.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Plane } from './Plane.js';
 import { Obstacles } from './Obstacles.js';
+import { SFX } from './SFX.js';
 
 class Game{
 	constructor(){
@@ -79,6 +80,8 @@ class Game{
         this.obstacles.reset();
 
         this.active = true;
+
+        this.sfx.play('engine');
     }
 
     resize(){
@@ -136,11 +139,22 @@ class Game{
 
         this.plane = new Plane(this);
         this.obstacles = new Obstacles(this);
+
+        this.loadSFX();
+    }
+
+    loadSFX(){
+        this.sfx = new SFX(this.camera, this.assetsPath + 'plane/');
+
+        this.sfx.load('explosion');
+        this.sfx.load('engine', true);
+        this.sfx.load('gliss');
+        this.sfx.load('gameover');
     }
 
     loadSkybox(){
         this.scene.background = new THREE.CubeTextureLoader()
-	        .setPath( `${this.assetsPath}plane/paintedsky/` )
+	        .setPath( `${this.assetsPath}/plane/paintedsky/` )
             .load( [
                 'px.jpg',
                 'nx.jpg',
@@ -161,6 +175,11 @@ class Game{
 
         gameover.style.display = 'block';
         btn.style.display = 'block';
+
+        this.plane.visible = false;
+
+        this.sfx.stopAll();
+        this.sfx.play('gameover');
     }
 
     incScore(){
@@ -169,6 +188,8 @@ class Game{
         const elm = document.getElementById('score');
 
         elm.innerHTML = this.score;
+
+        this.sfx.play('gliss');
     }
 
     decLives(){
@@ -178,7 +199,9 @@ class Game{
 
         elm.innerHTML = this.lives;
 
-        if (this.lives==0) this.gameOver();
+        if (this.lives==0) setTimeout(this.gameOver.bind(this), 1200);
+
+        this.sfx.play('explosion');
     }
 
     updateCamera(){
@@ -199,12 +222,13 @@ class Game{
             }
         }
 
+        const dt = this.clock.getDelta();
         const time = this.clock.getElapsedTime();
 
         this.plane.update(time);
 
         if (this.active){
-            this.obstacles.update(this.plane.position);
+            this.obstacles.update(this.plane.position, dt);
         }
     
         this.updateCamera();
