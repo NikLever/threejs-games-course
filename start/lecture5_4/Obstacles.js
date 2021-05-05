@@ -1,6 +1,5 @@
 import { Group, Vector3 } from '../../libs/three128/three.module.js';
 import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
-import { Explosion } from './Explosion.js';
 
 class Obstacles{
     constructor(game){
