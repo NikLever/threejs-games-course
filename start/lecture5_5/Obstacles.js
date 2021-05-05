@@ -1,5 +1,5 @@
-import { Group, Vector3 } from '../../libs/three126/three.module.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
+import { Group, Vector3 } from '../../libs/three128/three.module.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 import { Explosion } from './Explosion.js';
 
 class Obstacles{
@@ -144,7 +144,7 @@ class Obstacles{
 		});
     }
 
-	update(pos, time){
+	update(pos, dt){
         let collisionObstacle;
 
         this.obstacles.forEach( obstacle =>{
@@ -176,7 +176,7 @@ class Obstacles{
         }
 
         this.explosions.forEach( explosion => {
-            explosion.update( time );
+            explosion.update( dt );
         });
     }
 

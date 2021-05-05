@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three126/three.module.js';
-import { RGBELoader } from '../../libs/three126/RGBELoader.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import { RGBELoader } from '../../libs/three128/RGBELoader.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Plane } from './Plane.js';
 import { Obstacles } from './Obstacles.js';
