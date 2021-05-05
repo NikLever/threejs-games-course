@@ -1,4 +1,4 @@
-import { IcosahedronGeometry, TextureLoader, ShaderMaterial, Mesh, ShaderChunk } from '../../libs/three126/three.module.js';
+import { IcosahedronGeometry, TextureLoader, ShaderMaterial, Mesh, ShaderChunk } from '../../libs/three128/three.module.js';
 import { noise } from '../../libs/Noise.js';
 import { Tween } from '../../libs/Toon3D.js';
 
@@ -29,9 +29,6 @@ void main() {
 #define PI 3.141592653589
 #define PI2 6.28318530718
 
-uniform vec2 u_mouse;
-uniform vec2 u_resolution;
-uniform float u_time;
 uniform float u_opacity;
 uniform sampler2D u_tex;
 

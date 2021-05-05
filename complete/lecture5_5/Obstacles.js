@@ -1,5 +1,5 @@
-import { Group, Vector3 } from '../../libs/three126/three.module.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
+import { Group, Vector3 } from '../../libs/three128/three.module.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 import { Explosion } from './Explosion.js';
 
 class Obstacles{
@@ -119,7 +119,7 @@ class Obstacles{
 
     removeExplosion( explosion ){
         const index = this.explosions.indexOf( explosion );
-        if (index != -1) this.explosions.indexOf(index, 1);
+        if (index != -1) this.explosions.splice(index, 1);
     }
 
     reset(){
@@ -163,9 +163,8 @@ class Obstacles{
 			collisionObstacle.children.some( child => {
 				child.getWorldPosition(this.tmpPos);
 				const dist = this.tmpPos.distanceToSquared(pos);
-				if (dist<5){
+				if (dist<5 ){
 					collisionObstacle.userData.hit = true;
-					console.log(`Closest obstacle is ${minDist.toFixed(2)}`);
 					this.hit(child);
                     return true;
                 }

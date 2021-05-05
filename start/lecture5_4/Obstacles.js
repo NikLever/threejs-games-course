@@ -1,5 +1,5 @@
-import { Group, Vector3 } from '../../libs/three126/three.module.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
+import { Group, Vector3 } from '../../libs/three128/three.module.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 import { Explosion } from './Explosion.js';
 
 class Obstacles{
@@ -11,7 +11,6 @@ class Obstacles{
         this.loadStar();
 		this.loadBomb();
 		this.tmpPos = new Vector3();
-        this.explosions = [];
     }
 
     loadStar(){
@@ -117,19 +116,9 @@ class Obstacles{
 		this.ready = true;
     }
 
-    removeExplosion( explosion ){
-        const index = this.explosions.indexOf( explosion );
-        if (index != -1) this.explosions.indexOf(index, 1);
-    }
-
     reset(){
         this.obstacleSpawn = { pos: 20, offset: 5 };
         this.obstacles.forEach( obstacle => this.respawnObstacle(obstacle) );
-        let count;
-        while( this.explosions.length>0 && count<100){
-            this.explosions[0].onComplete();
-            count++;
-        }
     }
 
     respawnObstacle( obstacle ){
@@ -174,10 +163,6 @@ class Obstacles{
             })
             
         }
-
-        this.explosions.forEach( explosion => {
-            explosion.update( time );
-        });
     }
 
 	hit(obj){
@@ -185,8 +170,7 @@ class Obstacles{
 			obj.visible = false;
 			this.game.incScore();
         }else{
-            this.explosions.push( new Explosion(obj, this) );
-			this.game.decLives();
+            this.game.decLives();
         }
 	}
 }
