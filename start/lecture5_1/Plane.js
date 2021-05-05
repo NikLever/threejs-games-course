@@ -30,11 +30,10 @@ class Plane{
 			'microplane.glb',
 			// called when the resource is loaded
 			gltf => {
-
+                
 			},
 			// called while loading is progressing
 			xhr => {
-
 				
 			},
 			// called when loading has errors
