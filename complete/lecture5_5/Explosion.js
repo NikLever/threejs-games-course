@@ -98,10 +98,10 @@ void main() {
     if (this.obstacles) this.obstacles.removeExplosion(this);
   }
 
-  update(time) {
+  update(dt) {
     if (!this.active) return;
 
-    this.uniforms.u_time.value += time;
+    this.uniforms.u_time.value += dt;
     this.uniforms.u_opacity.value = this.ball.material.opacity;
 
     if (this.tweens.length<2){
@@ -113,7 +113,7 @@ void main() {
     }
 
     this.tweens.forEach( tween => {
-      tween.update(time);
+      tween.update(dt);
     });
 
     this.ball.scale.y = this.ball.scale.z = this.ball.scale.x;
