@@ -179,12 +179,12 @@ class Obstacles{
 
 	hit(obj){
 		if (obj.name=='star'){
-			obj.visible = false;
 			this.game.incScore();
         }else{
             this.explosions.push( new Explosion(obj, this) );
 			this.game.decLives();
         }
+        obj.visible = false;
 	}
 }
 

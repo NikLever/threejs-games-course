@@ -163,11 +163,11 @@ class Obstacles{
 
 	hit(obj){
 		if (obj.name=='star'){
-			obj.visible = false;
 			this.game.incScore();
         }else{
 			this.game.decLives();
         }
+        obj.visible = false;
 	}
 }
 
