@@ -29,6 +29,9 @@ void main() {
 #define PI 3.141592653589
 #define PI2 6.28318530718
 
+uniform vec2 u_mouse;
+uniform vec2 u_resolution;
+uniform float u_time;
 uniform float u_opacity;
 uniform sampler2D u_tex;
 
@@ -98,10 +101,10 @@ void main() {
     if (this.obstacles) this.obstacles.removeExplosion(this);
   }
 
-  update(dt) {
+  update(time) {
     if (!this.active) return;
 
-    this.uniforms.u_time.value += dt;
+    this.uniforms.u_time.value += time;
     this.uniforms.u_opacity.value = this.ball.material.opacity;
 
     if (this.tweens.length<2){
@@ -113,7 +116,7 @@ void main() {
     }
 
     this.tweens.forEach( tween => {
-      tween.update(dt);
+      tween.update(time);
     });
 
     this.ball.scale.y = this.ball.scale.z = this.ball.scale.x;
