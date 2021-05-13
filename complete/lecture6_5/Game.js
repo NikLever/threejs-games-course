@@ -62,7 +62,7 @@ class Game{
 	initPathfinding(navmesh){
 		this.pathfinder = new Pathfinding();
         this.pathfinder.setZoneData('factory', Pathfinding.createZone(navmesh.geometry, 0.02));
-		if (this.npcHandler.npcs === undefined) this.npcHandler.initNPCs();
+		if (this.npcHandler.gltf !== undefined) this.npcHandler.initNPCs();
 	}
 	
     resize(){

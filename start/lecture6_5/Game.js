@@ -115,14 +115,7 @@ class Game{
 
 				gltf.scene.traverse( child => {
 					if (child.isMesh){
-						if (child.name == 'NavMesh'){
-							this.navmesh = child;
-							this.navmesh.geometry.rotateX( Math.PI/2 );
-							this.navmesh.quaternion.identity();
-							this.navmesh.position.set(0,0,0);
-							child.material.transparent = true;
-							child.material.opacity = 0.5;
-						}else if (child.name.includes('fan')){
+						if (child.name.includes('fan')){
 							this.fans.push( child );
 						}else if (child.material.name.includes('elements2')){
 							mergeObjects.elements2.push(child);
@@ -157,8 +150,6 @@ class Game{
 				}
 
                 this.renderer.setAnimationLoop( this.render.bind(this) );
-
-				this.initPathfinding(this.navmesh);
 
 				this.loadingBar.visible = !this.loadingBar.loaded;
 			},

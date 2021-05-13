@@ -9,7 +9,10 @@ class NPCHandler{
 		this.loadingBar = this.game.loadingBar;
         this.waypoints = game.waypoints;
         this.load();
+		this.initMouseHandler();
+	}
 
+	initMouseHandler(){
 		const raycaster = new Raycaster();
     	game.renderer.domElement.addEventListener( 'click', raycast, false );
 			
@@ -70,90 +73,7 @@ class NPCHandler{
 	}
     
 	initNPCs(gltf = this.gltf){
-		const gltfs = [gltf];
-				
-		this.npcs = [];
 		
-		gltfs.forEach(gltf => {
-			const object = gltf.scene;
-
-			object.traverse(function(child){
-				if (child.isMesh){
-					child.castShadow = true;
-				}
-			});
-
-			const options = {
-				object: object,
-				speed: 0.8,
-				animations: gltf.animations,
-				app: this.game,
-				showPath: true,
-				zone: 'factory',
-				name: 'swat-guy',
-			};
-
-			const npc = new NPC(options);
-
-			npc.object.position.set(-7.607, 0.017, -7.713);
-			
-			this.npcs.push(npc);
-			
-		});
-
-		this.loadingBar.visible = !this.loadingBar.loaded;
-
-		this.game.startRendering();
-	}
-
-    cloneGLTF(gltf){
-	
-		const clone = {
-			animations: gltf.animations,
-			scene: gltf.scene.clone(true)
-		  };
-		
-		const skinnedMeshes = {};
-		
-		gltf.scene.traverse(node => {
-			if (node.isSkinnedMesh) {
-			  skinnedMeshes[node.name] = node;
-			}
-		});
-		
-		const cloneBones = {};
-		const cloneSkinnedMeshes = {};
-		
-		clone.scene.traverse(node => {
-			if (node.isBone) {
-			  cloneBones[node.name] = node;
-			}
-			if (node.isSkinnedMesh) {
-			  cloneSkinnedMeshes[node.name] = node;
-			}
-		});
-		
-		for (let name in skinnedMeshes) {
-			const skinnedMesh = skinnedMeshes[name];
-			const skeleton = skinnedMesh.skeleton;
-			const cloneSkinnedMesh = cloneSkinnedMeshes[name];
-			const orderedCloneBones = [];
-			for (let i = 0; i < skeleton.bones.length; ++i) {
-				const cloneBone = cloneBones[skeleton.bones[i].name];
-				orderedCloneBones.push(cloneBone);
-			}
-			cloneSkinnedMesh.bind(
-				new Skeleton(orderedCloneBones, skeleton.boneInverses),
-				cloneSkinnedMesh.matrixWorld);
-		}
-		
-		return clone;
-
-	}
-    
-    get randomWaypoint(){
-		const index = Math.floor(Math.random()*this.waypoints.length);
-		return this.waypoints[index];
 	}
 
     update(dt){
