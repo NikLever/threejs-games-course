@@ -1,4 +1,4 @@
-import { BufferAttribute, BufferGeometry, Float32BufferAttribute } from '../three126/three.module.js';
+import { BufferAttribute, BufferGeometry, Float32BufferAttribute } from '../three128/three.module.js';
 
 class Utils {
 

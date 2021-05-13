@@ -49,6 +49,18 @@ class LoadingBar{
 		}
 	}
 
+	get loaded(){
+		if ( this.assets === undefined ) return false;
+		
+		let ploaded=0, ptotal=0;
+		Object.values(this.assets).forEach( asset => {
+			ploaded += asset.loaded;
+			ptotal += asset.total;
+		});
+
+		return ploaded == ptotal;
+	}
+
 	update(assetName, loaded, total){
 		if ( this.assets === undefined ) this.assets = {};
 		

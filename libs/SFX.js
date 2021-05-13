@@ -46,14 +46,11 @@ class SFX{
     stop(name){
         const sound = this.sounds[name];
 
-        if (sound !== undefined) sound.play();
+        if (sound !== undefined && sound.isPlaying) sound.stop();
     }
 
     stopAll(){
-        for(let prop in this.sounds){
-            const sound = this.sounds[prop];
-            if (sound.isPlaying) sound.stop();
-        }
+        for(let name in this.sounds) this.stop(name);
     }
 
     pause(name){

@@ -1,4 +1,4 @@
-import * as THREE from '../../libs/three126/three.module.js';
+import * as THREE from '../../libs/three128/three.module.js';
 
 class NPC{
 	constructor(options){
@@ -11,7 +11,6 @@ class NPC{
 		options.app.scene.add(options.object);
 		
 		this.object = options.object;
-		
 		this.pathLines = new THREE.Object3D();
 		this.pathColor = new THREE.Color(0xFFFFFF);
 		options.app.scene.add(this.pathLines);
@@ -110,7 +109,6 @@ class NPC{
 					const material = new THREE.MeshBasicMaterial( {color: this.pathColor} );
 					const node = new THREE.Mesh( geometry, material );
 					node.position.copy(vertex);
-					node.position.y += this.app.debug.offset;
 					this.pathLines.add( node );
 				});
 			}

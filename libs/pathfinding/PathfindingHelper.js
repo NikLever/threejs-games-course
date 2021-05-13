@@ -10,7 +10,7 @@ import {
   Object3D,
   SphereBufferGeometry,
   Vector3,
-} from '../three126/three.module.js';
+} from '../three128/three.module.js';
 
 const colors = {
   PLAYER: new Color( 0xee836f ).convertGammaToLinear( 2.2 ).getHex(),

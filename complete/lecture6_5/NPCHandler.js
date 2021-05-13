@@ -1,6 +1,7 @@
 import {NPC} from './NPC.js';
-import {GLTFLoader} from '../../libs/three126/GLTFLoader.js';
-import {Skeleton, Raycaster} from '../../libs/three126/three.module.js';
+import {GLTFLoader} from '../../libs/three128/GLTFLoader.js';
+import {DRACOLoader} from '../../libs/three128/DRACOLoader.js';
+import {Skeleton, Raycaster} from '../../libs/three128/three.module.js';
 
 class NPCHandler{
     constructor( game ){
@@ -35,61 +36,28 @@ class NPCHandler{
     }
 
     load(){
-        
-		const loader = new GLTFLoader().setPath(`${this.game.assetsPath}factory/`);
+        const loader = new GLTFLoader( ).setPath(`${this.game.assetsPath}factory/`);
+		const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath( '../../libs/three128/draco/' );
+        loader.setDRACOLoader( dracoLoader );
+        this.loadingBar.visible = true;
 		
 		// Load a GLTF resource
 		loader.load(
 			// resource URL
-			`swat-guy-rifle.glb`,
+			`swat-guy.glb`,
 			// called when the resource is loaded
 			gltf => {
-				const gltfs = [gltf];
-				
-                for(let i=0; i<3; i++) gltfs.push(this.cloneGLTF(gltf));
-				
-				this.npcs = [];
-				
-				gltfs.forEach(gltf => {
-					const object = gltf.scene;
-
-					object.frustumCulled = false;
-
-					object.traverse(function(child){
-						if (child.isMesh){
-							child.castShadow = true;
-							child.frustumCulled = false;
-						}
-					});
-
-					const options = {
-						object: object,
-						speed: 1.2,
-						animations: gltf.animations,
-						app: this.game,
-						waypoints: this.waypoints,
-						showPath: false,
-						zone: 'factory',
-						name: 'swat-guy',
-					};
-
-					const npc = new NPC(options);
-
-					npc.object.position.copy(this.randomWaypoint);
-					npc.newPath(this.randomWaypoint);
-					
-					this.npcs.push(npc);
-					
-				});
-
-				this.loadingBar.visible = false;
-
-				this.game.startRendering();
+				if (this.game.pathfinder){
+					this.initNPCs(gltf);
+				}else{
+					this.gltf = gltf;
+				}
 			},
 			// called while loading is progressing
 			xhr => {
 
-				this.loadingBar.progress = (xhr.loaded / xhr.total)*0.5 + 0.5;
+				this.loadingBar.update( 'swat-guy', xhr.loaded, xhr.total );
 
 			},
 			// called when loading has errors
@@ -101,6 +69,43 @@ class NPCHandler{
 		);
 	}
     
+	initNPCs(gltf = this.gltf){
+		const gltfs = [gltf];
+				
+		this.npcs = [];
+		
+		gltfs.forEach(gltf => {
+			const object = gltf.scene;
+
+			object.traverse(function(child){
+				if (child.isMesh){
+					child.castShadow = true;
+				}
+			});
+
+			const options = {
+				object: object,
+				speed: 0.8,
+				animations: gltf.animations,
+				app: this.game,
+				showPath: true,
+				zone: 'factory',
+				name: 'swat-guy',
+			};
+
+			const npc = new NPC(options);
+
+			npc.object.position.set(-7.607, 0.017, -7.713);
+			
+			this.npcs.push(npc);
+			
+		});
+
+		this.loadingBar.visible = !this.loadingBar.loaded;
+
+		this.game.startRendering();
+	}
+
     cloneGLTF(gltf){
 	
 		const clone = {
@@ -152,7 +157,7 @@ class NPCHandler{
 	}
 
     update(dt){
-        this.npcs.forEach( npc => npc.update(dt) );
+        if (this.npcs) this.npcs.forEach( npc => npc.update(dt) );
     }
 }
 
