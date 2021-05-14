@@ -165,7 +165,6 @@ class Obstacles{
 				const dist = this.tmpPos.distanceToSquared(pos);
 				if (dist<5){
 					collisionObstacle.userData.hit = true;
-					console.log(`Closest obstacle is ${minDist.toFixed(2)}`);
 					this.hit(child);
                     return true;
                 }

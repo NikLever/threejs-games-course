@@ -119,7 +119,7 @@ class Obstacles{
 
     removeExplosion( explosion ){
         const index = this.explosions.indexOf( explosion );
-        if (index != -1) this.explosions.splice(index, 1);
+        if (index != -1) this.explosions.indexOf(index, 1);
     }
 
     reset(){
@@ -144,7 +144,7 @@ class Obstacles{
 		});
     }
 
-	update(pos, dt){
+	update(pos, time){
         let collisionObstacle;
 
         this.obstacles.forEach( obstacle =>{
@@ -163,7 +163,7 @@ class Obstacles{
 			collisionObstacle.children.some( child => {
 				child.getWorldPosition(this.tmpPos);
 				const dist = this.tmpPos.distanceToSquared(pos);
-				if (dist<5 ){
+				if (dist<5){
 					collisionObstacle.userData.hit = true;
 					this.hit(child);
                     return true;
@@ -173,7 +173,7 @@ class Obstacles{
         }
 
         this.explosions.forEach( explosion => {
-            explosion.update( dt );
+            explosion.update( time );
         });
     }
 
