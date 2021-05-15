@@ -1,11 +1,11 @@
-import * as THREE from '../../libs/three126/three.module.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
-import { RGBELoader } from '../../libs/three126/RGBELoader.js';
-import { Controller } from './Controller.js';
-import { Rifle } from './Rifle.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
+import { RGBELoader } from '../../libs/three128/RGBELoader.js';
 import { NPCHandler } from './NPCHandler.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Pathfinding } from '../../libs/pathfinding/Pathfinding.js';
+import { User } from './User.js';
+import { Controller } from './Controller.js';
 
 class Game{
 	constructor(){
@@ -19,11 +19,9 @@ class Game{
 
 		this.assetsPath = '../../assets/';
         
-		this.debug = true;
-
 		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 500 );
-
-		this.camera.position.set( -6.25, 1.6, -2 );
+		this.camera.position.set( -10.6, 1.6, -1.46 );
+		this.camera.rotation.y = -Math.PI*0.5;
 
 		let col = 0x201510;
 		this.scene = new THREE.Scene();
@@ -35,21 +33,20 @@ class Game{
 
         const light = new THREE.DirectionalLight();
         light.position.set( 4, 20, 20 );
+		light.target.position.set(-2, 0, 0);
 		light.castShadow = true;
 		//Set up shadow properties for the light
 		light.shadow.mapSize.width = 1024; 
-		light.shadow.mapSize.height = 1024; 
+		light.shadow.mapSize.height = 512; 
 		light.shadow.camera.near = 0.5; 
 		light.shadow.camera.far = 50;
-		const d = 10; 
-		light.shadow.camera.left = light.shadow.camera.bottom = -d;
+		const d = 30; 
+		light.shadow.camera.left = -d;
+		light.shadow.camera.bottom = -d*0.25;
 		light.shadow.camera.right = light.shadow.camera.top = d;
 		this.scene.add(light);
 		this.light = light;
-
-		const helper = new THREE.CameraHelper( light.shadow.camera );
-		this.scene.add( helper );
-			
+	
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -58,12 +55,9 @@ class Game{
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
 		
-		this.player = new Rifle(this, new THREE.Vector3( -6.4, 0.056, -3.07), 0);
-
-        this.load();
+		this.load();
 		
-		window.addEventListener('resize', this.resize.bind(this) );
-        
+		window.addEventListener( 'resize', this.resize.bind(this) );
 	}
 
 	initPathfinding(navmesh){
@@ -77,9 +71,9 @@ class Game{
 			new THREE.Vector3(-18.195950790753532, 0.17323640676321908, -0.9593366354062719),
 			new THREE.Vector3(-6.603208729295872, 0.015786387893574227, -12.265553884212125)
 		];
-
 		this.pathfinder = new Pathfinding();
         this.pathfinder.setZoneData('factory', Pathfinding.createZone(navmesh.geometry, 0.02));
+		if (this.npcHandler.gltf !== undefined) this.npcHandler.initNPCs();
 	}
 	
     resize(){
@@ -93,19 +87,27 @@ class Game{
         const pmremGenerator = new THREE.PMREMGenerator( this.renderer );
         pmremGenerator.compileEquirectangularShader();
         
-        loader.load( 'hdr/factory.hdr', ( texture ) => {
+        loader.load( 'hdr/factory.hdr', 
+		texture => {
           const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
           pmremGenerator.dispose();
 
           this.scene.environment = envMap;
 
-        }, undefined, (err)=>{
+		  this.loadingBar.visible = !this.loadingBar.loaded;
+        }, 
+		xhr => {
+			this.loadingBar.update( 'envmap', xhr.loaded, xhr.total );
+		},
+		err => {
             console.error( err.message );
         } );
     }
     
 	load(){
         this.loadEnvironment();
+		this.npcHandler = new NPCHandler(this);
+		this.user = new User(this, new THREE.Vector3( -5.97, 0.021, -1.49), 1.57)
     }
 
     loadEnvironment(){
@@ -116,13 +118,15 @@ class Game{
 		// Load a glTF resource
 		loader.load(
 			// resource URL
-			'factory.glb',
+			'factory2.glb',
 			// called when the resource is loaded
 			gltf => {
 
 				this.scene.add( gltf.scene );
                 this.factory = gltf.scene;
 				this.fans = [];
+
+				const mergeObjects = {elements2:[], elements5:[], terrain:[]};
 
 				gltf.scene.traverse( child => {
 					if (child.isMesh){
@@ -131,29 +135,57 @@ class Game{
 							this.navmesh.geometry.rotateX( Math.PI/2 );
 							this.navmesh.quaternion.identity();
 							this.navmesh.position.set(0,0,0);
+							//child.material.transparent = true;
+							//child.material.opacity = 0.3;
 							child.material.visible = false;
 						}else if (child.name.includes('fan')){
 							this.fans.push( child );
-						}else if (child.parent.name.includes('main')){
+						}else if (child.material.name.includes('elements2')){
+							mergeObjects.elements2.push(child);
+							child.castShadow = true;
+						}else if (child.material.name.includes('elements5')){
+							mergeObjects.elements5.push(child);
+							child.castShadow = true;
+						}else if (child.material.name.includes('terrain')){
+							mergeObjects.terrain.push(child);
+							child.castShadow = true;
+						}else if (child.material.name.includes('sand')){
+							child.receiveShadow = true;
+						}else if ( child.material.name.includes('elements1')){
 							child.castShadow = true;
 							child.receiveShadow = true;
+						}else if (child.parent.name.includes('main')){
+							child.castShadow = true;
 						}
 					}
 				});
 
 				this.scene.add(this.navmesh);
-				
+
+				for(let prop in mergeObjects){
+					const array = mergeObjects[prop];
+					let material;
+					array.forEach( object => {
+						if (material == undefined){
+							material = object.material;
+						}else{
+							object.material = material;
+						}
+					});
+				}
+
 				this.controller = new Controller(this);
+
+                this.renderer.setAnimationLoop( this.render.bind(this) );
 
 				this.initPathfinding(this.navmesh);
 
-				this.npcHandler = new NPCHandler(this);
-
+				this.loadingBar.visible = !this.loadingBar.loaded;
 			},
 			// called while loading is progressing
 			xhr => {
 
-				this.loadingBar.progress = (xhr.loaded / xhr.total) * 0.5;
+				this.loadingBar.update('environment', xhr.loaded, xhr.total);
 				
 			},
 			// called when loading has errors
@@ -178,9 +210,9 @@ class Game{
             });
         }
 
-		if (this.controller !== undefined) this.controller.update(dt);
-
 		if (this.npcHandler !== undefined ) this.npcHandler.update(dt);
+		if (this.user !== undefined ) this.user.update(dt);
+		if (this.controller !== undefined) this.controller.update(dt);
 
         this.renderer.render( this.scene, this.camera );
 

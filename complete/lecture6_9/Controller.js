@@ -1,11 +1,11 @@
-import { Object3D, Vector3, Quaternion, Raycaster } from '../../libs/three126/three.module.js';
+import { Object3D, Vector3, Quaternion, Raycaster } from '../../libs/three128/three.module.js';
 import { JoyStick } from '../../libs/JoyStick.js';
 //import { Game } from './Game.js';
 
 class Controller{
     constructor(game){
         this.camera = game.camera;
-        this.target = game.player.root;
+        this.target = game.user.root;
         this.navmesh = game.navmesh;
 
         this.raycaster = new Raycaster();
@@ -16,10 +16,6 @@ class Controller{
         this.tmpVec3 = new Vector3();
         this.tmpQuat = new Quaternion();
 
-        game.player.rifle.getWorldPosition(this.tmpVec3);
-        this.tmpVec3.y += 0.5;
-        game.camera.lookAt( this.tmpVec3 );
-
         //Used to return the camera to its base position and orientation after a look event
         this.cameraBase = new Object3D();
         this.cameraBase.position.copy( this.camera.position );
@@ -28,7 +24,7 @@ class Controller{
 
         this.yAxis = new Vector3(0, 1, 0);
         this.xAxis = new Vector3(1, 0, 0);
-        this.forward = new Vector3(0, 0, -1);
+        this.forward = new Vector3(0, 0, 1);
         this.down = new Vector3(0, -1, 0);
 
         this.speed = 3;

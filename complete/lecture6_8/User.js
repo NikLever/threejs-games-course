@@ -27,17 +27,6 @@ class User{
 
         this.load();
 
-        this.tmpVec = new Vector3();
-        this.tmpQuat = new Quaternion();
-
-        game.camera.getWorldPosition(this.tmpVec);
-        game.camera.getWorldQuaternion(this.tmpQuat);
-
-        this.dolly = new Object3D();
-        this.dolly.position.copy( this.tmpVec );
-        this.dolly.quaternion.copy( this.tmpQuat );
-        this.root.attach(this.dolly);
-
         this.initMouseHandler();
     }
 
@@ -63,13 +52,6 @@ class User{
 				console.log(pt);
 
 				self.root.position.copy(pt);
-
-                self.root.remove( self.dolly )
-
-                self.dolly.position.copy( self.game.camera.position );
-                self.dolly.quaternion.copy( self.game.camera.quaternion );
-
-                self.root.attach(self.dolly);
 			}	
 		}
     }
@@ -99,6 +81,9 @@ class User{
 			gltf => {
 				this.root.add( gltf.scene );
                 this.object = gltf.scene;
+
+                const scale = 1.2;
+                this.object.scale.set(scale, scale, scale);
 
                 this.object.traverse( child => {
                     if ( child.isMesh){
@@ -155,11 +140,6 @@ class User{
 	
 	update(dt){
 		if (this.mixer) this.mixer.update(dt);
-
-        if (this.dolly && this.camera){
-            this.dolly.getWorldPosition(this.tmpVec); 
-            this.camera.position.lerp(this.tmpVec, 0.1);
-        }
     }
 }
 

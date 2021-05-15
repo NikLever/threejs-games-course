@@ -1,16 +1,18 @@
 import {NPC} from './NPC.js';
-import {GLTFLoader} from '../../libs/three126/GLTFLoader.js';
-import {Skeleton, Raycaster} from '../../libs/three126/three.module.js';
+import {GLTFLoader} from '../../libs/three128/GLTFLoader.js';
+import {DRACOLoader} from '../../libs/three128/DRACOLoader.js';
+import {Skeleton, Raycaster} from '../../libs/three128/three.module.js';
 
 class NPCHandler{
     constructor( game ){
         this.game = game;
 		this.loadingBar = this.game.loadingBar;
-        this.waypoints = game.waypoints;
-        this.load();
+		this.load();
+	}
 
+	initMouseHandler(){
 		const raycaster = new Raycaster();
-    	game.renderer.domElement.addEventListener( 'click', raycast, false );
+    	this.game.renderer.domElement.addEventListener( 'click', raycast, false );
 			
     	const self = this;
     	const mouse = { x:0, y:0 };
@@ -35,8 +37,11 @@ class NPCHandler{
     }
 
     load(){
-        
-		const loader = new GLTFLoader().setPath(`${this.game.assetsPath}factory/`);
+        const loader = new GLTFLoader( ).setPath(`${this.game.assetsPath}factory/`);
+		const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath( '../../libs/three128/draco/' );
+        loader.setDRACOLoader( dracoLoader );
+        this.loadingBar.visible = true;
 		
 		// Load a GLTF resource
 		loader.load(
@@ -44,52 +49,16 @@ class NPCHandler{
 			`swat-guy.glb`,
 			// called when the resource is loaded
 			gltf => {
-				const gltfs = [gltf];
-				
-                for(let i=0; i<3; i++) gltfs.push(this.cloneGLTF(gltf));
-				
-				this.npcs = [];
-				
-				gltfs.forEach(gltf => {
-					const object = gltf.scene;
-
-					object.frustumCulled = false;
-
-					object.traverse(function(child){
-						if (child.isMesh){
-							child.castShadow = true;
-							child.frustumCulled = false;
-						}
-					});
-
-					const options = {
-						object: object,
-						speed: 1.2,
-						animations: gltf.animations,
-						app: this.game,
-						waypoints: this.waypoints,
-						showPath: false,
-						zone: 'factory',
-						name: 'swat-guy',
-					};
-
-					const npc = new NPC(options);
-
-					npc.object.position.copy(this.randomWaypoint);
-					npc.newPath(this.randomWaypoint);
-					
-					this.npcs.push(npc);
-					
-				});
-
-				this.loadingBar.visible = false;
-
-				this.game.startRendering();
+				if (this.game.pathfinder){
+					this.initNPCs(gltf);
+				}else{
+					this.gltf = gltf;
+				}
 			},
 			// called while loading is progressing
 			xhr => {
 
-				this.loadingBar.update('swat-guy', xhr.loaded, xhr.total);
+				this.loadingBar.update( 'swat-guy', xhr.loaded, xhr.total );
 
 			},
 			// called when loading has errors
@@ -101,7 +70,51 @@ class NPCHandler{
 		);
 	}
     
-    cloneGLTF(gltf){
+	initNPCs(gltf = this.gltf){
+		this.waypoints = this.game.waypoints;
+        
+		const gltfs = [gltf];
+			
+		for(let i=0; i<3; i++) gltfs.push(this.cloneGLTF(gltf));
+
+		this.npcs = [];
+		
+		gltfs.forEach(gltf => {
+			const object = gltf.scene;
+
+			object.traverse(function(child){
+				if (child.isMesh){
+					child.castShadow = true;
+					child.frustumCulled = false;
+				}
+			});
+
+			const options = {
+				object: object,
+				speed: 0.8,
+				animations: gltf.animations,
+				waypoints: this.waypoints,
+				app: this.game,
+				showPath: false,
+				zone: 'factory',
+				name: 'swat-guy',
+			};
+
+			const npc = new NPC(options);
+
+			npc.object.position.copy(this.randomWaypoint);
+			npc.newPath(this.randomWaypoint);
+			
+			this.npcs.push(npc);
+			
+		});
+
+		this.loadingBar.visible = !this.loadingBar.loaded;
+
+		this.game.startRendering();
+	}
+
+	cloneGLTF(gltf){
 	
 		const clone = {
 			animations: gltf.animations,
@@ -152,7 +165,7 @@ class NPCHandler{
 	}
 
     update(dt){
-        this.npcs.forEach( npc => npc.update(dt) );
+        if (this.npcs) this.npcs.forEach( npc => npc.update(dt) );
     }
 }
 

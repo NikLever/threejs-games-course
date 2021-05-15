@@ -19,9 +19,9 @@ class Game{
 		this.assetsPath = '../../assets/';
         
 		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 500 );
+		this.camera.position.set( -10.6, 1.6, -1.46 );
+		this.camera.rotation.y = -Math.PI*0.5;
 
-		this.camera.position.set( -6.25, 1.6, -2 );
-		
 		let col = 0x201510;
 		this.scene = new THREE.Scene();
 		this.scene.background = new THREE.Color( col );
@@ -106,7 +106,7 @@ class Game{
 	load(){
         this.loadEnvironment();
 		this.npcHandler = new NPCHandler(this);
-		this.user = new User(this, new THREE.Vector3( -6.4, 0.056, -3.07), 0)
+		this.user = new User(this, new THREE.Vector3( -5.97, 0.021, -1.49), 1.57)
     }
 
     loadEnvironment(){
