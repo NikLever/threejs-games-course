@@ -1,4 +1,4 @@
-import { Object3D, Vector3, Quaternion, Raycaster } from '../../libs/three128/three.module.js';
+import { Object3D, Camera, Vector3, Quaternion, Raycaster } from '../../libs/three128/three.module.js';
 import { JoyStick } from '../../libs/JoyStick.js';
 //import { Game } from './Game.js';
 
@@ -9,6 +9,7 @@ class Controller{
         this.user = game.user;
         this.target = game.user.root;
         this.navmesh = game.navmesh;
+        this.game = game;
 
         this.raycaster = new Raycaster();
 
@@ -23,6 +24,12 @@ class Controller{
         this.cameraBase.position.copy( this.camera.position );
         this.cameraBase.quaternion.copy( this.camera.quaternion );
         this.target.attach( this.cameraBase );
+
+        this.cameraHigh = new Camera();
+        this.cameraHigh.position.copy( this.camera.position );
+        this.cameraHigh.position.y += 10;
+        this.cameraHigh.lookAt( this.target.position );
+        this.target.attach( this.cameraHigh );
 
         this.yAxis = new Vector3(0, 1, 0);
         this.xAxis = new Vector3(1, 0, 0);
@@ -89,7 +96,7 @@ class Controller{
         if (playerMoved){
             this.cameraBase.getWorldPosition(this.tmpVec3);
             this.camera.position.lerp(this.tmpVec3, 0.1);
-            if (speed) console.log(speed.toFixed(2));
+            //if (speed) console.log(speed.toFixed(2));
             let run = false;
             if (speed>0.03){
                 if (this.overRunSpeedTime){
@@ -111,9 +118,15 @@ class Controller{
         }
 
         if (this.look.up==0 && this.look.right==0){
-            const lerpSpeed = 0.1;
+            let lerpSpeed = 0.1;
             this.cameraBase.getWorldPosition(this.tmpVec3);
-            this.cameraBase.getWorldQuaternion(this.tmpQuat);
+            if (this.game.seeUser(this.tmpVec3)){
+                this.cameraBase.getWorldQuaternion(this.tmpQuat);
+                lerpSpeed = 0.03;
+            }else{
+                this.cameraHigh.getWorldPosition(this.tmpVec3);
+                this.cameraHigh.getWorldQuaternion(this.tmpQuat);
+            }
             this.camera.position.lerp(this.tmpVec3, lerpSpeed);
             this.camera.quaternion.slerp(this.tmpQuat, lerpSpeed);
         }else{

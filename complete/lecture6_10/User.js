@@ -70,6 +70,10 @@ class User{
         this.root.position.copy( pos );
     }
 
+	get position(){
+		return this.root.position;
+	}
+
     addSphere(){
         const geometry = new SphereGeometry( 0.1, 8, 8 );
         const material = new MeshBasicMaterial( { color: 0xFF0000 });
@@ -123,9 +127,9 @@ class User{
 	}
 
     set action(name){
-		if (this.actionName == name.toLowerCase()) return;
+		if (this.actionName == name.toLowerCase()) return;  
 		
-		console.log(`User action:${name}`);
+		//console.log(`User action:${name}`);
 		
 		const clip = this.animations[name.toLowerCase()];
 
