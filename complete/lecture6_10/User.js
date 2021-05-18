@@ -127,7 +127,7 @@ class User{
 	}
 
     set action(name){
-		if (this.actionName == name.toLowerCase()) return;  
+		if (this.actionName == name.toLowerCase()) return;    
 		
 		//console.log(`User action:${name}`);
 		

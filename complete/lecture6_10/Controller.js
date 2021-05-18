@@ -120,7 +120,7 @@ class Controller{
         if (this.look.up==0 && this.look.right==0){
             let lerpSpeed = 0.1;
             this.cameraBase.getWorldPosition(this.tmpVec3);
-            if (this.game.seeUser(this.tmpVec3)){
+            if (this.game.seeUser(this.tmpVec3, true)){
                 this.cameraBase.getWorldQuaternion(this.tmpQuat);
                 lerpSpeed = 0.03;
             }else{
