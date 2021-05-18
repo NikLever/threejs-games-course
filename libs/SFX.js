@@ -23,6 +23,8 @@ class SFX{
             sound.setLoop( loop );
             sound.setVolume( vol );
         });
+
+        if (obj!==null) obj.add(sound);
     }
 
     setVolume(name, volume){
