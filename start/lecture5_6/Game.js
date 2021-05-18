@@ -139,17 +139,6 @@ class Game{
 
         this.plane = new Plane(this);
         this.obstacles = new Obstacles(this);
-
-        this.loadSFX();
-    }
-
-    loadSFX(){
-        this.sfx = new SFX(this.camera, this.assetsPath + 'plane/');
-
-        this.sfx.load('explosion');
-        this.sfx.load('engine', true);
-        this.sfx.load('gliss');
-        this.sfx.load('gameover');
     }
 
     loadSkybox(){
@@ -177,9 +166,6 @@ class Game{
         btn.style.display = 'block';
 
         this.plane.visible = false;
-
-        this.sfx.stopAll();
-        this.sfx.play('gameover');
     }
 
     incScore(){
@@ -188,8 +174,6 @@ class Game{
         const elm = document.getElementById('score');
 
         elm.innerHTML = this.score;
-
-        this.sfx.play('gliss');
     }
 
     decLives(){
@@ -200,8 +184,6 @@ class Game{
         elm.innerHTML = this.lives;
 
         if (this.lives==0) setTimeout(this.gameOver.bind(this), 1200);
-
-        this.sfx.play('explosion');
     }
 
     updateCamera(){
