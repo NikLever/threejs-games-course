@@ -178,8 +178,6 @@ class Game{
 							this.navmesh.geometry.rotateX( Math.PI/2 );
 							this.navmesh.quaternion.identity();
 							this.navmesh.position.set(0,0,0);
-							//child.material.transparent = true;
-							//child.material.opacity = 0.3;
 							child.material.visible = false;
 						}else if (child.name.includes('fan')){
 							this.fans.push( child );
