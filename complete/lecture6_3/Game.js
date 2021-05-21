@@ -35,7 +35,7 @@ class Game{
 		light.shadow.mapSize.width = 1024; 
 		light.shadow.mapSize.height = 512; 
 		light.shadow.camera.near = 0.5; 
-		light.shadow.camera.far = 50;
+		light.shadow.camera.far = 60;
 		const d = 30; 
 		light.shadow.camera.left = -d;
 		light.shadow.camera.bottom = -d*0.25;

@@ -81,7 +81,7 @@ class Game{
 		// Load a glTF resource
 		loader.load(
 			// resource URL
-			'factory.glb',
+			'factory1.glb',
 			// called when the resource is loaded
 			gltf => {
 
