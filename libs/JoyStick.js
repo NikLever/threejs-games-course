@@ -12,6 +12,7 @@ class JoyStick{
 		thumb.style.cssText = "position: absolute; left: 20px; top: 20px; width: 40px; height: 40px; border-radius: 50%; background: #fff;";
 		circle.appendChild(thumb);
 		document.body.appendChild(circle);
+		this.domBg = circle;
 		this.domElement = thumb;
 		this.maxRadius = options.maxRadius || 40;
 		this.maxRadiusSquared = this.maxRadius * this.maxRadius;
@@ -30,6 +31,12 @@ class JoyStick{
 		}
 	}
 	
+	set visible( mode ){
+		const setting = (mode) ? 'block' : 'none';
+		this.domElement.style.display = setting;
+		this.domBg.style.display = setting;
+	}
+
 	getMousePosition(evt){
 		let clientX = evt.targetTouches ? evt.targetTouches[0].pageX : evt.clientX;
 		let clientY = evt.targetTouches ? evt.targetTouches[0].pageY : evt.clientY;

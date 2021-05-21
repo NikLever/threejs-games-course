@@ -95,6 +95,7 @@ class User{
 			gltf => {
 				this.root.add( gltf.scene );
                 this.object = gltf.scene;
+				this.object.frustumCulled = false;
 
                 const scale = 1.2;
                 this.object.scale.set(scale, scale, scale);
