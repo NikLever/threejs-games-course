@@ -186,8 +186,12 @@ class NPC{
                 // Remove node from the path we calculated
                 this.calculatedPath.shift();
                 if (this.calculatedPath.length==0){
-                    player.position.copy( targetPosition );
-                    this.action = 'idle';
+                    if (this.waypoints!==undefined){
+                        this.newPath(this.randomWaypoint);
+                    }else{
+                        player.position.copy( targetPosition );
+                        this.action = 'idle';
+                    }
                 }else{
                     const pt = this.calculatedPath[0].clone();
                     pt.y = player.position.y;
