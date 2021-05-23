@@ -41,6 +41,17 @@ class User{
 		}
     }
 
+	initRifleDirection(){
+		this.rifleDirection = {};
+
+		this.rifleDirection.idle = new Quaternion(-0.178, -0.694, 0.667, 0.203);
+		this.rifleDirection.walk = new Quaternion( 0.044, -0.772, 0.626, -0.102);
+		this.rifleDirection.firingwalk = new Quaternion(-0.025, -0.816, 0.559, -0.147);
+		this.rifleDirection.firing = new Quaternion( 0.037, -0.780, 0.6, -0.175);
+		this.rifleDirection.run = new Quaternion( 0.015, -0.793, 0.595, -0.131);
+		this.rifleDirection.shot = new Quaternion(-0.082, -0.789, 0.594, -0.138);
+	}
+	
     set position(pos){
         this.root.position.copy( pos );
     }
