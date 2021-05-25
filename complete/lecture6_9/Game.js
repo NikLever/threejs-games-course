@@ -211,8 +211,10 @@ class Game{
         }
 
 		if (this.npcHandler !== undefined ) this.npcHandler.update(dt);
-		if (this.user !== undefined ) this.user.update(dt);
-		if (this.controller !== undefined) this.controller.update(dt);
+		if (this.user !== undefined && this.user.ready ){
+			this.user.update(dt);
+			if (this.controller !== undefined) this.controller.update(dt);
+		}
 
         this.renderer.render( this.scene, this.camera );
 

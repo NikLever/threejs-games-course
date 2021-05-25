@@ -40,7 +40,7 @@ class Controller{
 
         this.checkForGamepad();
 
-        if('ontouchstart' in document.documentElement){
+        if(true){//'ontouchstart' in document.documentElement){
             const options1 = {
                 left: true,
                 app: this,
@@ -69,14 +69,6 @@ class Controller{
             document.addEventListener('mousedown', this.mouseDown.bind(this));
             document.addEventListener('mouseup', this.mouseUp.bind(this));
             document.addEventListener('mousemove', this.mouseMove.bind(this));
-            this.keys = {   
-                            w:false, 
-                            a:false, 
-                            d:false, 
-                            s:false, 
-                            mousedown:false, 
-                            mouseorigin:{x:0, y:0}
-                        };
         }
     }
 
@@ -112,70 +104,23 @@ class Controller{
     }
 
     keyDown(e){
-        //console.log('keyCode:' + e.keyCode);
-        switch(e.keyCode){
-            case 87:
-                this.keys.w = true;
-                break;
-            case 65:
-                this.keys.a = true;
-                break;
-            case 83:
-                this.keys.s = true;
-                break;
-            case 68:
-                this.keys.d = true;
-                break;
-            case 32:
-                this.fire();
-                break;                                           
-        }
+        console.log('keyCode:' + e.keyCode);
     }
 
     keyUp(e){
-        switch(e.keyCode){
-            case 87:
-                this.keys.w = false;
-                if (!this.keys.s) this.move.up = 0;
-                break;
-            case 65:
-                this.keys.a = false;
-                if (!this.keys.d) this.move.right = 0;
-                break;
-            case 83:
-                this.keys.s = false;
-                if (!this.keys.w) this.move.up = 0;
-                break;
-            case 68:
-                this.keys.d = false;
-                if (!this.keys.a) this.move.right = 0;
-                break;                             
-        }
+
     }
 
     mouseDown(e){
-        this.keys.mousedown = true;
-        this.keys.mouseorigin.x = e.offsetX;
-        this.keys.mouseorigin.y = e.offsetY;
+
     }
 
     mouseUp(e){
-        this.keys.mousedown = false;
-        this.look.up = 0;
-        this.look.right = 0;
+
     }
 
     mouseMove(e){
-        if (!this.keys.mousedown) return;
-        let offsetX = e.offsetX - this.keys.mouseorigin.x;
-        let offsetY = e.offsetY - this.keys.mouseorigin.y;
-        if (offsetX<-100) offsetX = -100;
-        if (offsetX>100) offsetX = 100;
-        offsetX /= 100;
-        if (offsetY<-100) offsetY = -100;
-        if (offsetY>100) offsetY = 100;
-        offsetY /= 100;
-        this.onLook(-offsetY, offsetX);
+
     }
 
     fire(){
@@ -192,7 +137,7 @@ class Controller{
         this.look.right = -right;
     }
 
-    gamepadHandler(){
+    readGamepad(){
         const gamepads = navigator.getGamepads();
         const gamepad = gamepads[this.gamepad.index];
         const leftStickX = gamepad.axes[0];
@@ -205,26 +150,11 @@ class Controller{
         if (fire) this.fire();
     }
 
-    keyHandler(){
-        if (this.keys.w) this.move.up += 0.1;
-        if (this.keys.s) this.move.up -= 0.1;
-        if (this.keys.a) this.move.right += 0.1;
-        if (this.keys.d) this.move.right -= 0.1;
-        if (this.move.up>1) this.move.up = 1;
-        if (this.move.up<-1) this.move.up = -1;
-        if (this.move.right>1) this.move.right = 1;
-        if (this.move.right<-1) this.move.right = -1;
-    }
-
     update(dt=0.0167){   
         let playerMoved = false;
         let speed;
 
-        if (this.gamepad){
-            this.gamepadHandler();
-        }else if(this.keys){
-            this.keyHandler();
-        }
+        if (this.gamepad) this.readGamepad();
 
         if (this.move.up!=0){
             const forward = this.forward.clone().applyQuaternion(this.target.quaternion);
@@ -271,13 +201,19 @@ class Controller{
                 this.user.action = 'walk';
             }
         }else{
-            if (this.user !== undefined) this.user.action = 'idle';
+            this.user.action = 'idle';
         }
 
         if (this.look.up==0 && this.look.right==0){
             let lerpSpeed = 0.7;
             this.cameraBase.getWorldPosition(this.tmpVec3);
-            this.cameraBase.getWorldQuaternion(this.tmpQuat);
+            if (this.game.seeUser(this.tmpVec3, true)){
+                this.cameraBase.getWorldQuaternion(this.tmpQuat);
+                //lerpSpeed = 0.03;
+            }else{
+                this.cameraHigh.getWorldPosition(this.tmpVec3);
+                this.cameraHigh.getWorldQuaternion(this.tmpQuat);
+            }
             this.camera.position.lerp(this.tmpVec3, lerpSpeed);
             this.camera.quaternion.slerp(this.tmpQuat, lerpSpeed);
         }else{

@@ -56,8 +56,51 @@ class Game{
         this.setEnvironment();
 		
 		this.load();
+
+		this.raycaster = new THREE.Raycaster();
+		this.tmpVec = new THREE.Vector3();
 		
 		window.addEventListener( 'resize', this.resize.bind(this) );
+	}
+
+	seeUser(pos, seethrough=false){
+		if (this.seethrough){
+			this.seethrough.forEach( child => {
+				child.material.transparent = false;
+				child.material.opacity = 1;
+				//child.visible = true;
+			});
+			delete this.seethrough;
+		}
+
+		this.tmpVec.copy(this.user.position).sub(pos).normalize();
+		this.raycaster.set(pos, this.tmpVec);
+
+		const intersects = this.raycaster.intersectObjects(this.factory.children, true);
+		let userVisible = true;
+
+		if (intersects.length>0){
+			const dist = this.tmpVec.copy(this.user.position).distanceTo(pos);
+			
+			if (seethrough){
+				this.seethrough = [];
+				intersects.some( intersect => {
+					if (intersect.distance < dist){
+						this.seethrough.push(intersect.object);
+						//intersect.object.visible = false;
+						intersect.object.material.transparent = true;
+						intersect.object.material.opacity = 0.3;
+					}else{
+						return true;
+					}
+				})
+			}else{
+				userVisible = (intersects[0].distance > dist);
+			}
+			
+		}
+
+		return userVisible;
 	}
 
 	initPathfinding(navmesh){
@@ -135,8 +178,6 @@ class Game{
 							this.navmesh.geometry.rotateX( Math.PI/2 );
 							this.navmesh.quaternion.identity();
 							this.navmesh.position.set(0,0,0);
-							//child.material.transparent = true;
-							//child.material.opacity = 0.3;
 							child.material.visible = false;
 						}else if (child.name.includes('fan')){
 							this.fans.push( child );
@@ -211,10 +252,8 @@ class Game{
         }
 
 		if (this.npcHandler !== undefined ) this.npcHandler.update(dt);
-		if (this.user !== undefined && this.user.ready ){
-			this.user.update(dt);
-			if (this.controller !== undefined) this.controller.update(dt);
-		}
+		if (this.user !== undefined ) this.user.update(dt);
+		if (this.controller !== undefined) this.controller.update(dt);
 
         this.renderer.render( this.scene, this.camera );
 

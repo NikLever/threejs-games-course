@@ -1,7 +1,6 @@
 import { Group, 
          Object3D,
          Vector3,
-		 LoopOnce,
          Quaternion,
          Raycaster,
          AnimationMixer, 
@@ -28,7 +27,10 @@ class User{
 
         this.load();
 
-        this.initMouseHandler();
+        this.tmpVec = new Vector3();
+        this.tmpQuat = new Quaternion();
+
+        //this.initMouseHandler();
 		this.initRifleDirection();
     }
 
@@ -65,6 +67,13 @@ class User{
 				console.log(pt);
 
 				self.root.position.copy(pt);
+
+                self.root.remove( self.dolly )
+
+                self.dolly.position.copy( self.game.camera.position );
+                self.dolly.quaternion.copy( self.game.camera.quaternion );
+
+                self.root.attach(self.dolly);
 			}	
 		}
     }
@@ -72,6 +81,10 @@ class User{
     set position(pos){
         this.root.position.copy( pos );
     }
+
+	get position(){
+		return this.root.position;
+	}
 
     addSphere(){
         const geometry = new SphereGeometry( 0.1, 8, 8 );
@@ -89,11 +102,12 @@ class User{
         // Load a glTF resource
 		loader.load(
 			// resource URL
-			'eve2.glb',
+			'eve.glb',
 			// called when the resource is loaded
 			gltf => {
 				this.root.add( gltf.scene );
                 this.object = gltf.scene;
+				this.object.frustumCulled = false;
 
                 const scale = 1.2;
                 this.object.scale.set(scale, scale, scale);
@@ -101,7 +115,6 @@ class User{
                 this.object.traverse( child => {
                     if ( child.isMesh){
                         child.castShadow = true;
-						if (child.name.includes('Rifle')) this.rifle = child;
                     }
                 });
 
@@ -114,8 +127,6 @@ class User{
                 this.mixer = new AnimationMixer(gltf.scene);
             
                 this.action = 'idle';
-
-				this.ready = true;
     		},
 			// called while loading is progressing
 			xhr => {
@@ -129,15 +140,17 @@ class User{
 	}
 
     set action(name){
-		if (this.actionName == name.toLowerCase()) return;
-				
+		if (this.actionName == name.toLowerCase()) return;    
+		
+		//console.log(`User action:${name}`);
+		
 		const clip = this.animations[name.toLowerCase()];
 
 		if (clip!==undefined){
 			const action = this.mixer.clipAction( clip );
 			if (name=='shot'){
 				action.clampWhenFinished = true;
-				action.setLoop( LoopOnce );
+				action.setLoop( THREE.LoopOnce );
 			}
 			action.reset();
 			const nofade = this.actionName == 'shot';
@@ -151,18 +164,18 @@ class User{
 				}
 			}
 			this.curAction = action;
-			if (this.rifle && this.rifleDirection){
-				const q = this.rifleDirection[name.toLowerCase()];
-				if (q!==undefined){
-					const start = new Quaternion();
-					start.copy(this.rifle.quaternion);
-					this.rifle.quaternion.copy(q);
-					this.rifle.rotateX(1.57);
-					const end = new Quaternion();
-					end.copy(this.rifle.quaternion);
-					this.rotateRifle = { start, end, time:0 };
-					this.rifle.quaternion.copy( start );
-				}
+		}
+		if (this.rifle && this.rifleDirection){
+			const q = this.rifleDirection[name.toLowerCase()];
+			if (q!==undefined){
+				const start = new Quaternion();
+				start.copy(this.rifle.quaternion);
+				this.rifle.quaternion.copy(q);
+				this.rifle.rotateX(1.57);
+				const end = new Quaternion();
+				end.copy(this.rifle.quaternion);
+				this.rotateRifle = { start, end, time:0 };
+				this.rifle.quaternion.copy( start );
 			}
 		}
 	}
