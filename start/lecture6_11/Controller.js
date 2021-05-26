@@ -25,12 +25,6 @@ class Controller{
         this.cameraBase.quaternion.copy( this.camera.quaternion );
         this.target.attach( this.cameraBase );
 
-        this.cameraHigh = new Camera();
-        this.cameraHigh.position.copy( this.camera.position );
-        this.cameraHigh.position.y += 10;
-        this.cameraHigh.lookAt( this.target.position );
-        this.target.attach( this.cameraHigh );
-
         this.yAxis = new Vector3(0, 1, 0);
         this.xAxis = new Vector3(1, 0, 0);
         this.forward = new Vector3(0, 0, 1);
@@ -277,12 +271,7 @@ class Controller{
         if (this.look.up==0 && this.look.right==0){
             let lerpSpeed = 0.7;
             this.cameraBase.getWorldPosition(this.tmpVec3);
-            if (this.game.seeUser(this.tmpVec3, true)){
-                this.cameraBase.getWorldQuaternion(this.tmpQuat);
-            }else{
-                this.cameraHigh.getWorldPosition(this.tmpVec3);
-                this.cameraHigh.getWorldQuaternion(this.tmpQuat);
-            }
+            this.cameraBase.getWorldQuaternion(this.tmpQuat);
             this.camera.position.lerp(this.tmpVec3, lerpSpeed);
             this.camera.quaternion.slerp(this.tmpQuat, lerpSpeed);
         }else{

@@ -43,15 +43,15 @@ class Controller{
         if('ontouchstart' in document.documentElement){
             this.initOnscreenController();
         }else{
-            this.initKeyControl();
+            this.initKeyboardControl();
         }
     }
 
     initOnscreenController(){
-        
+
     }
 
-    initKeyControl(){
+    initKeyboardControl(){
         document.addEventListener('keydown', this.keyDown.bind(this));
         document.addEventListener('keyup', this.keyUp.bind(this));
         document.addEventListener('mousedown', this.mouseDown.bind(this));
@@ -68,7 +68,7 @@ class Controller{
     }
 
     checkForGamepad(){
-       
+        
     }
 
     showTouchController(mode){
