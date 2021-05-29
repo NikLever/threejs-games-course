@@ -22,6 +22,7 @@ class Game{
         
 		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 500 );
 		this.camera.position.set( -10.6, 1.6, -1.46 );
+		//this.camera.position.set( -10.6, 1.6, -0.46 );
 		this.camera.rotation.y = -Math.PI*0.5;
 
 		let col = 0x201510;
@@ -152,7 +153,6 @@ class Game{
         this.loadEnvironment();
 		this.npcHandler = new NPCHandler(this);
 		this.user = new User(this, new THREE.Vector3( -5.97, 0.021, -1.49), 1.57);
-		this.bulletHandler = new BulletHandler(this);
     }
 
     loadEnvironment(){
@@ -241,7 +241,10 @@ class Game{
 	}			
     
 	startRendering(){
-		this.renderer.setAnimationLoop( this.render.bind(this) );
+		if (this.npcHandler.ready && this.user.ready && this.bulletHandler == undefined){
+			this.bulletHandler = new BulletHandler(this);
+			this.renderer.setAnimationLoop( this.render.bind(this) );
+		}
 	}
 
 	render() {

@@ -59,7 +59,8 @@ class Controller{
 
             const fireBtn = document.createElement("div");
             fireBtn.style.cssText = "position:absolute; bottom:55px; width:40px; height:40px; background:#FFFFFF; border:#444 solid medium; border-radius:50%; left:50%; transform:translateX(-50%);";
-            fireBtn.addEventListener('click', this.fire.bind(this));
+            fireBtn.addEventListener('mousedown', this.fire.bind(this, true));
+            fireBtn.addEventListener('mouseup', this.fire.bind(this, false));
             document.body.appendChild(fireBtn);
 
             this.touchController = { joystick1, joystick2, fireBtn };
@@ -74,6 +75,7 @@ class Controller{
                             a:false, 
                             d:false, 
                             s:false, 
+                            space:false,
                             mousedown:false, 
                             mouseorigin:{x:0, y:0}
                         };
@@ -112,7 +114,11 @@ class Controller{
     }
 
     keyDown(e){
-        //console.log('keyCode:' + e.keyCode);
+        console.log('keyCode:' + e.keyCode);
+        let repeat = false;
+        if (e.repeat !== undefined) {
+            repeat = e.repeat;
+        }
         switch(e.keyCode){
             case 87:
                 this.keys.w = true;
@@ -127,7 +133,7 @@ class Controller{
                 this.keys.d = true;
                 break;
             case 32:
-                this.fire();
+                if (!repeat) this.fire(true);
                 break;                                           
         }
     }
@@ -149,7 +155,10 @@ class Controller{
             case 68:
                 this.keys.d = false;
                 if (!this.keys.a) this.move.right = 0;
-                break;                             
+                break;   
+            case 32:
+                this.fire(false);
+                break;                          
         }
     }
 
@@ -178,8 +187,9 @@ class Controller{
         this.onLook(-offsetY, offsetX);
     }
 
-    fire(){
-        console.log("Fire");
+    fire(mode){
+        console.log(`Fire:${mode}`);
+        this.user.firing = mode;
     }
 
     onMove( up, right ){
@@ -202,7 +212,7 @@ class Controller{
         const fire = gamepad.buttons[7].pressed;
         this.onMove(-leftStickY, leftStickX);
         this.onLook(-rightStickY, rightStickX);
-        if (fire) this.fire();
+        this.fire(fire);
     }
 
     keyHandler(){
@@ -230,6 +240,8 @@ class Controller{
             const forward = this.forward.clone().applyQuaternion(this.target.quaternion);
             speed = this.move.up>0 ? this.speed * dt : this.speed * dt * 0.3;
             speed *= this.move.up;
+            if (this.user.isFiring && speed>0.03) speed = 0.02; 
+            this.user.speed = speed;
             const pos = this.target.position.clone().add(forward.multiplyScalar(speed));
             pos.y += 2;
             //console.log(`Moving>> target rotation:${this.target.rotation} forward:${forward} pos:${pos}`);
@@ -268,10 +280,10 @@ class Controller{
             if (run){
                 this.user.action = 'run';    
             }else{
-                this.user.action = 'walk';
+                this.user.action = (this.user.isFiring) ? 'firingwalk' : 'walk';
             }
         }else{
-            if (this.user !== undefined) this.user.action = 'idle';
+            if (this.user !== undefined && !this.user.isFiring) this.user.action = 'idle';
         }
 
         if (this.look.up==0 && this.look.right==0){

@@ -141,6 +141,8 @@ class NPC{
 			if (name=='shot'){
 				action.clampWhenFinished = true;
 				action.setLoop( THREE.LoopOnce );
+				this.dead = true;
+				delete this.calculatedPath;
 			}
 			action.reset();
 			const nofade = this.actionName == 'shot';

@@ -6,7 +6,10 @@ import { Group,
          AnimationMixer, 
          SphereGeometry, 
          MeshBasicMaterial, 
-         Mesh } from '../../libs/three128/three.module.js';
+         Mesh,
+		 BufferGeometry,
+		 Line
+		} from '../../libs/three128/three.module.js';
 import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 import { DRACOLoader } from '../../libs/three128/DRACOLoader.js';
 
@@ -30,6 +33,9 @@ class User{
         this.tmpVec = new Vector3();
         this.tmpQuat = new Quaternion();
 
+		this.speed = 0;
+
+		this.ready = false;
         //this.initMouseHandler();
 		this.initRifleDirection();
     }
@@ -86,11 +92,32 @@ class User{
 		return this.root.position;
 	}
 
+	set firing(mode){
+		this.aim.visible = mode;
+		this.isFiring = mode;
+		if (mode){
+			this.action = ( Math.abs(this.speed) == 0 ) ? "firing" : "firingwalk";
+			this.shoot();
+		}else{
+			this.action = 'idle';
+		}
+	}
+
+	shoot(){
+		if (this.bulletHandler === undefined) this.bulletHandler = this.game.bulletHandler;
+		this.aim.getWorldPosition(this.tmpVec);
+		this.aim.getWorldQuaternion(this.tmpQuat);
+		this.bulletHandler.createBullet( this.tmpVec, this.tmpQuat );
+		this.bulletTime = this.game.clock.getElapsedTime();
+	}
+
     addSphere(){
         const geometry = new SphereGeometry( 0.1, 8, 8 );
         const material = new MeshBasicMaterial( { color: 0xFF0000 });
         const mesh = new Mesh( geometry, material );
-        this.root.add(mesh);
+        this.game.scene.add(mesh);
+		this.hitPoint = mesh;
+		this.hitPoint.visible = false;
     }
 
     load(){
@@ -102,7 +129,7 @@ class User{
         // Load a glTF resource
 		loader.load(
 			// resource URL
-			'eve.glb',
+			'eve2.glb',
 			// called when the resource is loaded
 			gltf => {
 				this.root.add( gltf.scene );
@@ -115,8 +142,24 @@ class User{
                 this.object.traverse( child => {
                     if ( child.isMesh){
                         child.castShadow = true;
+						if (child.name.includes('Rifle')) this.rifle = child;
                     }
                 });
+
+				if (this.rifle){
+					const geometry = new BufferGeometry().setFromPoints( [ new Vector3( 0, 0, 0 ), new Vector3( 0, 0, 1 ) ] );
+
+        			const line = new Line( geometry );
+        			line.name = 'aim';
+					line.scale.z = 20;
+
+					this.root.add(line);
+					line.position.set(0, 1.4, 0.5);
+					line.rotateY(0.2);
+					this.aim = line;
+
+					//this.addSphere();
+				}
 
                 this.animations = {};
 
@@ -127,6 +170,10 @@ class User{
                 this.mixer = new AnimationMixer(gltf.scene);
             
                 this.action = 'idle';
+
+				this.ready = true;
+
+				this.game.startRendering();
     		},
 			// called while loading is progressing
 			xhr => {
@@ -142,7 +189,7 @@ class User{
     set action(name){
 		if (this.actionName == name.toLowerCase()) return;    
 		
-		//console.log(`User action:${name}`);
+		console.log(`User action:${name}`);
 		
 		const clip = this.animations[name.toLowerCase()];
 
@@ -190,6 +237,10 @@ class User{
 			}else{
 				this.rifle.quaternion.slerpQuaternions(this.rotateRifle.start, this.rotateRifle.end, this.rotateRifle.time * 2);
 			}
+		}
+		if (this.isFiring){
+			const elapsedTime = this.game.clock.getElapsedTime() - this.bulletTime;
+			if (elapsedTime > 0.6) this.shoot(); 
 		}
     }
 }

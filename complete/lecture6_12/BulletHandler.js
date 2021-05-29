@@ -1,10 +1,17 @@
-import { Mesh, CylinderGeometry, MeshBasicMaterial, Raycaster, Vector3 } from '../../libs/three128/three.module.js';
+import { 
+        Mesh, 
+        CylinderGeometry, 
+        MeshBasicMaterial, 
+        Raycaster, 
+        Vector3, 
+        Quaternion
+    } from '../../libs/three128/three.module.js';
 
 class BulletHandler{
     constructor(game){
         this.game = game;
         this.scene = game.scene;
-        const geometry = new CylinderGeometry(0.005, 0.005, 0.03);
+        const geometry = new CylinderGeometry(0.01, 0.01, 0.08);
         geometry.rotateX( Math.PI/2 );
         const material = new MeshBasicMaterial();
         this.bullet = new Mesh(geometry, material);
@@ -32,25 +39,30 @@ class BulletHandler{
             }
         }); 
 
-        this.rayCaster = new Raycaster();
-        this.forward = new Vector3( 0, 0, 1 );
+        this.raycaster = new Raycaster();
+        this.forward = new Vector3( 0, 0, -1 );
+        this.xAxis = new Vector3( 1, 0, 0 );
+        this.tmpQuat = new Quaternion();
     }
 
     createBullet( pos, quat, user=false){
         const bullet = this.bullet.clone();
         bullet.position.copy(pos);
         bullet.quaternion.copy(quat);
+        //bullet.rotateY(0.2);
         bullet.userData.targetType = (user) ? 1 : 2;
         bullet.userData.distance = 0;
         this.scene.add(bullet);
+        this.bullets.push(bullet);
     }
 
     update(dt){
         this.bullets.forEach( bullet => {
-            const dir = this.forward.clone().applyQuaternion( bullet.quaternion );
+            bullet.getWorldQuaternion( this.tmpQuat );
+            const dir = this.forward.clone().applyQuaternion( this.tmpQuat );
             this.raycaster.set(bullet.position, dir);
 
-            const dist = dt * 5;
+            const dist = dt * 15;
             let intersects;
 
             if (bullet.userData.targetType==1){
@@ -63,11 +75,11 @@ class BulletHandler{
                 if (intersects[0].distance<dist){
                     intersects[0].object.userData.controller.action = 'shot';
                     bullet.userData.remove = true;
-                }else{
-                    bullet.translateZ(dist);
-                    bullet.userData.distance += dist;
-                    bullet.userData.remove = (bullet.userData.distance > 50);
                 }
+            }else{
+                bullet.translateZ(dist);
+                bullet.userData.distance += dist;
+                bullet.userData.remove = (bullet.userData.distance > 50);
             }
         });
 
@@ -88,3 +100,5 @@ class BulletHandler{
         }while(found);
     }
 }
+
+export { BulletHandler };
