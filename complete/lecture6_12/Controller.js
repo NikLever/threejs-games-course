@@ -114,7 +114,7 @@ class Controller{
     }
 
     keyDown(e){
-        console.log('keyCode:' + e.keyCode);
+        //console.log('keyCode:' + e.keyCode);
         let repeat = false;
         if (e.repeat !== undefined) {
             repeat = e.repeat;
@@ -188,7 +188,7 @@ class Controller{
     }
 
     fire(mode){
-        console.log(`Fire:${mode}`);
+        //console.log(`Fire:${mode}`);
         this.user.firing = mode;
     }
 

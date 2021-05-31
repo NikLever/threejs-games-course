@@ -97,7 +97,7 @@ class User{
 		this.isFiring = mode;
 		if (mode){
 			this.action = ( Math.abs(this.speed) == 0 ) ? "firing" : "firingwalk";
-			this.shoot();
+			this.bulletTime = this.game.clock.getElapsedTime();
 		}else{
 			this.action = 'idle';
 		}
@@ -147,18 +147,15 @@ class User{
                 });
 
 				if (this.rifle){
-					const geometry = new BufferGeometry().setFromPoints( [ new Vector3( 0, 0, 0 ), new Vector3( 0, 0, 1 ) ] );
+					const geometry = new BufferGeometry().setFromPoints( [ new Vector3( 0, 0, 0 ), new Vector3( 1, 0, 0 ) ] );
 
         			const line = new Line( geometry );
         			line.name = 'aim';
-					line.scale.z = 20;
+					line.scale.x = 50;
 
-					this.root.add(line);
-					line.position.set(0, 1.4, 0.5);
-					line.rotateY(0.2);
+					this.rifle.add(line);
+					line.position.set(0, 0, 0.5);
 					this.aim = line;
-
-					//this.addSphere();
 				}
 
                 this.animations = {};
@@ -189,7 +186,7 @@ class User{
     set action(name){
 		if (this.actionName == name.toLowerCase()) return;    
 		
-		console.log(`User action:${name}`);
+		//console.log(`User action:${name}`);
 		
 		const clip = this.animations[name.toLowerCase()];
 

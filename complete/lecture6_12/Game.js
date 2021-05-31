@@ -21,9 +21,9 @@ class Game{
 		this.assetsPath = '../../assets/';
         
 		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 500 );
-		this.camera.position.set( -10.6, 1.6, -1.46 );
-		//this.camera.position.set( -10.6, 1.6, -0.46 );
-		this.camera.rotation.y = -Math.PI*0.5;
+		//this.camera.position.set( -10.6, 1.6, -1.46 );
+		this.camera.position.set( -10.6, 1.6, -3.5 );
+		this.camera.rotation.y = -Math.PI*0.6;
 
 		let col = 0x201510;
 		this.scene = new THREE.Scene();

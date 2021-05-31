@@ -159,6 +159,10 @@ class NPC{
 		}
 	}
 	
+	get position(){
+		return this.object.position;
+	}
+
 	update(dt){
 		const speed = this.speed;
 		const player = this.object;
