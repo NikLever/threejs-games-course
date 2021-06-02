@@ -34,8 +34,10 @@ class User{
         this.tmpQuat = new Quaternion();
 
 		this.speed = 0;
+		this.isFiring = false;
 
 		this.ready = false;
+
         //this.initMouseHandler();
 		this.initRifleDirection();
     }
@@ -93,7 +95,6 @@ class User{
 	}
 
 	set firing(mode){
-		this.aim.visible = mode;
 		this.isFiring = mode;
 		if (mode){
 			this.action = ( Math.abs(this.speed) == 0 ) ? "firing" : "firingwalk";
@@ -156,6 +157,7 @@ class User{
 					this.rifle.add(line);
 					line.position.set(0, 0, 0.5);
 					this.aim = line;
+					line.visible = false;
 				}
 
                 this.animations = {};

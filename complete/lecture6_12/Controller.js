@@ -24,6 +24,7 @@ class Controller{
         this.cameraBase.position.copy( this.camera.position );
         this.cameraBase.quaternion.copy( this.camera.quaternion );
         this.target.attach( this.cameraBase );
+        this.target.rotateY(0.7);
 
         this.cameraHigh = new Camera();
         this.cameraHigh.position.copy( this.camera.position );
@@ -241,7 +242,6 @@ class Controller{
             speed = this.move.up>0 ? this.speed * dt : this.speed * dt * 0.3;
             speed *= this.move.up;
             if (this.user.isFiring && speed>0.03) speed = 0.02; 
-            this.user.speed = speed;
             const pos = this.target.position.clone().add(forward.multiplyScalar(speed));
             pos.y += 2;
             //console.log(`Moving>> target rotation:${this.target.rotation} forward:${forward} pos:${pos}`);
@@ -254,7 +254,11 @@ class Controller{
                 this.target.position.copy(intersects[0].point);
                 playerMoved = true;
             }
-        } 
+        }else{
+            speed = 0;
+        }
+
+        this.user.speed = speed;
         
         if (Math.abs(this.move.right)>0.1){
             const theta = dt * (this.move.right-0.1) * 1;

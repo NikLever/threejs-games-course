@@ -217,10 +217,6 @@ class Game{
 					});
 				}
 
-				this.controller = new Controller(this);
-
-                this.renderer.setAnimationLoop( this.render.bind(this) );
-
 				this.initPathfinding(this.navmesh);
 
 				this.loadingBar.visible = !this.loadingBar.loaded;
@@ -242,6 +238,7 @@ class Game{
     
 	startRendering(){
 		if (this.npcHandler.ready && this.user.ready && this.bulletHandler == undefined){
+			this.controller = new Controller(this);
 			this.bulletHandler = new BulletHandler(this);
 			this.renderer.setAnimationLoop( this.render.bind(this) );
 		}
