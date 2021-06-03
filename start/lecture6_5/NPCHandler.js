@@ -14,7 +14,7 @@ class NPCHandler{
 
 	initMouseHandler(){
 		const raycaster = new Raycaster();
-    	game.renderer.domElement.addEventListener( 'click', raycast, false );
+    	this.game.renderer.domElement.addEventListener( 'click', raycast, false );
 			
     	const self = this;
     	const mouse = { x:0, y:0 };
