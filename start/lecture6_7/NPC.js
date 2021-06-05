@@ -42,23 +42,23 @@ class NPC{
             })
         }
 	}
-
-    get randomWaypoint(){
-		const index = Math.floor(Math.random()*this.waypoints.length);
-		return this.waypoints[index];
-	}
 	
+	setTargetDirection(pt){
+		const player = this.object;
+		pt.y = player.position.y;
+		const quaternion = player.quaternion.clone();
+		player.lookAt(pt);
+		this.quaternion = player.quaternion.clone();
+		player.quaternion.copy(quaternion);
+	}
+
 	newPath(pt){
         const player = this.object;
         
         if (this.pathfinder===undefined){
             this.calculatedPath = [ pt.clone() ];
             //Calculate target direction
-            pt.y = player.position.y;
-            const quaternion = player.quaternion.clone();
-            player.lookAt(pt);
-            this.quaternion = player.quaternion.clone();
-            player.quaternion.copy(quaternion); 
+            this.setTargetDirection( pt.clone() );
             this.action = 'walking';
             return;
         }
@@ -74,44 +74,9 @@ class NPC{
 		if (this.calculatedPath && this.calculatedPath.length) {
 			this.action = 'walking';
 			
-			const pt = this.calculatedPath[0].clone();
-			pt.y = player.position.y;
-			const quaternion = player.quaternion.clone();
-			player.lookAt(pt);
-			this.quaternion = player.quaternion.clone();
-			player.quaternion.copy(quaternion);
+			this.setTargetDirection( this.calculatedPath[0].clone() );
 			
-			if (this.showPath){
-				if (this.pathLines) this.app.scene.remove(this.pathLines);
-
-				const material = new THREE.LineBasicMaterial({
-					color: this.pathColor,
-					linewidth: 2
-				});
-
-				const points = [player.position];
-				
-				// Draw debug lines
-				this.calculatedPath.forEach( function(vertex){
-					points.push(vertex.clone());
-				});
-
-				let geometry = new THREE.BufferGeometry().setFromPoints( points );
-
-				this.pathLines = new THREE.Line( geometry, material );
-				this.app.scene.add( this.pathLines );
-
-				// Draw debug spheres except the last one. Also, add the player position.
-				const debugPath = [player.position].concat(this.calculatedPath);
-
-				debugPath.forEach(vertex => {
-					geometry = new THREE.SphereGeometry( 0.2 );
-					const material = new THREE.MeshBasicMaterial( {color: this.pathColor} );
-					const node = new THREE.Mesh( geometry, material );
-					node.position.copy(vertex);
-					this.pathLines.add( node );
-				});
-			}
+			if (this.showPath) this.initPathlines(player);
 		} else {
 			this.action = 'idle';
 			
@@ -131,6 +96,38 @@ class NPC{
 		}
 	}
 	
+	initPathlines(player = this.object){
+		if (this.pathLines) this.app.scene.remove(this.pathLines);
+
+		const material = new THREE.LineBasicMaterial({
+			color: this.pathColor,
+			linewidth: 2
+		});
+
+		const points = [player.position];
+		
+		// Draw debug lines
+		this.calculatedPath.forEach( function(vertex){
+			points.push(vertex.clone());
+		});
+
+		let geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+		this.pathLines = new THREE.Line( geometry, material );
+		this.app.scene.add( this.pathLines );
+
+		// Draw debug spheres except the last one. Also, add the player position.
+		const debugPath = [player.position].concat(this.calculatedPath);
+
+		debugPath.forEach(vertex => {
+			geometry = new THREE.SphereGeometry( 0.2 );
+			const material = new THREE.MeshBasicMaterial( {color: this.pathColor} );
+			const node = new THREE.Mesh( geometry, material );
+			node.position.copy(vertex);
+			this.pathLines.add( node );
+		});
+	}
+
 	set action(name){
 		if (this.actionName == name.toLowerCase()) return;
 				
@@ -189,12 +186,7 @@ class NPC{
                     player.position.copy( targetPosition );
                     this.action = 'idle';
                 }else{
-                    const pt = this.calculatedPath[0].clone();
-                    pt.y = player.position.y;
-                    const quaternion = player.quaternion.clone();
-                    player.lookAt(pt);
-                    this.quaternion = player.quaternion.clone();
-                    player.quaternion.copy(quaternion); 
+                    this.setTargetDirection( this.calculatedPath[0].clone() );
                 }
             }
         }else{
