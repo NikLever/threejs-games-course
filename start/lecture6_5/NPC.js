@@ -179,7 +179,7 @@ class NPC{
                 player.position.add(vel.multiplyScalar(dt * speed));
                 //Get distance after moving, if greater then we've overshot and this leg is complete
                 const newDistanceSq = player.position.distanceToSquared(targetPosition);
-                pathLegComplete = (newDistanceSq > prevDistanceSq);
+                pathLegComplete = newDistanceSq > prevDistanceSq; 
             } 
             
             if (pathLegComplete){

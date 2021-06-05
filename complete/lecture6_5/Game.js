@@ -19,7 +19,7 @@ class Game{
         
 		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 500 );
 
-		this.camera.position.set( 0, 60, 20 );
+		this.camera.position.set( 0, 40, 20 );
         this.camera.lookAt(0, 0, -10);
 		
 		let col = 0x201510;
