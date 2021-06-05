@@ -37,6 +37,12 @@ class NPCHandler{
 		}
     }
 
+	reset(){
+		this.npcs.forEach( npc => {
+			npc.reset();
+		})
+	}
+
     load(){
         const loader = new GLTFLoader( ).setPath(`${this.game.assetsPath}factory/`);
 		const dracoLoader = new DRACOLoader();

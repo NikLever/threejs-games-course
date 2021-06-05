@@ -74,6 +74,14 @@
           left: 50%;
           transform: translateX(-50%);
       }
+
+      #gameover{
+          position:absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: none;
+      }
   </style>
 
   <title>Lecture 6.13</title>
@@ -94,12 +102,12 @@
                 <img src='../../assets/factory/ammo.svg' alt='ammo-icon'>
             </div>
             <div class="progressBase">
-                <div class="progressBar"></div>
+                <div class="progressBar" name="ammoBar"></div>
               </div>
         </div>
         <div id='health'>
             <div class="progressBase">
-                <div class="progressBar"></div>
+                <div class="progressBar" name="healthBar"></div>
             </div>
             <div class='icon'>
                 <img src='../../assets/factory/health.svg' alt='health-icon'>
@@ -107,6 +115,9 @@
         </div>
         <div id='playBtn'>
             <img src='../../assets/factory/playgame.png' alt='play game'>
+        </div>
+        <div id='gameover'>
+            <img src='../../assets/factory/gameover.png' alt='gameover'>
         </div>
     </div>
 </body>

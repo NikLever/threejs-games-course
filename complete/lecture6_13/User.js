@@ -19,6 +19,8 @@ class User{
         this.root.position.copy( pos );
         this.root.rotation.set( 0, heading, 0, 'XYZ' );
 
+		this.startInfo = { pos: pos.clone(), heading };
+
         this.game = game;
 
         this.camera = game.camera;
@@ -85,6 +87,17 @@ class User{
 			}	
 		}
     }
+
+	reset(){
+		this.position = this.startInfo.pos;
+		this.root.rotation.set(0, this.startInfo.heading, 0, 'XYZ');
+		this.root.rotateY(0.7);
+		this.ammo = 100;
+		this.health = 100;
+		this.action = 'idle';
+		this.speed = 0;
+		this.isFiring = false;
+	}
 
     set position(pos){
         this.root.position.copy( pos );

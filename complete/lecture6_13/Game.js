@@ -6,7 +6,8 @@ import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Pathfinding } from '../../libs/pathfinding/Pathfinding.js';
 import { User } from './User.js';
 import { Controller } from './Controller.js';
-import {BulletHandler} from './BulletHandler.js';
+import { BulletHandler } from './BulletHandler.js';
+import { UI } from './UI.js';
 
 class Game{
 	constructor(){
@@ -61,8 +62,20 @@ class Game{
 
 		this.raycaster = new THREE.Raycaster();
 		this.tmpVec = new THREE.Vector3();
+
+		this.active = false;
 		
 		window.addEventListener( 'resize', this.resize.bind(this) );
+	}
+
+	startGame(){
+		this.user.reset();
+		this.npcHandler.reset();
+		this.ui.ammo = 1;
+		this.ui.health = 1;
+		this.active = true;
+		this.controller.cameraBase.getWorldPosition(this.camera.position);
+        this.controller.cameraBase.getWorldQuaternion(this.camera.quaternion);
 	}
 
 	seeUser(pos, seethrough=false){
@@ -153,6 +166,7 @@ class Game{
         this.loadEnvironment();
 		this.npcHandler = new NPCHandler(this);
 		this.user = new User(this, new THREE.Vector3( -5.97, 0.021, -1.49), 1.57);
+		this.ui = new UI(this);
     }
 
     loadEnvironment(){

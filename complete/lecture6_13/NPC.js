@@ -35,12 +35,23 @@ class NPC{
 		this.object.lookAt(pt);
         
         if (options.animations){
-            //Use this option to set multiple animations directly
             this.mixer = new THREE.AnimationMixer(options.object);
             options.animations.forEach( (animation) => {
                 this.animations[animation.name.toLowerCase()] = animation;
             })
         }
+	}
+
+	reset(){
+		this.dead = false;
+		this.object.position.copy(this.randomWaypoint);
+		let pt = this.randomWaypoint;
+		let count = 0;
+		while(this.object.position.distanceToSquared(pt)<1 && count<10){
+			pt = this.randomWaypoint;
+			count++;
+		}
+		this.newPath(pt);
 	}
 
     get randomWaypoint(){
