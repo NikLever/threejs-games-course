@@ -72,6 +72,8 @@ class NPCHandler{
     
 	initNPCs(gltf = this.gltf){
 		const gltfs = [gltf];
+		this.waypoints = this.game.waypoints;
+		this.npcs = [];
 		
 		gltfs.forEach(gltf => {
 			const object = gltf.scene;
@@ -95,6 +97,7 @@ class NPCHandler{
 			const npc = new NPC(options);
 
 			npc.object.position.set(-7.607, 0.017, -7.713);
+			npc.action = 'idle';
 			
 			this.npcs.push(npc);
 			
