@@ -8,7 +8,8 @@ import { Group,
          MeshBasicMaterial, 
          Mesh,
 		 BufferGeometry,
-		 Line
+		 Line,
+		 LoopOnce
 		} from '../../libs/three128/three.module.js';
 import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 import { DRACOLoader } from '../../libs/three128/DRACOLoader.js';
@@ -118,11 +119,14 @@ class User{
 	}
 
 	shoot(){
+		if (this.ammo<1) return;
 		if (this.bulletHandler === undefined) this.bulletHandler = this.game.bulletHandler;
 		this.aim.getWorldPosition(this.tmpVec);
 		this.aim.getWorldQuaternion(this.tmpQuat);
 		this.bulletHandler.createBullet( this.tmpVec, this.tmpQuat );
 		this.bulletTime = this.game.clock.getElapsedTime();
+		this.ammo--;
+		this.game.ui.ammo = Math.max(0, Math.min(this.ammo/100, 1));
 	}
 
     addSphere(){
@@ -202,14 +206,28 @@ class User{
 		if (this.actionName == name.toLowerCase()) return;    
 		
 		//console.log(`User action:${name}`);
-		
+		if (name == 'shot'){ 
+			this.health -= 25;
+			if (this.health>=0){
+				name = 'hit';
+				//Temporarily disable control
+				this.game.active = false;
+				setTimeout( () => this.game.active = true, 1000);
+			}
+			this.speed = 0;
+			this.game.tintScreen(name);
+			this.game.ui.health = Math.max(0, Math.min(this.health/100, 1)); 
+		}
+
 		const clip = this.animations[name.toLowerCase()];
 
 		if (clip!==undefined){
 			const action = this.mixer.clipAction( clip );
 			if (name=='shot'){
 				action.clampWhenFinished = true;
-				action.setLoop( THREE.LoopOnce );
+				action.setLoop( LoopOnce );
+				this.dead = true;
+				this.game.gameover();
 			}
 			action.reset();
 			const nofade = this.actionName == 'shot';

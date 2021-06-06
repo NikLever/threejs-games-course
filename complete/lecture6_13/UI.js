@@ -6,6 +6,14 @@ class UI{
         this.game = game;
     }
 
+    set visible(value){
+        const playBtn = document.getElementById('playBtn');
+        const ui = document.getElementById('ui');
+        const display = (value) ? 'block' : 'none';
+        playBtn.style.display = display;
+        ui.style.display = display;
+    }
+
     playBtnPressed(){
         const playBtn = document.getElementById('playBtn');
         playBtn.style.display = 'none';
