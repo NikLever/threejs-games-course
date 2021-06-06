@@ -13,6 +13,7 @@ import { RenderPass } from '../../libs/three128/pp/RenderPass.js';
 import { ShaderPass } from '../../libs/three128/pp/ShaderPass.js';
 import { GammaCorrectionShader } from '../../libs/three128/pp/GammaCorrectionShader.js';
 import { Tween } from '../../libs/Toon3D.js';
+import { SFX } from '../../libs/SFX.js';
 
 class Game{
 	constructor(){
@@ -134,6 +135,7 @@ class Game{
 		this.active = true;
 		this.controller.cameraBase.getWorldPosition(this.camera.position);
         this.controller.cameraBase.getWorldQuaternion(this.camera.quaternion);
+		this.sfx.play('atmos');
 	}
 
 	seeUser(pos, seethrough=false){
@@ -179,6 +181,7 @@ class Game{
 	gameover(){
 		this.active = false;
 		this.ui.showGameover();
+		this.sfx.stop('atmos');
 	}
 
 	initPathfinding(navmesh){
@@ -313,12 +316,22 @@ class Game{
 		);
 	}			
     
+	initSounds(){
+		this.listener = new THREE.AudioListener();
+        this.camera.add( this.listener );
+		this.sfx = new SFX(this.camera, `${this.assetsPath}factory/sfx/`, this.listener);
+		this.sfx.load('atmos', true, 0.1);
+		this.user.initSounds();
+		this.npcHandler.npcs.forEach( npc => npc.initSounds() );
+	}
+	
 	startRendering(){
 		if (this.npcHandler.ready && this.user.ready && this.bulletHandler == undefined){
 			this.controller = new Controller(this);
 			this.bulletHandler = new BulletHandler(this);
 			this.renderer.setAnimationLoop( this.render.bind(this) );
 			this.ui.visible = true;
+			this.initSounds();
 		}
 	}
 

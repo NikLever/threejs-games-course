@@ -1,9 +1,13 @@
 import { AudioListener, Audio, PositionalAudio, AudioLoader } from './three128/three.module.js';
 
 class SFX{
-    constructor(camera, assetsPath){
-        this.listener = new AudioListener();
-        camera.add( this.listener );
+    constructor(camera, assetsPath, listener){
+        if (listener==null){
+            this.listener = new AudioListener();
+            camera.add( this.listener );
+        }else{
+            this.listener = listener;
+        }
 
         this.assetsPath = assetsPath;
 
@@ -42,7 +46,7 @@ class SFX{
     play(name){
         const sound = this.sounds[name];
 
-        if (sound !== undefined) sound.play();
+        if (sound !== undefined && !sound.isPlaying) sound.play();
     }
 
     stop(name){

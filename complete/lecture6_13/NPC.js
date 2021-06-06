@@ -1,4 +1,5 @@
 import * as THREE from '../../libs/three128/three.module.js';
+import { SFX } from '../../libs/SFX.js';
 
 class NPC{
 	constructor(options){
@@ -42,6 +43,14 @@ class NPC{
         }
 	}
 
+	initSounds(){
+		const assetsPath = `${this.app.assetsPath}factory/sfx/`;
+		this.sfx = new SFX(this.app.camera, assetsPath, this.app.listener);
+		this.sfx.load('footsteps', true, 0.6, this.object);
+		this.sfx.load('groan', false, 0.6, this.object);
+		this.sfx.load('shot', false, 0.6, this.object);
+	}
+
 	reset(){
 		this.dead = false;
 		this.object.position.copy(this.randomWaypoint);
@@ -79,6 +88,7 @@ class NPC{
             return;
         }
         
+		if (this.sfx) this.sfx.play('footsteps');
 		//console.log(`New path to ${pt.x.toFixed(1)}, ${pt.y.toFixed(2)}, ${pt.z.toFixed(2)}`);	
 
 		const targetGroup = this.pathfinder.getGroup(this.ZONE, pt);
@@ -124,6 +134,8 @@ class NPC{
 				});
 			}
 		} else {
+			if (this.sfx) this.sfx.stop('footsteps');
+
 			this.action = 'idle';
 			
             if (this.pathfinder){
@@ -153,6 +165,10 @@ class NPC{
 				action.clampWhenFinished = true;
 				action.setLoop( THREE.LoopOnce );
 				this.dead = true;
+				if (this.sfx){
+					this.sfx.stop('footsteps');
+					this.sfx.play('groan');
+				}
 				delete this.calculatedPath;
 			}
 			action.reset();

@@ -13,6 +13,7 @@ import { Group,
 		} from '../../libs/three128/three.module.js';
 import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 import { DRACOLoader } from '../../libs/three128/DRACOLoader.js';
+import { SFX } from '../../libs/SFX.js';
 
 class User{
     constructor(game, pos, heading){
@@ -127,6 +128,7 @@ class User{
 		this.bulletTime = this.game.clock.getElapsedTime();
 		this.ammo--;
 		this.game.ui.ammo = Math.max(0, Math.min(this.ammo/100, 1));
+		this.sfx.play('shot');
 	}
 
     addSphere(){
@@ -202,8 +204,17 @@ class User{
 		);
 	}
 
+	initSounds(){
+		const assetsPath = `${this.game.assetsPath}factory/sfx/`;
+		this.sfx = new SFX(this.game.camera, assetsPath, this.game.listener);
+		this.sfx.load('footsteps', true, 0.8, this.object);
+		this.sfx.load('eve-groan', false, 0.8, this.object);
+		this.sfx.load('shot', false, 0.8, this.object);
+	}
+
     set action(name){
-		if (this.actionName == name.toLowerCase()) return;    
+		name = name.toLowerCase();
+		if (this.actionName == name) return;    
 		
 		//console.log(`User action:${name}`);
 		if (name == 'shot'){ 
@@ -214,9 +225,17 @@ class User{
 				this.game.active = false;
 				setTimeout( () => this.game.active = true, 1000);
 			}
-			this.speed = 0;
 			this.game.tintScreen(name);
 			this.game.ui.health = Math.max(0, Math.min(this.health/100, 1)); 
+			if (this.sfx) this.sfx.play('eve-groan');
+		}
+
+		if (this.sfx){
+			if (name=='walk' || name=='firingwalk' || name=='run'){
+				this.sfx.play('footsteps');
+			}else{
+				this.sfx.stop('footsteps');
+			}
 		}
 
 		const clip = this.animations[name.toLowerCase()];
