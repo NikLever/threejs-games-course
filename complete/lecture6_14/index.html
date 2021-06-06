@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!--favicon -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../css/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../css/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../css/favicon/favicon-16x16.png">
+  <link rel="manifest" href="../../css/favicon/site.webmanifest">
+  <link rel="mask-icon" href="../../css/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+    
+  <style>
+      body{
+          margin: 0;
+          background-color: #000;
+      }  
+
+      #ui{
+          position: absolute;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          padding: 10px;
+          display: none;
+      }
+
+      #ammo{
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          height: 40px;
+          width: 160px;
+          display: flex;
+          align-items: center;
+      }
+
+      #health{
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 160px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+      }
+
+      .icon{
+          width: 30px;
+          height: 30px;
+          padding: 10px;
+      }
+
+      .progressBase{
+          width: 100px;
+          height: 15px;
+          background-color: white;
+          border-radius: 10px;
+      }
+
+      .progressBar{
+          width: 100%;
+          height: 15px;
+          background-color: sienna;
+          border-radius: 10px;
+      }
+
+      #playBtn{
+          position:absolute;
+          bottom: 80px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: none;
+      }
+
+      #gameover{
+          position:absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: none;
+      }
+  </style>
+
+  <title>Lecture 6.13</title>
+</head>
+
+<body>
+    <script type="module">
+        import { Game } from './Game.js';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const game = new Game(); 
+            window.game = game;
+        });
+    </script>
+    <div id='ui'>
+        <div id='ammo'>
+            <div class='icon'>
+                <img src='../../assets/factory/ammo.svg' alt='ammo-icon'>
+            </div>
+            <div class="progressBase">
+                <div class="progressBar" name="ammoBar"></div>
+              </div>
+        </div>
+        <div id='health'>
+            <div class="progressBase">
+                <div class="progressBar" name="healthBar"></div>
+            </div>
+            <div class='icon'>
+                <img src='../../assets/factory/health.svg' alt='health-icon'>
+            </div>
+        </div>
+        <div id='playBtn'>
+            <img src='../../assets/factory/playgame.png' alt='play game'>
+        </div>
+        <div id='gameover'>
+            <img src='../../assets/factory/gameover.png' alt='gameover'>
+        </div>
+    </div>
+</body>
+
+</html>
