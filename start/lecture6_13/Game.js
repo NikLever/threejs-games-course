@@ -69,14 +69,7 @@ class Game{
 	}
 
 	startGame(){
-		this.user.reset();
-		this.npcHandler.reset();
-		this.ui.ammo = 1;
-		this.ui.health = 1;
-		this.active = true;
-		this.controller.cameraBase.getWorldPosition(this.camera.position);
-        this.controller.cameraBase.getWorldQuaternion(this.camera.quaternion);
-		this.sfx.play('atmos');
+		
 	}
 
 	seeUser(pos, seethrough=false){
@@ -173,7 +166,6 @@ class Game{
         this.loadEnvironment();
 		this.npcHandler = new NPCHandler(this);
 		this.user = new User(this, new THREE.Vector3( -5.97, 0.021, -1.49), 1.57);
-		this.ui = new UI(this);
     }
 
     loadEnvironment(){
@@ -258,12 +250,7 @@ class Game{
 	}			
     
 	initSounds(){
-		this.listener = new THREE.AudioListener();
-        this.camera.add( this.listener );
-		this.sfx = new SFX(this.camera, `${this.assetsPath}factory/sfx/`, this.listener);
-		this.sfx.load('atmos', true, 0.1);
-		this.user.initSounds();
-		this.npcHandler.npcs.forEach( npc => npc.initSounds() );
+		
 	}
 	
 	startRendering(){
@@ -271,8 +258,6 @@ class Game{
 			this.controller = new Controller(this);
 			this.bulletHandler = new BulletHandler(this);
 			this.renderer.setAnimationLoop( this.render.bind(this) );
-			this.ui.visible = true;
-			this.initSounds();
 		}
 	}
 
@@ -289,13 +274,8 @@ class Game{
 		if (this.user !== undefined ) this.user.update(dt);
 		if (this.controller !== undefined) this.controller.update(dt);
 		if (this.bulletHandler !== undefined) this.bulletHandler.update(dt);
-		if (this.tween !== undefined) this.tween.update(dt);
-
-		if (this.composer){
-			this.composer.render();
-		}else{
-        	this.renderer.render( this.scene, this.camera );
-		}
+		
+        this.renderer.render( this.scene, this.camera );
 
     }
 }

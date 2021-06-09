@@ -8,6 +8,11 @@ import { User } from './User.js';
 import { Controller } from './Controller.js';
 import { BulletHandler } from './BulletHandler.js';
 import { UI } from './UI.js';
+import { EffectComposer } from '../../libs/three128/pp/EffectComposer.js';
+import { RenderPass } from '../../libs/three128/pp/RenderPass.js';
+import { ShaderPass } from '../../libs/three128/pp/ShaderPass.js';
+import { GammaCorrectionShader } from '../../libs/three128/pp/GammaCorrectionShader.js';
+import { Tween } from '../../libs/Toon3D.js';
 import { SFX } from '../../libs/SFX.js';
 
 class Game{
@@ -23,6 +28,7 @@ class Game{
 		this.assetsPath = '../../assets/';
         
 		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 500 );
+		//this.camera.position.set( -10.6, 1.6, -1.46 );
 		this.camera.position.set( -10.6, 1.6, -3.5 );
 		this.camera.rotation.y = -Math.PI*0.6;
 
@@ -58,6 +64,8 @@ class Game{
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
 		
+		this.initPostProcessing();
+
 		this.load();
 
 		this.raycaster = new THREE.Raycaster();
@@ -66,6 +74,57 @@ class Game{
 		this.active = false;
 		
 		window.addEventListener( 'resize', this.resize.bind(this) );
+	}
+
+	initPostProcessing(){
+		this.composer = new EffectComposer( this.renderer );
+  		const renderPass = new RenderPass( this.scene, this.camera );
+  		this.composer.addPass( renderPass );
+		const gammaCorrectionPass = new ShaderPass( GammaCorrectionShader );
+		this.composer.addPass( gammaCorrectionPass );
+
+		const tintShader = {
+
+			uniforms: {
+		
+				'tDiffuse': { value: null },
+				'strength': { value: 0.0 }
+		
+			},
+		
+			vertexShader: /* glsl */`
+				varying vec2 vUv;
+				void main() {
+					vUv = uv;
+					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+				}`,
+		
+			fragmentShader: /* glsl */`
+				uniform float strength;
+				uniform sampler2D tDiffuse;
+				varying vec2 vUv;
+				void main() {
+					vec3 texel = texture2D(tDiffuse, vUv).rgb;
+					vec3 tintColor = vec3(1.0, 0.3, 0.3);
+					float luminance = (texel.r + texel.g + texel.b)/3.0;
+					vec3 tint = tintColor * luminance * 1.8;
+					vec3 color = mix(texel, tint, clamp(strength, 0.0, 1.0));
+					gl_FragColor = vec4(color, 1.0);
+				}`
+		
+		}; 
+		this.tintPass = new ShaderPass( tintShader );
+		this.composer.addPass( this.tintPass );	  
+	}
+
+	tintScreen(action){
+		this.tintPass.uniforms.strength.value = 1; 
+		const duration = (action=='shot') ? 3.0 : 1.5;
+		this.tween = new Tween( this.tintPass.uniforms.strength, 'value', 0, duration, this.removeTween.bind(this));
+	}
+
+	removeTween(){
+		delete this.tween;
 	}
 
 	startGame(){

@@ -6,9 +6,7 @@ import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Pathfinding } from '../../libs/pathfinding/Pathfinding.js';
 import { User } from './User.js';
 import { Controller } from './Controller.js';
-import { BulletHandler } from './BulletHandler.js';
-import { UI } from './UI.js';
-import { SFX } from '../../libs/SFX.js';
+import {BulletHandler} from './BulletHandler.js';
 
 class Game{
 	constructor(){
@@ -23,6 +21,7 @@ class Game{
 		this.assetsPath = '../../assets/';
         
 		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 500 );
+		//this.camera.position.set( -10.6, 1.6, -1.46 );
 		this.camera.position.set( -10.6, 1.6, -3.5 );
 		this.camera.rotation.y = -Math.PI*0.6;
 
@@ -62,21 +61,8 @@ class Game{
 
 		this.raycaster = new THREE.Raycaster();
 		this.tmpVec = new THREE.Vector3();
-
-		this.active = false;
 		
 		window.addEventListener( 'resize', this.resize.bind(this) );
-	}
-
-	startGame(){
-		this.user.reset();
-		this.npcHandler.reset();
-		this.ui.ammo = 1;
-		this.ui.health = 1;
-		this.active = true;
-		this.controller.cameraBase.getWorldPosition(this.camera.position);
-        this.controller.cameraBase.getWorldQuaternion(this.camera.quaternion);
-		this.sfx.play('atmos');
 	}
 
 	seeUser(pos, seethrough=false){
@@ -117,12 +103,6 @@ class Game{
 		}
 
 		return userVisible;
-	}
-
-	gameover(){
-		this.active = false;
-		this.ui.showGameover();
-		this.sfx.stop('atmos');
 	}
 
 	initPathfinding(navmesh){
@@ -173,7 +153,6 @@ class Game{
         this.loadEnvironment();
 		this.npcHandler = new NPCHandler(this);
 		this.user = new User(this, new THREE.Vector3( -5.97, 0.021, -1.49), 1.57);
-		this.ui = new UI(this);
     }
 
     loadEnvironment(){
@@ -257,22 +236,11 @@ class Game{
 		);
 	}			
     
-	initSounds(){
-		this.listener = new THREE.AudioListener();
-        this.camera.add( this.listener );
-		this.sfx = new SFX(this.camera, `${this.assetsPath}factory/sfx/`, this.listener);
-		this.sfx.load('atmos', true, 0.1);
-		this.user.initSounds();
-		this.npcHandler.npcs.forEach( npc => npc.initSounds() );
-	}
-	
 	startRendering(){
 		if (this.npcHandler.ready && this.user.ready && this.bulletHandler == undefined){
 			this.controller = new Controller(this);
 			this.bulletHandler = new BulletHandler(this);
 			this.renderer.setAnimationLoop( this.render.bind(this) );
-			this.ui.visible = true;
-			this.initSounds();
 		}
 	}
 
@@ -289,13 +257,8 @@ class Game{
 		if (this.user !== undefined ) this.user.update(dt);
 		if (this.controller !== undefined) this.controller.update(dt);
 		if (this.bulletHandler !== undefined) this.bulletHandler.update(dt);
-		if (this.tween !== undefined) this.tween.update(dt);
 
-		if (this.composer){
-			this.composer.render();
-		}else{
-        	this.renderer.render( this.scene, this.camera );
-		}
+        this.renderer.render( this.scene, this.camera );
 
     }
 }

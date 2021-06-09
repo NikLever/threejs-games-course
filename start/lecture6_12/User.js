@@ -8,7 +8,8 @@ import { Group,
          MeshBasicMaterial, 
          Mesh,
 		 BufferGeometry,
-		 Line
+		 Line,
+		 LoopOnce
 		} from '../../libs/three128/three.module.js';
 import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 import { DRACOLoader } from '../../libs/three128/DRACOLoader.js';
@@ -32,9 +33,6 @@ class User{
 
         this.tmpVec = new Vector3();
         this.tmpQuat = new Quaternion();
-
-		this.speed = 0;
-		this.isFiring = false;
 
 		this.ready = false;
 
@@ -94,24 +92,6 @@ class User{
 		return this.root.position;
 	}
 
-	set firing(mode){
-		this.isFiring = mode;
-		if (mode){
-			this.action = ( Math.abs(this.speed) == 0 ) ? "firing" : "firingwalk";
-			this.bulletTime = this.game.clock.getElapsedTime();
-		}else{
-			this.action = 'idle';
-		}
-	}
-
-	shoot(){
-		if (this.bulletHandler === undefined) this.bulletHandler = this.game.bulletHandler;
-		this.aim.getWorldPosition(this.tmpVec);
-		this.aim.getWorldQuaternion(this.tmpQuat);
-		this.bulletHandler.createBullet( this.tmpVec, this.tmpQuat );
-		this.bulletTime = this.game.clock.getElapsedTime();
-	}
-
     addSphere(){
         const geometry = new SphereGeometry( 0.1, 8, 8 );
         const material = new MeshBasicMaterial( { color: 0xFF0000 });
@@ -146,19 +126,6 @@ class User{
 						if (child.name.includes('Rifle')) this.rifle = child;
                     }
                 });
-
-				if (this.rifle){
-					const geometry = new BufferGeometry().setFromPoints( [ new Vector3( 0, 0, 0 ), new Vector3( 1, 0, 0 ) ] );
-
-        			const line = new Line( geometry );
-        			line.name = 'aim';
-					line.scale.x = 50;
-
-					this.rifle.add(line);
-					line.position.set(0, 0, 0.5);
-					this.aim = line;
-					line.visible = false;
-				}
 
                 this.animations = {};
 
@@ -196,7 +163,7 @@ class User{
 			const action = this.mixer.clipAction( clip );
 			if (name=='shot'){
 				action.clampWhenFinished = true;
-				action.setLoop( THREE.LoopOnce );
+				action.setLoop( LoopOnce );
 			}
 			action.reset();
 			const nofade = this.actionName == 'shot';
@@ -236,10 +203,6 @@ class User{
 			}else{
 				this.rifle.quaternion.slerpQuaternions(this.rotateRifle.start, this.rotateRifle.end, this.rotateRifle.time * 2);
 			}
-		}
-		if (this.isFiring){
-			const elapsedTime = this.game.clock.getElapsedTime() - this.bulletTime;
-			if (elapsedTime > 0.6) this.shoot(); 
 		}
     }
 }
