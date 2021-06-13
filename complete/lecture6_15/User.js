@@ -94,9 +94,11 @@ class User{
 		this.position = this.startInfo.pos;
 		this.root.rotation.set(0, this.startInfo.heading, 0, 'XYZ');
 		this.root.rotateY(0.7);
+		this.root.userData.dead = false;
 		this.ammo = 100;
 		this.health = 100;
 		this.action = 'idle';
+		this.dead = false;
 		this.speed = 0;
 		this.isFiring = false;
 	}
@@ -162,6 +164,7 @@ class User{
                 this.object.traverse( child => {
                     if ( child.isMesh){
                         child.castShadow = true;
+						child.frustumCulled = false;
 						if (child.name.includes('Rifle')) this.rifle = child;
                     }
                 });
@@ -246,6 +249,7 @@ class User{
 				action.clampWhenFinished = true;
 				action.setLoop( LoopOnce );
 				this.dead = true;
+				this.root.userData.dead = true;
 				this.game.gameover();
 			}
 			action.reset();

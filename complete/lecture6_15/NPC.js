@@ -34,6 +34,15 @@ class NPC{
 		const pt = this.object.position.clone();
 		pt.z += 10;
 		this.object.lookAt(pt);
+
+		this.rifle = options.rifle;
+		this.aim = options.aim;
+		this.enemy = this.app.user.root;
+		this.isFiring = false;
+		this.raycaster = new THREE.Raycaster();
+		this.forward = new THREE.Vector3(0, 0, 1);
+		this.tmpVec = new THREE.Vector3();
+		this.tmpQuat = new THREE.Quaternion();
         
         if (options.animations){
             this.mixer = new THREE.AnimationMixer(options.object);
@@ -41,6 +50,17 @@ class NPC{
                 this.animations[animation.name.toLowerCase()] = animation;
             })
         }
+
+		this.initRifleDirection();
+	}
+
+	initRifleDirection(){
+		this.rifleDirection = {};
+
+		this.rifleDirection.idle = new THREE.Quaternion(-0.044, -0.061, 0.865, 0.495);
+		this.rifleDirection.firing = new THREE.Quaternion(-0.147, -0.040, 0.784, 0.600);
+		this.rifleDirection.walking = new THREE.Quaternion( 0.046, -0.017, 0.699, 0.712);
+		this.rifleDirection.shot = new THREE.Quaternion(-0.133, -0.144, -0.635, 0.747);
 	}
 
 	initSounds(){
@@ -67,7 +87,7 @@ class NPC{
 		const index = Math.floor(Math.random()*this.waypoints.length);
 		return this.waypoints[index];
 	}
-	
+
 	setTargetDirection(pt){
 		const player = this.object;
 		pt.y = player.position.y;
@@ -184,18 +204,133 @@ class NPC{
 			}
 			this.curAction = action;
 		}
+		if (this.rifle && this.rifleDirection){
+			const q = this.rifleDirection[name.toLowerCase()];
+			if (q!==undefined){
+				const start = new THREE.Quaternion();
+				start.copy(this.rifle.quaternion);
+				this.rifle.quaternion.copy(q);
+				this.rifle.rotateX(1.57);
+				const end = new THREE.Quaternion();
+				end.copy(this.rifle.quaternion);
+				this.rotateRifle = { start, end, time:0 };
+				this.rifle.quaternion.copy( start );
+			}
+		}
 	}
 	
 	get position(){
 		return this.object.position;
 	}
 
+	withinAggroRange(){
+		const distSq = this.object.position.distanceToSquared(this.enemy.position);
+		return distSq < 400;
+	}
+
+	withinFOV( fov ){
+		const rads = fov / 360 * Math.PI;
+		const v1 = this.forward.clone().applyQuaternion( this.object.quaternion );
+		const v2 = this.enemy.position.clone().sub(this.object.position).normalize();
+		const theta = Math.abs(v1.angleTo(v2)) ;
+		return theta < rads;
+	}
+
+	set firing(mode){
+		this.isFiring = mode;
+		if (mode){
+			this.action = "firingwalk";
+			this.bulletTime = this.app.clock.getElapsedTime();
+		}else{
+			this.newPath(this.randomWaypoint);
+		}
+	}
+
+	shoot(){
+		if (this.bulletHandler === undefined) this.bulletHandler = this.app.bulletHandler;
+		this.aim.getWorldPosition(this.tmpVec);
+		this.aim.getWorldQuaternion(this.tmpQuat);
+		this.bulletHandler.createBullet( this.tmpVec, this.tmpQuat, true );
+		this.bulletTime = this.app.clock.getElapsedTime();
+		this.sfx.play('shot');
+	}
+
+	pointAtEnemy(){
+		//Aim at enemy	
+		this.object.getWorldQuaternion(this.tmpQuat);
+		this.object.lookAt( this.enemy.position );
+		this.object.quaternion.slerp(this.tmpQuat, 0.9); 
+	}
+
 	update(dt){
-		const speed = this.speed;
+		const speed = (this.actionName=='firingwalk') ? this.speed*0.6 : this.speed;
 		const player = this.object;
 		
 		if (this.mixer) this.mixer.update(dt);
-		
+
+		if (this.rotateRifle !== undefined){
+			this.rotateRifle.time += dt;
+			if (this.rotateRifle.time > 0.5){
+				this.rifle.quaternion.copy( this.rotateRifle.end );
+				delete this.rotateRifle;
+			}else{
+				this.rifle.quaternion.slerpQuaternions(this.rotateRifle.start, this.rotateRifle.end, this.rotateRifle.time * 2);
+			}
+		}
+
+		if (!this.dead && this.app.active && this.enemy && !this.enemy.userData.dead){
+			if (!this.aggro){
+				//Not in aggro mode so check enemy is in range and in sight
+				if (this.withinAggroRange()){
+					//Less than 20 metres away
+					if (this.withinFOV(120)){
+						//Within a 120 deg FOV
+						this.aggro = true;
+						const v = this.enemy.position.clone().sub(this.object.position);
+						const len = v.length();
+						if (len>10){
+							this.newPath(this.enemy.position);
+						}else{
+							delete this.calculatedPath;
+							this.action = 'idle';
+						}
+					}
+				}
+			}else{
+				//Check still in aggro andrange
+				if (this.withinAggroRange()){
+					const v = this.enemy.position.clone().sub(this.object.position);
+					const len = v.length();
+					if (!this.isFiring){
+						if (len<10){
+							delete this.calculatedPath;
+							this.firing = true;
+							this.action = 'firing';
+						}else if (this.withinFOV(10)){
+							this.firing = true;
+						}
+					}else{
+						if (!this.calculatedPath){
+							this.pointAtEnemy();	
+						}else if (!this.withinFOV(10)){
+							this.isFiring = false;
+							this.action = 'walking';
+						}
+						if (this.isFiring){
+							const elapsedTime = this.app.clock.getElapsedTime() - this.bulletTime;
+							if (elapsedTime > 0.6) this.shoot(); 
+						}
+					}
+				}else{
+					this.firing = false;
+					this.aggro = false;
+				}
+			}
+		}else if (this.isFiring){
+			this.firing = false;
+			this.aggro = false;
+		}
+
         if (this.calculatedPath && this.calculatedPath.length) {
             const targetPosition = this.calculatedPath[0];
 
@@ -230,7 +365,7 @@ class NPC{
                 }
             }
         }else{
-            if (!this.dead && this.waypoints!==undefined) this.newPath(this.randomWaypoint);
+            if (!this.dead && this.waypoints!==undefined && !this.aggro) this.newPath(this.randomWaypoint);
         }
     }
 }

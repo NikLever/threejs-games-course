@@ -1,7 +1,7 @@
 import {NPC} from './NPC.js';
 import {GLTFLoader} from '../../libs/three128/GLTFLoader.js';
 import {DRACOLoader} from '../../libs/three128/DRACOLoader.js';
-import {Skeleton, Raycaster} from '../../libs/three128/three.module.js';
+import {Skeleton, Raycaster, BufferGeometry, Line, Vector3} from '../../libs/three128/three.module.js';
 
 class NPCHandler{
     constructor( game ){
@@ -53,7 +53,7 @@ class NPCHandler{
 		// Load a GLTF resource
 		loader.load(
 			// resource URL
-			`swat-guy.glb`,
+			`swat-guy2.glb`,
 			// called when the resource is loaded
 			gltf => {
 				if (this.game.pathfinder){
@@ -88,16 +88,31 @@ class NPCHandler{
 		
 		gltfs.forEach(gltf => {
 			const object = gltf.scene;
+			let rifle, aim;
 
 			object.traverse(function(child){
 				if (child.isMesh){
 					child.castShadow = true;
 					child.frustumCulled = false;
+					if (child.name.includes('Rifle')) rifle = child;
 				}
 			});
 
+			if (rifle){
+				const geometry = new BufferGeometry().setFromPoints( [ new Vector3( 0, 0, 0 ), new Vector3( 1, 0, 0 ) ] );
+
+				const line = new Line( geometry );
+				line.name = 'aim';
+				line.scale.x = 50;
+
+				rifle.add(line);
+				line.position.set(0, 0, 0.5);
+				aim = line;
+				line.visible = false;
+			}
+
 			const options = {
-				object: object,
+				object,
 				speed: 0.8,
 				animations: gltf.animations,
 				waypoints: this.waypoints,
@@ -105,6 +120,8 @@ class NPCHandler{
 				showPath: false,
 				zone: 'factory',
 				name: 'swat-guy',
+				rifle,
+				aim
 			};
 
 			const npc = new NPC(options);
