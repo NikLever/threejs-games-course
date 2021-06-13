@@ -45,8 +45,8 @@ class NPC{
 		this.forward = new THREE.Vector3(0, 0, 1);
 		this.tmpVec = new THREE.Vector3();
 		this.tmpQuat = new THREE.Quaternion();
-		this.aggro = false;
-        
+        this.aggro = false;
+		
         if (options.animations){
             this.mixer = new THREE.AnimationMixer(options.object);
             options.animations.forEach( (animation) => {
@@ -226,19 +226,6 @@ class NPC{
 		return this.object.position;
 	}
 
-	withinAggroRange(){
-		const distSq = this.object.position.distanceToSquared(this.enemy.position);
-		return distSq < 400;
-	}
-
-	withinFOV( fov ){
-		const rads = fov / 360 * Math.PI;
-		const v1 = this.forward.clone().applyQuaternion( this.object.quaternion );
-		const v2 = this.enemy.position.clone().sub(this.object.position).normalize();
-		const theta = Math.abs(v1.angleTo(v2)) ;
-		return theta < rads;
-	}
-
 	set firing(mode){
 		this.isFiring = mode;
 		if (mode){
@@ -258,28 +245,20 @@ class NPC{
 		this.sfx.play('shot');
 	}
 
+	withinAggroRange(){
+		
+	}
+
+	withinFOV( fov ){
+		
+	}
+
 	pointAtEnemy(){
-		//Aim at enemy	
-		this.object.getWorldQuaternion(this.tmpQuat);
-		this.object.lookAt( this.enemy.position );
-		this.object.quaternion.slerp(this.tmpQuat, 0.9); 
+		 
 	}
 
 	seeEnemy(){
-		const enemyVec = this.enemy.position.clone().sub(this.object.position);
-		const enemyDistance = enemyVec.length();
-		enemyVec.normalize();
-
-		this.aim.getWorldPosition(this.tmpVec);
-		this.raycaster.set(this.tmpVec, enemyVec);
-
-		const intersects = this.raycaster.intersectObjects( this.factory.children );
-
-		if (intersects.length>0){
-			return intersects[0].distance > enemyDistance;
-		}
-
-		return true;
+		
 	}
 
 	update(dt){
@@ -298,58 +277,7 @@ class NPC{
 			}
 		}
 
-		if (!this.dead && this.app.active && this.enemy && !this.enemy.userData.dead){
-			if (!this.aggro){
-				//Not in aggro mode so check enemy is in range and in sight
-				if (this.withinAggroRange()){
-					//Less than 20 metres away
-					if (this.withinFOV(120)){
-						//Within a 120 deg FOV
-						this.aggro = true;
-						const v = this.enemy.position.clone().sub(this.object.position);
-						const len = v.length();
-						if (len>10){
-							this.newPath(this.enemy.position);
-						}else{
-							delete this.calculatedPath;
-							this.action = 'idle';
-						}
-					}
-				}
-			}else{
-				//Check still in aggro andrange
-				if (this.withinAggroRange()){
-					const v = this.enemy.position.clone().sub(this.object.position);
-					const len = v.length();
-					if (!this.isFiring){
-						if (len<10){
-							delete this.calculatedPath;
-							this.firing = true;
-							this.action = 'firing';
-						}else if (this.withinFOV(10)){
-							this.firing = true;
-						}
-					}else{
-						if (!this.calculatedPath){
-							this.pointAtEnemy();	
-						}else if (!this.withinFOV(10)){
-							this.isFiring = false;
-							this.action = 'walking';
-						}
-						if (this.isFiring && this.seeEnemy()){
-							const elapsedTime = this.app.clock.getElapsedTime() - this.bulletTime;
-							if (elapsedTime > 0.6) this.shoot(); 
-						}
-					}
-				}else{
-					this.firing = false;
-					this.aggro = false;
-				}
-			}
-		}else if (this.isFiring){
-			this.firing = false;
-			this.aggro = false;
-		}
+		//Add aggro code here
 
         if (this.calculatedPath && this.calculatedPath.length) {
             const targetPosition = this.calculatedPath[0];

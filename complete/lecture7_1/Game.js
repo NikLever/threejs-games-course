@@ -1,182 +1,141 @@
-import * as THREE from '../../libs/three126/three.module.js';
-import { RGBELoader } from '../../libs/three126/RGBELoader.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
-import { OrbitControls } from '../../libs/three126/OrbitControls.js';
-import { LoadingBar } from '../../libs/LoadingBar.js';
-import { Ball } from './Ball.js';
-import { WhiteBall } from './WhiteBall.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import * as CANNON from '../../libs/cannon-es.js';
+import { CannonHelper } from '../../libs/CannonHelper.js';
+import { OrbitControls } from '../../libs/three128/OrbitControls.js';
 
-class Game{
-    static LENGTH = 2.7432;
-    static WIDTH = 1.3716;
+ class Game{
+   constructor(){
+     this.initThree();
+     this.initWorld();
+     this.initScene();
+   }
 
-	constructor(){
-		const container = document.createElement( 'div' );
-		document.body.appendChild( container );
-        
-        this.clock = new THREE.Clock();
-
-		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 20 );
-		this.camera.position.set( -3, 1.5, 0 );
-        
-		this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color( 0x000000 );
-        
-		const ambient = new THREE.HemisphereLight(0x0d0d0d, 0x020202, 0.01);
-		this.scene.add(ambient);
-        
-        const debug = true;
-
-        this.createLight( Game.LENGTH / 4 );
-        this.createLight( -Game.LENGTH / 4 );
-  			
-		this.renderer = new THREE.WebGLRenderer({ antialias: true } );
-        this.renderer.shadowMap.enabled = true;
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
-        this.renderer.physicallyCorrectLights = true;
-        container.appendChild( this.renderer.domElement );
-
-		this.setEnvironment();
-
-        this.loadingBar = new LoadingBar();
-        
-        this.loadGLTF();
-
-        this.createBalls();
-        
-        this.controls = new OrbitControls( this.camera, this.renderer.domElement );
-        
-        window.addEventListener('resize', this.resize.bind(this) );
-	}	
+   initThree(){
+    const container = document.createElement( 'div' );
+    document.body.appendChild( container );
     
-    createLight( x, debug=false ){
-        //SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
-        const spotlight = new THREE.SpotLight(0xffffe5, 2.5, 10, 0.8, 0.5, 2);
-          
-        spotlight.position.set(x, 1.5, 0);
-        spotlight.target.position.set(x, 0, 0); //the light points directly towards the xz plane
-        spotlight.target.updateMatrixWorld();
-          
-        spotlight.castShadow = true;
-        spotlight.shadow.camera.fov = 70;
-        spotlight.shadow.camera.near = 1;
-        spotlight.shadow.camera.far = 2.5;
-        spotlight.shadow.mapSize.width = 2048;
-        spotlight.shadow.mapSize.height = 2048;
-          
-        this.scene.add(spotlight);
-
-        if (debug){
-            const spotLightHelper = new THREE.SpotLightHelper( spotlight );
-            this.scene.add( spotLightHelper );
-        }
-    }
-
-    setEnvironment(){
-        const loader = new RGBELoader().setDataType( THREE.UnsignedByteType );
-        const pmremGenerator = new THREE.PMREMGenerator( this.renderer );
-        pmremGenerator.compileEquirectangularShader();
-        
-        loader.load( '../../assets/hdr/living_room.hdr',  
-            texture => {
-                const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
-                pmremGenerator.dispose();
-                this.scene.environment = envMap;
-            }, 
-            undefined, 
-            err => console.error( err )
-         );
-    }
+    this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 100 );
+    this.camera.position.set( 0, 0, 4 );
     
-    loadGLTF(){
-        const loader = new GLTFLoader( ).setPath('../../assets/pool-table/');
-        
-		// Load a glTF resource
-		loader.load(
-			// resource URL
-			'pool-table.glb',
-			// called when the resource is loaded
-			gltf => {
-                
-                this.table = gltf.scene;
-                this.table.position.set( -Game.LENGTH/2, 0, Game.WIDTH/2)
-                this.table.traverse( child => {
-                    if (child.name == 'Cue'){
-                        this.cue = child;
-                        child.visible = false;
-                    }
-                    if (child.name == 'Felt'){
-                        this.edges = child;
-                    }
-                    if (child.isMesh){
-                        child.material.metalness = 0.0;
-                        child.material.roughness = 0.3;
-                    }
-                    if (child.parent !== null && child.parent.name !== null && child.parent.name == 'Felt'){
-                        child.material.roughness = 0.8;
-                        child.receiveShadow = true;
-                    }
-                })
-				this.scene.add( gltf.scene );
-                
-                this.loadingBar.visible = false;
-				
-				this.renderer.setAnimationLoop( this.render.bind(this));
-			},
-			// called while loading is progressing
-			xhr => {
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color( 0xaaaaaa );
 
-				this.loadingBar.progress = (xhr.loaded / xhr.total);
-				
-			},
-			// called when loading has errors
-			err => {
-
-				console.error( err );
-
-			}  
-        );
-    }
+    const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.3);
+    this.scene.add(ambient);
     
-    createBalls(){
-        const X_offset = Game.LENGTH / 4;
-        const X_offset_2 = 1.72;
-
-        this.balls = [ new WhiteBall(this, -Game.LENGTH/4, 0) ];
-
-        const rowInc = 1.72 * Ball.RADIUS;
-        let row = { x:Game.LENGTH/4+rowInc, count:6, total:6 };
-        const ids = [4,3,14,2,15,13,7,12,5,6,8,9,10,11,1];
-
-        for(let i=0; i<15; i++){
-            if (row.total==row.count){
-                //Initialize a new row
-                row.total = 0;
-                row.count--;
-                row.x -= rowInc;
-                row.z = (row.count-1) * Ball.RADIUS;
-            }
-            this.balls.push( new Ball(this, row.x, row.z, ids[i]));
-            row.z -= 2 * Ball.RADIUS;
-            row.total++;
-        }
-    }
-
-    resize(){
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize( window.innerWidth, window.innerHeight );  
-    }
+    const light = new THREE.DirectionalLight();
+    light.position.set( 0.2, 1, 1);
+    this.scene.add(light);
+  
+    this.renderer = new THREE.WebGLRenderer({ antialias: true } );
+    this.renderer.setPixelRatio( window.devicePixelRatio );
+    this.renderer.setSize( window.innerWidth, window.innerHeight );
+    container.appendChild( this.renderer.domElement );
     
-	render( ) {   
-        this.controls.target.copy(this.balls[0].mesh.position);
-        this.controls.update();
-        const dt = this.clock.getDelta();
-        this.balls.forEach( ball => ball.update(dt) );
-        this.renderer.render( this.scene, this.camera );
-    }
+    const controls = new OrbitControls( this.camera, this.renderer.domElement );
+    
+    this.renderer.setAnimationLoop(this.render.bind(this));
+
+    window.addEventListener('resize', this.resize.bind(this) );
+  }
+
+   initWorld() {
+    const world = new CANNON.World();
+    world.gravity.set(0, -50, 0)
+
+    // Max solver iterations: Use more for better force propagation, but keep in mind that it's not very computationally cheap!
+    world.solver.iterations = 5
+
+    // Tweak contact properties.
+    // Contact stiffness - use to make softer/harder contacts
+    world.defaultContactMaterial.contactEquationStiffness = 5e6
+
+    // Stabilization time in number of timesteps
+    world.defaultContactMaterial.contactEquationRelaxation = 10
+
+    // Since we have many bodies and they don't move very much, we can use the less accurate quaternion normalization
+    world.quatNormalizeFast = true
+    world.quatNormalizeSkip = 3 // ...and we do not have to normalize every step.
+
+    // Static ground plane
+    const groundShape = new CANNON.Plane()
+    const groundBody = new CANNON.Body({ mass: 0 })
+    groundBody.addShape(groundShape)
+    groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
+    world.addBody(groundBody)
+
+    this.helper = new CannonHelper( this.scene, world);
+    this.helper.addVisual(groundBody);
+
+    this.world = world;
+  }
+      // Spheres
+  initScene(){
+    // Plane -x
+    const planeShapeXmin = new CANNON.Plane()
+    const planeXmin = new CANNON.Body({ mass: 0 })
+    planeXmin.addShape(planeShapeXmin)
+    planeXmin.quaternion.setFromEuler(0, Math.PI / 2, 0)
+    planeXmin.position.set(-5, 0, 0)
+    this.world.addBody(planeXmin)
+
+    // Plane +x
+    const planeShapeXmax = new CANNON.Plane()
+    const planeXmax = new CANNON.Body({ mass: 0 })
+    planeXmax.addShape(planeShapeXmax)
+    planeXmax.quaternion.setFromEuler(0, -Math.PI / 2, 0)
+    planeXmax.position.set(5, 0, 0)
+    this.world.addBody(planeXmax)
+
+    // Plane -z
+    const planeShapeZmin = new CANNON.Plane()
+    const planeZmin = new CANNON.Body({ mass: 0 })
+    planeZmin.addShape(planeShapeZmin)
+    planeZmin.quaternion.setFromEuler(0, 0, 0)
+    planeZmin.position.set(0, 0, -5)
+    this.world.addBody(planeZmin)
+
+    // Plane +z
+    const planeShapeZmax = new CANNON.Plane()
+    const planeZmax = new CANNON.Body({ mass: 0 })
+    planeZmax.addShape(planeShapeZmax)
+    planeZmax.quaternion.setFromEuler(0, Math.PI, 0)
+    planeZmax.position.set(0, 0, 5)
+    this.world.addBody(planeZmax)
+
+    const size = 1
+    const bodies = []
+    let i = 0
+    setInterval(() => {
+      // Sphere
+      i++;
+      const sphereShape = new CANNON.Sphere(size)
+      const sphereBody = new CANNON.Body({
+        mass: 5,
+        position: new CANNON.Vec3(-size * 2 * Math.sin(i), size * 2 * 7, size * 2 * Math.cos(i)),
+      })
+      sphereBody.addShape(sphereShape)
+      this.world.addBody(sphereBody)
+      this.helper.addVisual(sphereBody)
+      bodies.push(sphereBody)
+
+      if (bodies.length > 80) {
+        const bodyToKill = bodies.shift()
+        this.helper.removeVisual(bodyToKill)
+        world.removeBody(bodyToKill)
+      }
+    }, 100);
+  })
+
+  resize(){
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize( window.innerWidth, window.innerHeight );  
+  }
+
+  render( ) {   
+    this.world.step(0.167);
+    this.helper.update();
+    this.renderer.render( this.scene, this.camera );
+  }
 }
-
-export { Game };
