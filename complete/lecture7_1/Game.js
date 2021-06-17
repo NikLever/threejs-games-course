@@ -15,7 +15,7 @@ import { OrbitControls } from '../../libs/three128/OrbitControls.js';
     document.body.appendChild( container );
     
     this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 100 );
-    this.camera.position.set( 0, 0, 4 );
+    this.camera.position.set( 0, 20, 30 );
     
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color( 0xaaaaaa );
@@ -122,10 +122,10 @@ import { OrbitControls } from '../../libs/three128/OrbitControls.js';
       if (bodies.length > 80) {
         const bodyToKill = bodies.shift()
         this.helper.removeVisual(bodyToKill)
-        world.removeBody(bodyToKill)
+        this.world.removeBody(bodyToKill)
       }
     }, 100);
-  })
+  }
 
   resize(){
     this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -134,8 +134,10 @@ import { OrbitControls } from '../../libs/three128/OrbitControls.js';
   }
 
   render( ) {   
-    this.world.step(0.167);
+    this.world.step(0.0167);
     this.helper.update();
     this.renderer.render( this.scene, this.camera );
   }
 }
+
+export { Game };

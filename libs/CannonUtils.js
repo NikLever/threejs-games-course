@@ -1,4 +1,4 @@
-import * as THREE from '../../libs/three126/three.module.js';
+import * as THREE from '../../libs/three128/three.module.js';
 import * as CANNON from '../../libs/cannon-es.js';
 
 let wireframeMaterial;
@@ -13,7 +13,7 @@ function createQuaternionFromAxisAngle(axis, angle) {
   Adapted from cannon.demo.js:
   Helper to draw wireframes of collision bodies
 */
-function addCannonVisual(body, scene, color=0xFFFFFF) {
+function addCannonVisual(body, scene, color=0xFFFFFF, wireframe=true) {
   wireframeMaterial = new THREE.MeshBasicMaterial({color: color, wireframe: true});
   
   let mesh;
