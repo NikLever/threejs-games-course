@@ -6,9 +6,7 @@ import { Group,
          AnimationMixer, 
          SphereGeometry, 
          MeshBasicMaterial, 
-         Mesh,
-		 LoopOnce 
-		} from '../../libs/three128/three.module.js';
+         Mesh } from '../../libs/three128/three.module.js';
 import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
 import { DRACOLoader } from '../../libs/three128/DRACOLoader.js';
 
@@ -74,7 +72,7 @@ class User{
         // Load a glTF resource
 		loader.load(
 			// resource URL
-			'eve2.glb',
+			'eve.glb',
 			// called when the resource is loaded
 			gltf => {
 				
@@ -99,7 +97,7 @@ class User{
 			const action = this.mixer.clipAction( clip );
 			if (name=='shot'){
 				action.clampWhenFinished = true;
-				action.setLoop( LoopOnce );
+				action.setLoop( THREE.LoopOnce );
 			}
 			action.reset();
 			const nofade = this.actionName == 'shot';
