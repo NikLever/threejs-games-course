@@ -16,8 +16,6 @@ class NPC{
 		this.pathColor = new THREE.Color(0xFFFFFF);
 		options.app.scene.add(this.pathLines);
 
-		this.factory = this.app.factory;
-
 		this.showPath = options.showPath | false;
 
         this.waypoints = options.waypoints;
@@ -273,7 +271,7 @@ class NPC{
 		this.aim.getWorldPosition(this.tmpVec);
 		this.raycaster.set(this.tmpVec, enemyVec);
 
-		const intersects = this.raycaster.intersectObjects( this.factory.children );
+		const intersects = this.raycaster.intersectObjects( this.app.factory.children );
 
 		if (intersects.length>0){
 			return intersects[0].distance > enemyDistance;
