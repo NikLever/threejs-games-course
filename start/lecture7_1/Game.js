@@ -50,51 +50,17 @@ import { OrbitControls } from '../../libs/three128/OrbitControls.js';
     window.addEventListener('resize', this.resize.bind(this) );
   }
 
-   initWorld() {
-    const world = new CANNON.World();
-    world.gravity.set(0, -10, 0);
-
-    this.helper = new CannonHelper( this.scene, world);
-
-    this.world = world;
+  initWorld() {
+    
   }
 
   random(min, max){
     const range = max - min;
     return Math.random() * range + min; 
   }
-      // Spheres
+  
   initScene(){
-    // Static ground plane
-    const groundShape = new CANNON.Plane()
-    const groundBody = new CANNON.Body({ mass: 0 })
-    groundBody.addShape(groundShape)
-    groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
-    this.world.addBody(groundBody)
-    this.helper.addVisual(groundBody);
-
-    const size = 0.4;
-    const bodies = [];
-    let i = 0
-    setInterval(() => {
-      // Sphere
-      i++;
-      const sphereShape = new CANNON.Sphere(size)
-      const sphereBody = new CANNON.Body({
-        mass: 1,
-        position: new CANNON.Vec3(this.random(-0.1, 0.1), 4, this.random(-0.1, 0.1)),
-      })
-      sphereBody.addShape(sphereShape)
-      this.world.addBody(sphereBody)
-      this.helper.addVisual(sphereBody, 0xFF0000);
-      bodies.push(sphereBody)
-
-      if (bodies.length > 80) {
-        const bodyToKill = bodies.shift()
-        this.helper.removeVisual(bodyToKill)
-        this.world.removeBody(bodyToKill)
-      }
-    }, 300);
+    
   }
 
   resize(){
@@ -104,8 +70,6 @@ import { OrbitControls } from '../../libs/three128/OrbitControls.js';
   }
 
   render( ) {   
-    this.world.step(0.0167);
-    this.helper.update();
     this.renderer.render( this.scene, this.camera );
   }
 }

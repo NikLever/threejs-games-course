@@ -1,0 +1,250 @@
+body{
+  margin: 0;
+  padding: 0;
+  font-family: 'Rubik', sans-serif;
+}
+
+.center {
+  margin: 0 auto;
+  width: 80%;
+}
+
+.hide {
+  display: none !important;
+}
+
+#gameHud {
+  z-index: 2;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#playBtn{
+  position: absolute;
+  color: white;
+  background-color: #123ecd;
+  border-radius: 8px;
+  border: none;
+  padding: 10px;
+  font-size: 30px;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#playBtn:hover{
+  border: 3px solid #fff;
+}
+
+#message {
+  position: absolute;
+  padding-top: 15%;
+  width: 100%;
+  background-color: green;
+  z-index: 10;
+  height: 100%;
+  text-align: center;
+  color: #eaeaea;
+}
+
+/* breaks accessibility but these look ugly */
+* {
+  outline: none !important;
+}
+
+.player {
+  border-radius: 5px;
+  border: 1px solid #000;
+  display: block;
+  position: absolute;
+  width: 200px;
+  top: 5px;
+  text-align: center;
+  background-color: rgba(128, 128, 128, 0.75);
+  border-color: rgb(128, 128, 128);
+}
+
+.player ul {
+  display: inline-block;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.player ul li {
+  float: left;
+  padding: 0;
+  margin: 0 3px;
+  width: 20px;
+  height: 22px;
+  text-align: center;
+  display: block;
+  border-radius: 20px;
+}
+
+.player ul li.pocketed {
+  background-color: #3d3d3d;
+}
+
+.player1 {
+  left: 5px;
+}
+
+.player.active {
+  background-color: rgba(152, 251, 152, 0.75);
+  border-color: rgb(152, 251, 152);
+}
+
+.player2 {
+  right: 5px;
+}
+
+.player h5 {
+  margin: 0;
+  padding: 0;
+  margin-top: 2px;
+  margin-left: 3px;
+  margin-bottom: 3px;
+  color: #eaeaea;
+}
+
+.gamelog {
+  padding: 0 3px;
+  margin: 0;
+  margin-left: 3px;
+  color: #dadada;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 3px;
+  border: 1px solid #000;
+  display: block;
+  position: absolute;
+  width: 300px;
+  height: 20px;
+  bottom: 10px;
+  left: 5px;
+  text-align: left;
+  z-index: 2;
+}
+
+.gamelog:hover {
+  height: 130px;
+}
+
+.gamelog li {
+  display: none;
+}
+
+.gamelog li:nth-last-child(-n+1) {
+  display: block;
+}
+
+.gamelog:hover li:nth-last-child(-n+6) {
+  display: block;
+}
+
+.gamelog li {
+  margin: 0;
+  padding: 0;
+  margin-top: 0px;
+}
+
+.timer {
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 3px;
+  border: 1px solid #000;
+  display: block;
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  bottom: 10px;
+  right: 10px;
+  text-align: center;
+  font-size: 36px;
+  z-index: 1;
+}
+
+.player.solid span:before {
+  content: 'Solid';
+}
+
+.player.striped span:before {
+  content: 'Striped';
+}
+.player.unknown span:before {
+  content: '?';
+}
+
+.player ul li {
+  font-size: 10px;
+  line-height: 19px;
+  text-align: center;
+}
+
+.player ul li::after {
+  display: block;
+  background-color: white;
+  width: 12px;
+  height: 12px;
+  border-radius: 12px;
+  margin-top: -15px;
+  content: '';
+  margin-left: 4px;
+  z-index: 10;
+}
+
+.player.striped ul li::before {
+  background-image: linear-gradient(#fff 13%, transparent 13%, transparent 87%, #fff 13%);
+}
+
+.player.solid ul li::before {
+  background-image: none;
+}
+
+.player ul li::before {
+  display: block;
+  border: 1px solid #000;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  margin-top: 0;
+  content: '';
+  margin-bottom: -20px;
+}
+
+.player ul li:nth-child(1) {
+  background-color: #f5c61f;
+}
+
+.player ul li:nth-child(2) {
+  background-color: #123ecd;
+}
+
+.player ul li:nth-child(3) {
+  background-color: #cd1b12;
+}
+
+.player ul li:nth-child(4) {
+  background-color: #8412cd;
+}
+
+.player ul li:nth-child(5) {
+  background-color: #ff7f00;
+}
+
+.player ul li:nth-child(6) {
+  background-color: #269c0f;
+}
+
+.player ul li:nth-child(7) {
+  background-color: #a20000;
+}
+
+.player ul li.pocketed {
+  opacity: 0.5;
+}
+
+.player.unknown ul li {
+  background-color: #3d3d3d;
+}
