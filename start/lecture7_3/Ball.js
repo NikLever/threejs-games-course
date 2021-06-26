@@ -5,7 +5,7 @@ import * as CANNON from '../../libs/cannon-es.js';
 class Ball{
     static RADIUS = 0.05715 / 2;
     static MASS = 0.17;
-    static CONTACT_MATERIAL = new CANNON.Material("ballMaterial");
+    static MATERIAL = new CANNON.Material("ballMaterial");
     
     constructor(game, x, z, id=0) {
         this.id = id;
@@ -34,9 +34,6 @@ class Ball{
     hit(strength=0.6) {
       this.rigidBody.wakeUp();
       
-      const position = new CANNON.Vec3();
-      position.copy(this.rigidBody.position);
-    
       const theta = this.game.controls.getAzimuthalAngle();
       this.tmpQuat.setFromAxisAngle(this.up, theta);
 
@@ -51,6 +48,7 @@ class Ball{
     reset(){
       this.rigidBody.velocity = new CANNON.Vec3(0);
       this.rigidBody.angularVelocity = new CANNON.Vec3(0);
+      this.rigidBody.position.copy( this.startPosition );
       this.mesh.position.copy( this.startPosition );
       this.mesh.rotation.set(0,0,0);
     }
@@ -60,7 +58,7 @@ class Ball{
         mass: Ball.MASS, // kg
         position: new CANNON.Vec3(x,y,z), // m
         shape: new CANNON.Sphere(Ball.RADIUS),
-        material: Ball.CONTACT_MATERIAL
+        material: Ball.MATERIAL
       });
     
       body.linearDamping = body.angularDamping = 0.5; // Hardcode

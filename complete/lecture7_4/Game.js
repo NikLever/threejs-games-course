@@ -4,13 +4,16 @@ import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
 import { OrbitControls } from '../../libs/three126/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Ball } from './Ball.js';
-import { WhiteBall } from './WhiteBall.js';
+import { Table } from './Table.js';
 
 class Game{
-    static LENGTH = 2.7432;
-    static WIDTH = 1.3716;
-
 	constructor(){
+        this.initThree();
+        this.initWorld();
+        this.initScene();
+    }
+
+    initThree(){
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
         
@@ -27,8 +30,8 @@ class Game{
         
         const debug = true;
 
-        this.createLight( Game.LENGTH / 4 );
-        this.createLight( -Game.LENGTH / 4 );
+        this.createLight( Table.LENGTH / 4 );
+        this.createLight( -Table.LENGTH / 4 );
   			
 		this.renderer = new THREE.WebGLRenderer({ antialias: true } );
         this.renderer.shadowMap.enabled = true;

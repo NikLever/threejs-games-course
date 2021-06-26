@@ -87,14 +87,14 @@ import { OrbitControls } from '../../libs/three128/OrbitControls.js';
     world.defaultContactMaterial.restitution = 0.8;
   
     const ball_floor = new CANNON.ContactMaterial(
-      Ball.CONTACT_MATERIAL,
-      Table.FLOOR_CONTACT_MATERIAL,
+      Ball.MATERIAL,
+      Table.FLOOR_MATERIAL,
       {friction: 0.7, restitution: 0.1}
     );
 
     const ball_wall = new CANNON.ContactMaterial(
-      Ball.CONTACT_MATERIAL,
-      Table.WALL_CONTACT_MATERIAL,
+      Ball.MATERIAL,
+      Table.WALL_MATERIAL,
       {friction: 0.5, restitution: 0.6}
     );
 
@@ -138,6 +138,10 @@ import { OrbitControls } from '../../libs/three128/OrbitControls.js';
   }
 
   render( ) {   
+    if (this.cueball){
+      this.controls.target.copy( this.cueball.mesh.position );
+      this.controls.update();
+    }
     this.world.step(this.world.fixedTimeStep);
     this.helper.update();
     this.renderer.render( this.scene, this.camera );

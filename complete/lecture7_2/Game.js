@@ -57,9 +57,6 @@ import { Table } from './Table.js';
     const w = new CANNON.World();
     w.gravity.set(0, -9.82, 0); // m/s²
   
-    w.solver.iterations = 10;
-    w.solver.tolerance = 0; // Force solver to use all iterations
-  
     // Allow sleeping
     w.allowSleep = true;
   

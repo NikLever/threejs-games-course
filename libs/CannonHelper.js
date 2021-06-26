@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three128/three.module.js';
-import * as CANNON from '../../libs/cannon-es.js';
+import * as THREE from './three128/three.module.js';
+import * as CANNON from './cannon-es.js';
 
 class CannonHelper{
     constructor(scene, world){
@@ -142,6 +142,7 @@ class CannonHelper{
 			let mesh;
 			let geometry;
 			let v0, v1, v2;
+			let a, b, c;
 
 			switch(shape.type){
 
@@ -229,24 +230,26 @@ class CannonHelper{
 
 			case CANNON.Shape.types.TRIMESH:
 				const points = [];
+				const normals = [];
         
 				v0 = new CANNON.Vec3();
 				v1 = new CANNON.Vec3();
 				v2 = new CANNON.Vec3();
 
 				for (let i = 0; i < shape.indices.length / 3; i++) {
-				shape.getTriangleVertices(i, v0, v1, v2);
-				points.push(
-					new THREE.Vector3(v0.x, v0.y, v0.z),
-					new THREE.Vector3(v1.x, v1.y, v1.z),
-					new THREE.Vector3(v2.x, v2.y, v2.z)
-				);
+					shape.getTriangleVertices(i, v0, v1, v2);
+					
+					points.push(
+						new THREE.Vector3(v0.x, v0.y, v0.z),
+						new THREE.Vector3(v1.x, v1.y, v1.z),
+						new THREE.Vector3(v2.x, v2.y, v2.z)
+					);
 				}
+
 				geometry = new THREE.BufferGeometry().setFromPoints( points );
 				geometry.computeBoundingSphere();
-				geometry.computeFaceNormals();
-
-       
+				geometry.computeVertexNormals();
+				
 				mesh = new THREE.Mesh(geometry, material);
 				break;
 
@@ -275,6 +278,26 @@ class CannonHelper{
 		return obj;
 	}
     
+	computeFaceNormals(points, geometry){
+		const data = [];
+		
+		const a = new THREE.Vector3();
+		const b = new THREE.Vector3();
+		const c = new THREE.Vector3();
+		
+		for(let i=0; i<points.length; i+=3){
+			a.copy(points[i]).sub(points[i+1]);
+			b.copy(points[i+2]).sub(points[i+1]);
+			c.crossVectors(a, b).normalize();
+			data.push(c.x, c.y, c.z);
+			data.push(c.x, c.y, c.z);
+			data.push(c.x, c.y, c.z);
+		}
+
+		const normals = Float32Array.from(data);
+		geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+	}
+
 	removeVisual(body){
 		this.scene.remove(body.threemesh);
 	}

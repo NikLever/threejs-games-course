@@ -27,16 +27,11 @@ class Ball{
         this.up = new THREE.Vector3(0,1,0);
         this.tmpVec = new THREE.Vector3();
         this.tmpQuat = new THREE.Quaternion();
-
-        this.reset();
     }
 
     hit(strength=0.6) {
       this.rigidBody.wakeUp();
       
-      const position = new CANNON.Vec3();
-      position.copy(this.rigidBody.position);
-    
       const theta = this.game.controls.getAzimuthalAngle();
       this.tmpQuat.setFromAxisAngle(this.up, theta);
 
@@ -45,17 +40,11 @@ class Ball{
       const force = new CANNON.Vec3();
       force.copy(forward);
       force.scale(strength, force);
+      
       this.rigidBody.applyImpulse(force, new CANNON.Vec3());
   }
-
-    reset(){
-      this.rigidBody.velocity = new CANNON.Vec3(0);
-      this.rigidBody.angularVelocity = new CANNON.Vec3(0);
-      this.mesh.position.copy( this.startPosition );
-      this.mesh.rotation.set(0,0,0);
-    }
     
-    createBody(x,y,z) {
+  createBody(x,y,z) {
       const body = new CANNON.Body({
         mass: Ball.MASS, // kg
         position: new CANNON.Vec3(x,y,z), // m
