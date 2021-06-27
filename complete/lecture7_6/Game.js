@@ -1,16 +1,27 @@
-import * as THREE from '../../libs/three126/three.module.js';
-import { RGBELoader } from '../../libs/three126/RGBELoader.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
-import { OrbitControls } from '../../libs/three126/OrbitControls.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import * as CANNON from '../../libs/cannon-es.js';
+import { RGBELoader } from '../../libs/three128/RGBELoader.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
+import { OrbitControls } from '../../libs/three128/OrbitControls.js';
+import { CannonHelper } from '../../libs/CannonHelper.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Ball } from './Ball.js';
 import { WhiteBall } from './WhiteBall.js';
 import { Table } from './Table.js';
-import * as CANNON from '../../libs/cannon-es.js';
 import { GameState } from './GameState.js';
 
 class Game{
 	constructor(){
+        this.initThree();
+        this.initWorld();
+        this.initScene();
+
+        this.gameState = new GameState(this);
+
+        if (this.helper) this.helper.wireframe = true;
+    }
+
+    initThree(){
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
         
@@ -39,15 +50,6 @@ class Game{
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.physicallyCorrectLights = true;
         container.appendChild( this.renderer.domElement );
-
-        this.setEnvironment();
-
-        this.world = this.createPhysicsWorld();
-        this.table = new Table(this);
-        
-        this.loadGLTF();
-
-        this.createBalls();
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
         this.controls.enableZoom = true;
@@ -58,56 +60,9 @@ class Game{
 
         // Don't let the camera go below the ground
         this.controls.maxPolarAngle = 0.49 * Math.PI;
-    
-        this.gameState = new GameState(this);
-
+          
         window.addEventListener('resize', this.resize.bind(this) );
 	}	
-
-    reset(){
-        this.balls.forEach( ball => ball.reset() );
-    }
-
-    strikeCueball(strength){
-        this.cueball.hit(strength);
-    }
-    
-    createPhysicsWorld(){
-        const w = new CANNON.World();
-        w.gravity.set(0, -9.82, 0); // m/s²
-      
-        w.solver.iterations = 10;
-        w.solver.tolerance = 0; // Force solver to use all iterations
-      
-        // Allow sleeping
-        w.allowSleep = true;
-      
-        w.fixedTimeStep = 1.0 / 60.0; // seconds
-      
-        this.setCollisionBehaviour(w);
-
-        return w;
-    }
-
-    setCollisionBehaviour(world) {
-        world.defaultContactMaterial.friction = 0.2;
-        world.defaultContactMaterial.restitution = 0.8;
-      
-        const ball_floor = new CANNON.ContactMaterial(
-          Ball.CONTACT_MATERIAL,
-          Table.FLOOR_CONTACT_MATERIAL,
-          {friction: 0.7, restitution: 0.1}
-        );
-      
-        const ball_wall = new CANNON.ContactMaterial(
-          Ball.CONTACT_MATERIAL,
-          Table.WALL_CONTACT_MATERIAL,
-          {friction: 0.5, restitution: 0.6}
-        );
-
-        world.addContactMaterial(ball_floor);
-        world.addContactMaterial(ball_wall);
-      }
 
     createLight( x, debug=false ){
         //SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
@@ -130,6 +85,63 @@ class Game{
             const spotLightHelper = new THREE.SpotLightHelper( spotlight );
             this.scene.add( spotLightHelper );
         }
+    }
+
+    reset(){
+        this.balls.forEach( ball => ball.reset() );
+    }
+
+    strikeCueball(strength){
+        this.cueball.hit(strength);
+    }
+    
+    initWorld(){
+        const w = new CANNON.World();
+        w.gravity.set(0, -9.82, 0); // m/s²
+      
+        w.solver.iterations = 10;
+        w.solver.tolerance = 0; // Force solver to use all iterations
+      
+        // Allow sleeping
+        w.allowSleep = true;
+      
+        w.fixedTimeStep = 1.0 / 60.0; // seconds
+      
+        this.setCollisionBehaviour(w);
+
+        if (this.debug) this.helper = new CannonHelper( this.scene, w );
+
+        this.world = w;
+    }
+
+    setCollisionBehaviour(world) {
+        world.defaultContactMaterial.friction = 0.2;
+        world.defaultContactMaterial.restitution = 0.8;
+      
+        const ball_floor = new CANNON.ContactMaterial(
+          Ball.MATERIAL,
+          Table.FLOOR_MATERIAL,
+          {friction: 0.7, restitution: 0.1}
+        );
+      
+        const ball_wall = new CANNON.ContactMaterial(
+          Ball.MATERIAL,
+          Table.WALL_MATERIAL,
+          {friction: 0.5, restitution: 0.6}
+        );
+
+        world.addContactMaterial(ball_floor);
+        world.addContactMaterial(ball_wall);
+      }
+
+    initScene(){
+        this.setEnvironment();
+
+        this.table = new Table(this);
+        
+        this.loadGLTF();
+
+        this.createBalls();
     }
 
     setEnvironment(){
@@ -241,12 +253,12 @@ class Game{
     }
     
 	render( ) {   
-        this.controls.target.copy(this.balls[0].mesh.position);
+        this.controls.target.copy(this.cueball.mesh.position);
         this.controls.update();
+        if (this.helper) this.helper.update();
         this.gameState.update();
-        const dt = this.clock.getDelta();
         this.world.step(this.world.fixedTimeStep);
-        this.balls.forEach( ball => ball.update(dt) );
+        this.balls.forEach( ball => ball.update() );
         this.renderer.render( this.scene, this.camera );
     }
 }

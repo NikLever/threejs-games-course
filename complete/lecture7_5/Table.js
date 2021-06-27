@@ -12,7 +12,7 @@ function createQuaternionFromAxisAngle(axis, angle) {
     return q;
 }
 
-let scene, world, debug;
+let scene, world, debug, helper;
 
 class Arch{
     constructor(params) {
@@ -221,6 +221,7 @@ class Table{
         world = game.world;
         scene = game.scene;
         debug = game.debug;
+        helper = game.helper;
 
         this.createRigidBodies();
     }

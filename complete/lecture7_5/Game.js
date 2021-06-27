@@ -8,6 +8,7 @@ import { Ball } from './Ball.js';
 import { WhiteBall } from './WhiteBall.js';
 import { Table } from './Table.js';
 import { StrengthBar } from './StrengthBar.js';
+import { CannonHelper } from '../../libs/CannonHelper.js';
 
 class Game{
 	constructor(){
@@ -19,6 +20,8 @@ class Game{
 
         document.addEventListener( 'keydown', this.keydown.bind(this));
         document.addEventListener( 'keyup', this.keyup.bind(this));
+
+        if (this.helper) this.helper.wireframe = true;
     }
 
     initThree(){
@@ -87,6 +90,8 @@ class Game{
         w.fixedTimeStep = 1.0 / 60.0; // seconds
       
         this.setCollisionBehaviour(w);
+
+        if (this.debug) this.helper = new CannonHelper( this.scene, w );
 
         this.world = w;
     }
@@ -249,8 +254,9 @@ class Game{
     }
     
 	render( ) {   
-        this.controls.target.copy(this.balls[0].mesh.position);
+        this.controls.target.copy(this.cueball.mesh.position);
         this.controls.update();
+        if (this.helper) this.helper.update();
         if (this.strengthBar.visible) this.strengthBar.update();
         const dt = this.clock.getDelta();
         this.world.step(this.world.fixedTimeStep);

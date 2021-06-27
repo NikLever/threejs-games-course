@@ -1,15 +1,24 @@
 import * as CANNON from '../../libs/cannon-es.js';
-import * as THREE from '../../libs/three126/three.module.js';
-import { createQuaternionFromAxisAngle, addCannonVisual } from './CannonUtils.js';
 import { Ball } from './Ball.js';
  
-let scene, world, debug;
+function addCannonVisual(body, color=0xAAAAAA){
+    if (!helper) return;
+    helper.addVisual(body, color);
+}
+
+function createQuaternionFromAxisAngle(axis, angle) {
+    const q = new CANNON.Quaternion();
+    q.setFromAxisAngle(axis, angle);
+    return q;
+}
+
+let scene, world, debug, helper;
 
 class Arch{
     constructor(params) {
         this.body = new CANNON.Body({
             mass: 0, // mass == 0 makes the body static
-            material: Table.floorContactMaterial
+            material: Table.floorMaterial
         });
   
         params = params || {};
@@ -64,7 +73,7 @@ class LongWall{
   
         this.body = new CANNON.Body({
             mass: 0, // mass == 0 makes the body static
-            material: Table.wallContactMaterial
+            material: Table.wallMaterial
         });
   
         //adjust the x-coordinates to change the angle of the triangle shape
@@ -119,7 +128,7 @@ class ShortWall{
 
         this.body = new CANNON.Body({
             mass: 0, // mass == 0 makes the body static
-            material: Table.wallContactMaterial
+            material: Table.wallMaterial
         });
   
         // How to make a mesh with a single triangle
@@ -205,13 +214,14 @@ class Table{
     static LENGTH = 2.7432;
     static WIDTH = 1.3716;
     static HEIGHT = 0.06;
-    static FLOOR_CONTACT_MATERIAL = new CANNON.Material('floorMaterial');
-    static WALL_CONTACT_MATERIAL = new CANNON.Material('wallMaterial');
+    static FLOOR_MATERIAL = new CANNON.Material('floorMaterial');
+    static WALL_MATERIAL = new CANNON.Material('wallMaterial');
 
     constructor(game){
         world = game.world;
         scene = game.scene;
         debug = game.debug;
+        helper = game.helper;
 
         this.createRigidBodies();
     }
