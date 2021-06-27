@@ -1,6 +1,6 @@
 import { Ball } from './Ball.js';
-import * as THREE from '../../libs/three126/three.module.js';
-//import * as CANNON from '../../libs/cannon-es.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import * as CANNON from '../../libs/cannon-es.js';
 
 class WhiteBall extends Ball{
     constructor(game, x, z){
@@ -92,10 +92,10 @@ class WhiteBall extends Ball{
 
     hit(strength) {
         this.rigidBody.wakeUp();
-        
+      
         const position = new CANNON.Vec3();
         position.copy(this.rigidBody.position);
-      
+        
         const vec = new CANNON.Vec3();
         vec.copy(this.forward);
       
@@ -106,7 +106,7 @@ class WhiteBall extends Ball{
         const force = new CANNON.Vec3();
         force.copy(this.forward.normalize());
         force.scale(strength, force);
-        this.rigidBody.applyImpulse(force, position);
+        this.rigidBody.applyImpulse(force, new CANNON.Vec3());
     }
       
     //Resets the position to this.startPosition 
@@ -114,7 +114,6 @@ class WhiteBall extends Ball{
         this.rigidBody.velocity = new CANNON.Vec3(0);
         this.rigidBody.angularVelocity = new CANNON.Vec3(0);
         this.rigidBody.position.copy(this.startPosition);
-        this.game.updateUI({ event:'whitedrop' });
     }
 }
 

@@ -1,12 +1,10 @@
-import * as THREE from '../../libs/three126/three.module.js';
-//import * as CANNON from '../../libs/cannon-es.js';
-import { addCannonVisual } from './CannonUtils.js';
-
+import * as THREE from '../../libs/three128/three.module.js';
+import * as CANNON from '../../libs/cannon-es.js';
 
 class Ball{
     static RADIUS = 0.05715 / 2;
     static MASS = 0.17;
-    static CONTACT_MATERIAL = new CANNON.Material("ballMaterial");
+    static MATERIAL = new CANNON.Material("ballMaterial");
     
     constructor(game, x, z, id=0) {
         this.id = id;
@@ -20,10 +18,6 @@ class Ball{
         this.rigidBody = this.createBody(x, Ball.RADIUS, z);
         this.world.addBody(this.rigidBody);
         this.reset();
- 
-        if (game.debug){
-          this.debugMesh = addCannonVisual(this.rigidBody, game.scene);
-        }
 
         this.name = `ball${id}`;
     }
@@ -31,6 +25,7 @@ class Ball{
     reset(){
       this.rigidBody.velocity = new CANNON.Vec3(0);
       this.rigidBody.angularVelocity = new CANNON.Vec3(0);
+      this.rigidBody.position.copy( this.startPosition );
       this.mesh.position.copy( this.startPosition );
       this.mesh.rotation.set(0,0,0);
       this.fallen = false;
@@ -40,7 +35,6 @@ class Ball{
       this.rigidBody.velocity = new CANNON.Vec3(0);
       this.rigidBody.angularVelocity = new CANNON.Vec3(0);
       this.world.removeBody(this.rigidBody);
-      this.game.updateUI({event: 'balldrop', id: this.id } );
     }
     
     createBody(x,y,z) {
@@ -48,7 +42,7 @@ class Ball{
         mass: Ball.MASS, // kg
         position: new CANNON.Vec3(x,y,z), // m
         shape: new CANNON.Sphere(Ball.RADIUS),
-        material: Ball.CONTACT_MATERIAL
+        material: Ball.MATERIAL
       });
     
       body.linearDamping = body.angularDamping = 0.5; // Hardcode
@@ -89,11 +83,6 @@ class Ball{
     update(dt){
         this.mesh.position.copy(this.rigidBody.position);
         this.mesh.quaternion.copy(this.rigidBody.quaternion);
-
-        if (this.debugMesh!==undefined){
-          this.debugMesh.position.copy(this.rigidBody.position);
-          this.debugMesh.quaternion.copy(this.rigidBody.quaternion);
-        }
       
         // Has the ball fallen into a hole?
         if (this.rigidBody.position.y < -Ball.RADIUS && !this.fallen) {

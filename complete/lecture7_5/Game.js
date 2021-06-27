@@ -1,20 +1,31 @@
-import * as THREE from '../../libs/three126/three.module.js';
-import { RGBELoader } from '../../libs/three126/RGBELoader.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
-import { OrbitControls } from '../../libs/three126/OrbitControls.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import * as CANNON from '../../libs/cannon-es.js';
+import { RGBELoader } from '../../libs/three128/RGBELoader.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
+import { OrbitControls } from '../../libs/three128/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Ball } from './Ball.js';
 import { WhiteBall } from './WhiteBall.js';
 import { Table } from './Table.js';
-//import * as CANNON from '../../libs/cannon-es.js';
 import { StrengthBar } from './StrengthBar.js';
 
 class Game{
 	constructor(){
+        this.initThree();
+        this.initWorld();
+        this.initScene();
+
+        this.strengthBar = new StrengthBar();
+
+        document.addEventListener( 'keydown', this.keydown.bind(this));
+        document.addEventListener( 'keyup', this.keyup.bind(this));
+    }
+
+    initThree(){
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
         
-        this.debug = true;
+        this.debug = false;
 
         this.loadingBar = new LoadingBar();
 
@@ -39,24 +50,11 @@ class Game{
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.physicallyCorrectLights = true;
         container.appendChild( this.renderer.domElement );
-
-        this.setEnvironment();
-
-        this.world = this.createPhysicsWorld();
-        this.table = new Table(this);
-        
-        this.loadGLTF();
-
-        this.createBalls();
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
 
-        this.strengthBar = new StrengthBar();
-        
         window.addEventListener('resize', this.resize.bind(this) );
-
-        document.addEventListener( 'keydown', this.keydown.bind(this));
-        document.addEventListener( 'keyup', this.keyup.bind(this));
+        
 	}	
 
     keydown( evt ){
@@ -76,7 +74,7 @@ class Game{
         if (this.cueball.isSleeping) this.cueball.hit(this.strengthBar.strength);
     }
     
-    createPhysicsWorld(){
+    initWorld(){
         const w = new CANNON.World();
         w.gravity.set(0, -9.82, 0); // m/s²
       
@@ -90,7 +88,7 @@ class Game{
       
         this.setCollisionBehaviour(w);
 
-        return w;
+        this.world = w;
     }
 
     setCollisionBehaviour(world) {
@@ -98,14 +96,14 @@ class Game{
         world.defaultContactMaterial.restitution = 0.8;
       
         const ball_floor = new CANNON.ContactMaterial(
-          Ball.CONTACT_MATERIAL,
-          Table.FLOOR_CONTACT_MATERIAL,
+          Ball.MATERIAL,
+          Table.FLOOR_MATERIAL,
           {friction: 0.7, restitution: 0.1}
         );
       
         const ball_wall = new CANNON.ContactMaterial(
-          Ball.CONTACT_MATERIAL,
-          Table.WALL_CONTACT_MATERIAL,
+          Ball.MATERIAL,
+          Table.WALL_MATERIAL,
           {friction: 0.5, restitution: 0.6}
         );
 
@@ -202,6 +200,16 @@ class Game{
         );
     }
     
+    initScene(){
+        this.setEnvironment();
+
+        this.table = new Table(this);
+        
+        this.loadGLTF();
+
+        this.createBalls();
+    }
+
     createBalls(){
         this.balls = [ new WhiteBall(this, -Table.LENGTH/4, 0) ];
 

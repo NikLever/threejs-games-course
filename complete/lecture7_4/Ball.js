@@ -1,30 +1,73 @@
-import * as THREE from '../../libs/three126/three.module.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import * as CANNON from '../../libs/cannon-es.js';
 
 class Ball{
     static RADIUS = 0.05715 / 2;
     static MASS = 0.17;
-    //Ball.contactMaterial = new CANNON.Material("ballMaterial");
+    static MATERIAL = new CANNON.Material("ballMaterial");
   
     constructor(game, x, z, id=0) {
         this.id = id;
     
         this.startPosition = new THREE.Vector3(x, Ball.RADIUS, z);
         this.mesh = this.createMesh(game.scene);
-        this.reset();
         
-        //this.sphere = new THREE.Sphere(this.mesh.position, Ball.RADIUS); //used for guiding line intersection detecting
-        
-        //this.rigidBody = this.createBody(x,y,z);
-        //world.addBody(this.rigidBody);
+        this.rigidBody = this.createBody(x,Ball.RADIUS,z);
+        game.world.addBody(this.rigidBody);
+
+        this.game = game;
         this.name = `ball${id}`;
+
+        this.tmpQuat = new THREE.Quaternion();
+        this.forward = new THREE.Vector3(0,0,-1);
+        this.up = new THREE.Vector3(0,1,0);
+
+        this.fallen = false;
+
+        this.reset();
     }
 
     reset(){
+        this.rigidBody.velocity = new CANNON.Vec3(0);
+        this.rigidBody.angularVelocity = new CANNON.Vec3(0);
+        this.rigidBody.position.copy( this.startPosition );
         this.mesh.position.copy( this.startPosition );
         this.mesh.rotation.set(0,0,0);
         this.fallen = false;
     }
   
+    hit(strength=0.6) {
+      this.rigidBody.wakeUp();
+    
+      const theta = this.game.controls.getAzimuthalAngle();
+      this.tmpQuat.setFromAxisAngle(this.up, theta);
+
+      const forward = this.forward.clone().applyQuaternion(this.tmpQuat);
+    
+      const force = new CANNON.Vec3();
+      force.copy(forward);
+      force.scale(strength, force);
+      this.rigidBody.applyImpulse(force, new CANNON.Vec3());
+    }
+
+    createBody(x,y,z) {
+      const body = new CANNON.Body({
+        mass: Ball.MASS, // kg
+        position: new CANNON.Vec3(x,y,z), // m
+        shape: new CANNON.Sphere(Ball.RADIUS),
+        material: Ball.MATERIAL
+      });
+    
+      body.linearDamping = body.angularDamping = 0.5; // Hardcode
+      body.allowSleep = true;
+    
+      // Sleep parameters
+      body.sleepSpeedLimit = 2; // Body will feel sleepy if speed< 1 (speed == norm of velocity)
+      body.sleepTimeLimit = 0.1; // Body falls asleep after 0.1s of sleepiness
+    
+      return body;
+    }
+
     createMesh (scene) {
         const geometry = new THREE.SphereBufferGeometry(Ball.RADIUS, 16, 16);
         const material = new THREE.MeshStandardMaterial({
@@ -50,43 +93,10 @@ class Ball{
         return mesh;
     };
  
-    update(dt){
-        /*this.mesh.position.copy(this.rigidBody.position);
+    update(){
+        this.mesh.position.copy(this.rigidBody.position);
         this.mesh.quaternion.copy(this.rigidBody.quaternion);
-      
-        // Has the ball fallen into a hole?
-        if (this.rigidBody.position.y < -4 * Ball.RADIUS && !this.fallen) {
-          this.fallen = true;
-          this.onEnterHole();
-        }*/
     }
-}
+  }
 
-export { Ball };
-
-/*
-  
-  Ball.prototype.onEnterHole = function () {
-    this.rigidBody.velocity = new CANNON.Vec3(0);
-    this.rigidBody.angularVelocity = new CANNON.Vec3(0);
-    world.removeBody(this.rigidBody);
-    eightballgame.coloredBallEnteredHole(this.name);
-  };
-  
-  Ball.prototype.createBody = function (x,y,z) {
-    var sphereBody = new CANNON.Body({
-      mass: Ball.MASS, // kg
-      position: new CANNON.Vec3(x,y,z), // m
-      shape: new CANNON.Sphere(Ball.RADIUS),
-      material: Ball.contactMaterial
-    });
-  
-    sphereBody.linearDamping = sphereBody.angularDamping = 0.5; // Hardcode
-    sphereBody.allowSleep = true;
-  
-    // Sleep parameters
-    sphereBody.sleepSpeedLimit = 0.5; // Body will feel sleepy if speed< 0.05 (speed == norm of velocity)
-    sphereBody.sleepTimeLimit = 0.1; // Body falls asleep after 1s of sleepiness
-  
-    return sphereBody;
-  };*/
+  export { Ball };

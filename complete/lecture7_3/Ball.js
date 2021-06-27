@@ -46,7 +46,7 @@ class Ball{
       force.copy(forward);
       force.scale(strength, force);
       this.rigidBody.applyImpulse(force, new CANNON.Vec3());
-  }
+    }
 
     reset(){
       this.rigidBody.velocity = new CANNON.Vec3(0);
