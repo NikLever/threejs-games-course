@@ -1,7 +1,7 @@
-import * as THREE from '../../libs/three126/three.module.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
-import { RGBELoader } from '../../libs/three126/RGBELoader.js';
-import { OrbitControls } from '../../libs/three126/OrbitControls.js';
+import * as THREE from '../../libs/three128/three.module.js';
+import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
+import { RGBELoader } from '../../libs/three128/RGBELoader.js';
+import { OrbitControls } from '../../libs/three128/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 
 class App{
