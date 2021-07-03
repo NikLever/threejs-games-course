@@ -16,7 +16,10 @@ class NPC{
 		this.pathColor = new THREE.Color(0xFFFFFF);
 		options.app.scene.add(this.pathLines);
 
-		this.factory = this.app.factory;
+		this.app = options.app;
+		this.game = options.app;
+
+		this.factory = options.app.factory;
 
 		this.showPath = options.showPath | false;
 
@@ -25,7 +28,7 @@ class NPC{
         this.dead = false;
 		
         this.speed = options.speed;
-        this.app = options.app;
+        
         
         if (options.app.pathfinder){
             this.pathfinder = options.app.pathfinder;
