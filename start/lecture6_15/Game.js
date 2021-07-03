@@ -133,6 +133,7 @@ class Game{
 		this.ui.ammo = 1;
 		this.ui.health = 1;
 		this.active = true;
+		this.started = true;
 		this.controller.cameraBase.getWorldPosition(this.camera.position);
         this.controller.cameraBase.getWorldQuaternion(this.camera.quaternion);
 		this.sfx.play('atmos');
@@ -180,6 +181,7 @@ class Game{
 
 	gameover(){
 		this.active = false;
+		this.started = false;
 		this.ui.showGameover();
 		this.sfx.stop('atmos');
 	}
