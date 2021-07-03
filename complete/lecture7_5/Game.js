@@ -18,8 +18,17 @@ class Game{
 
         this.strengthBar = new StrengthBar();
 
-        document.addEventListener( 'keydown', this.keydown.bind(this));
-        document.addEventListener( 'keyup', this.keyup.bind(this));
+        const strengthControl = document.getElementById('strengthControl');
+
+        if ('ontouchstart' in document.documentElement){
+            strengthControl.addEventListener( 'touchstart', this.mousedown.bind(this));
+            strengthControl.addEventListener( 'touchend', this.mouseup.bind(this));
+        }else{
+            strengthControl.addEventListener( 'mousedown', this.mousedown.bind(this));
+            strengthControl.addEventListener( 'mouseup', this.mouseup.bind(this));
+            document.addEventListener( 'keydown', this.keydown.bind(this));
+            document.addEventListener( 'keyup', this.keyup.bind(this));
+        }
 
         if (this.helper) this.helper.wireframe = true;
     }
@@ -71,6 +80,15 @@ class Game{
             this.strengthBar.visible = false;
             this.strikeCueball()
         }
+    }
+
+    mousedown(evt){
+        this.strengthBar.visible = true;
+    }
+
+    mouseup( evt ){
+        this.strengthBar.visible = false;
+        this.strikeCueball()
     }
 
     strikeCueball(){

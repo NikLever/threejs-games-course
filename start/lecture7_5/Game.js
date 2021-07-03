@@ -252,7 +252,7 @@ class Game{
         this.controls.target.copy(this.cueball.mesh.position);
         this.controls.update();
         if (this.helper) this.helper.update();
-        if (this.strengthBar.visible) this.strengthBar.update();
+        if (this.strengthBar) this.strengthBar.update();
         const dt = this.clock.getDelta();
         this.world.step(this.world.fixedTimeStep);
         this.balls.forEach( ball => ball.update(dt) );
