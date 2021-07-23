@@ -68,6 +68,15 @@ class Game{
         }
     }
 
+    mousedown(evt){
+        this.strengthBar.visible = true;
+    }
+
+    mouseup( evt ){
+        this.strengthBar.visible = false;
+        this.strikeCueball();
+    }
+
     strikeCueball(){
         if (this.cueball.isSleeping) this.cueball.hit(this.strengthBar.strength);
     }
