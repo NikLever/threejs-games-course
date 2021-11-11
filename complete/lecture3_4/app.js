@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three128/three.module.js';
-import { OrbitControls } from '../../libs/three128/OrbitControls.js';
+import * as THREE from '../../libs/three134/three.module.js';
+import { OrbitControls } from '../../libs/three134/OrbitControls.js';
 
 class App{
 	constructor(){
