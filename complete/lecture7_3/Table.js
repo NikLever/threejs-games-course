@@ -12,7 +12,7 @@ class Arch{
     constructor(params) {
         this.body = new CANNON.Body({
             mass: 0, // mass == 0 makes the body static
-            material: Table.floorContactMaterial
+            material: Table.FLOOR_MATERIAL
         });
   
         params = params || {};
@@ -67,7 +67,7 @@ class LongWall{
   
         this.body = new CANNON.Body({
             mass: 0, // mass == 0 makes the body static
-            material: Table.wallContactMaterial
+            material: Table.WALL_MATERIAL
         });
   
         //adjust the x-coordinates to change the angle of the triangle shape
@@ -122,7 +122,7 @@ class ShortWall{
 
         this.body = new CANNON.Body({
             mass: 0, // mass == 0 makes the body static
-            material: Table.wallContactMaterial
+            material: Table.WALL_MATERIAL
         });
   
         // How to make a mesh with a single triangle
@@ -208,8 +208,8 @@ class Table{
     static LENGTH = 2.7432;
     static WIDTH = 1.3716;
     static HEIGHT = 0.06;
-    static FLOOR_CONTACT_MATERIAL = new CANNON.Material('floorMaterial');
-    static WALL_CONTACT_MATERIAL = new CANNON.Material('wallMaterial');
+    static FLOOR_MATERIAL = new CANNON.Material('floorMaterial');
+    static WALL_MATERIAL = new CANNON.Material('wallMaterial');
 
     constructor(game){
         world = game.world;

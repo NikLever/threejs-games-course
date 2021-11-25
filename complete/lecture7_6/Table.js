@@ -18,7 +18,7 @@ class Arch{
     constructor(params) {
         this.body = new CANNON.Body({
             mass: 0, // mass == 0 makes the body static
-            material: Table.floorMaterial
+            material: Table.FLOOR_MATERIAL
         });
   
         params = params || {};
@@ -73,7 +73,7 @@ class LongWall{
   
         this.body = new CANNON.Body({
             mass: 0, // mass == 0 makes the body static
-            material: Table.wallMaterial
+            material: Table.WALL_MATERIAL
         });
   
         //adjust the x-coordinates to change the angle of the triangle shape
@@ -128,7 +128,7 @@ class ShortWall{
 
         this.body = new CANNON.Body({
             mass: 0, // mass == 0 makes the body static
-            material: Table.wallMaterial
+            material: Table.WALL_MATERIAL
         });
   
         // How to make a mesh with a single triangle
