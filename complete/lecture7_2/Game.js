@@ -74,8 +74,8 @@ import { Table } from './Table.js';
     world.defaultContactMaterial.restitution = 0.8;
   
     const ball_floor = new CANNON.ContactMaterial(
-      Ball.CONTACT_MATERIAL,
-      Table.FLOOR_CONTACT_MATERIAL,
+      Ball.MATERIAL,
+      Table.FLOOR_MATERIAL,
       {friction: 0.7, restitution: 0.1}
     );
 
