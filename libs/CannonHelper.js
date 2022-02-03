@@ -141,6 +141,7 @@ class CannonHelper{
 		body.shapes.forEach (function(shape){
 			let mesh;
 			let geometry;
+			let points;
 			let v0, v1, v2;
 			let a, b, c;
 
@@ -176,29 +177,33 @@ class CannonHelper{
 				break;
 
 			case CANNON.Shape.types.CONVEXPOLYHEDRON:
-				const geo = new THREE.Geometry();
+				points = [];
 
 				// Add vertices
 				shape.vertices.forEach(function(v){
-					geo.vertices.push(new THREE.Vector3(v.x, v.y, v.z));
+					points.push(new THREE.Vector3(v.x, v.y, v.z));
 				});
 
+				const geo = new THREE.BufferGeometry().setFromPoints( points );
+				
+				const indices = [];
 				shape.faces.forEach(function(face){
 					// add triangles
 					const a = face[0];
 					for (let j = 1; j < face.length - 1; j++) {
 						const b = face[j];
 						const c = face[j + 1];
-						geo.faces.push(new THREE.Face3(a, b, c));
+						indices.push(a, b, c);
 					}
 				});
+				geo.setIndex( indices );
 				geo.computeBoundingSphere();
 				geo.computeFaceNormals();
 				mesh = new THREE.Mesh( geo, material );
 				break;
 
 			case CANNON.Shape.types.HEIGHTFIELD:
-				geometry = new THREE.Geometry();
+				points = [];
 
 				v0 = new CANNON.Vec3();
 				v1 = new CANNON.Vec3();
@@ -213,23 +218,23 @@ class CannonHelper{
 							v0.vadd(shape.pillarOffset, v0);
 							v1.vadd(shape.pillarOffset, v1);
 							v2.vadd(shape.pillarOffset, v2);
-							geometry.vertices.push(
+							points.push(
 								new THREE.Vector3(v0.x, v0.y, v0.z),
 								new THREE.Vector3(v1.x, v1.y, v1.z),
 								new THREE.Vector3(v2.x, v2.y, v2.z)
 							);
-							var i = geometry.vertices.length - 3;
-							geometry.faces.push(new THREE.Face3(i, i+1, i+2));
 						}
 					}
 				}
+
+				geometry = new THREE.BufferGeometry().setFromPoints( points );
 				geometry.computeBoundingSphere();
 				geometry.computeFaceNormals();
 				mesh = new THREE.Mesh(geometry, material);
 				break;
 
 			case CANNON.Shape.types.TRIMESH:
-				const points = [];
+				points = [];
 				const normals = [];
         
 				v0 = new CANNON.Vec3();
