@@ -6,9 +6,9 @@ import { Group,
          AnimationMixer, 
          SphereGeometry, 
          MeshBasicMaterial, 
-         Mesh } from '../../libs/three128/three.module.js';
-import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
-import { DRACOLoader } from '../../libs/three128/DRACOLoader.js';
+         Mesh } from '../../libs/three137/three.module.js';
+import { GLTFLoader } from '../../libs/three137/GLTFLoader.js';
+import { DRACOLoader } from '../../libs/three137/DRACOLoader.js';
 
 class User{
     constructor(game, pos, heading){
@@ -66,7 +66,7 @@ class User{
     load(){
     	const loader = new GLTFLoader( ).setPath(`${this.game.assetsPath}factory/`);
 		const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath( '../../libs/three128/draco/' );
+        dracoLoader.setDecoderPath( '../../libs/three137/draco/' );
         loader.setDRACOLoader( dracoLoader );
         
         // Load a glTF resource

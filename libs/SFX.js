@@ -1,4 +1,4 @@
-import { AudioListener, Audio, PositionalAudio, AudioLoader } from './three128/three.module.js';
+import { AudioListener, Audio, PositionalAudio, AudioLoader } from './three137/three.module.js';
 
 class SFX{
     constructor(camera, assetsPath, listener){

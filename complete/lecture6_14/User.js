@@ -10,9 +10,9 @@ import { Group,
 		 BufferGeometry,
 		 Line,
 		 LoopOnce
-		} from '../../libs/three128/three.module.js';
-import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
-import { DRACOLoader } from '../../libs/three128/DRACOLoader.js';
+		} from '../../libs/three137/three.module.js';
+import { GLTFLoader } from '../../libs/three137/GLTFLoader.js';
+import { DRACOLoader } from '../../libs/three137/DRACOLoader.js';
 import { SFX } from '../../libs/SFX.js';
 
 class User{
@@ -143,7 +143,7 @@ class User{
     load(){
     	const loader = new GLTFLoader( ).setPath(`${this.game.assetsPath}factory/`);
 		const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath( '../../libs/three128/draco/' );
+        dracoLoader.setDecoderPath( '../../libs/three137/draco/' );
         loader.setDRACOLoader( dracoLoader );
         
         // Load a glTF resource

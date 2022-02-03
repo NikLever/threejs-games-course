@@ -1,9 +1,9 @@
-import * as THREE from '../../libs/three128/three.module.js';
+import * as THREE from '../../libs/three137/three.module.js';
 import * as CANNON from '../../libs/cannon-es.js';
 import { CannonHelper  } from '../../libs/CannonHelper.js';
 import { Table } from './Table.js';
 import { Ball } from './Ball.js';
-import { OrbitControls } from '../../libs/three128/OrbitControls.js';
+import { OrbitControls } from '../../libs/three137/OrbitControls.js';
 
  class Game{
    constructor(){
@@ -87,14 +87,14 @@ import { OrbitControls } from '../../libs/three128/OrbitControls.js';
     world.defaultContactMaterial.restitution = 0.8;
   
     const ball_floor = new CANNON.ContactMaterial(
-      Ball.CONTACT_MATERIAL,
-      Table.FLOOR_CONTACT_MATERIAL,
+      Ball.MATERIAL,
+      Table.FLOOR_MATERIAL,
       {friction: 0.7, restitution: 0.1}
     );
 
     const ball_wall = new CANNON.ContactMaterial(
-      Ball.CONTACT_MATERIAL,
-      Table.WALL_CONTACT_MATERIAL,
+      Ball.MATERIAL,
+      Table.WALL_MATERIAL,
       {friction: 0.5, restitution: 0.6}
     );
 

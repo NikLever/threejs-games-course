@@ -37,7 +37,7 @@ class App{
 	}	
     
     setEnvironment(){
-        const loader = new RGBELoader().setDataType( THREE.UnsignedByteType );
+        const loader = new RGBELoader();
         const pmremGenerator = new THREE.PMREMGenerator( this.renderer );
         pmremGenerator.compileEquirectangularShader();
         

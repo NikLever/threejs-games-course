@@ -1,8 +1,8 @@
-import * as THREE from '../../libs/three128/three.module.js';
+import * as THREE from '../../libs/three137/three.module.js';
 import * as CANNON from '../../libs/cannon-es.js';
-import { RGBELoader } from '../../libs/three128/RGBELoader.js';
-import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
-import { OrbitControls } from '../../libs/three128/OrbitControls.js';
+import { RGBELoader } from '../../libs/three137/RGBELoader.js';
+import { GLTFLoader } from '../../libs/three137/GLTFLoader.js';
+import { OrbitControls } from '../../libs/three137/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Ball } from './Ball.js';
 import { WhiteBall } from './WhiteBall.js';
@@ -144,7 +144,7 @@ class Game{
     }
 
     setEnvironment(){
-        const loader = new RGBELoader().setDataType( THREE.UnsignedByteType );
+        const loader = new RGBELoader();
         const pmremGenerator = new THREE.PMREMGenerator( this.renderer );
         pmremGenerator.compileEquirectangularShader();
         

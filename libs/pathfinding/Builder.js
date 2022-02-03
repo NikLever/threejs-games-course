@@ -1,4 +1,4 @@
-import { Vector3 } from '../three128/three.module.js';
+import { Vector3 } from '../three137/three.module.js';
 
 import { Utils } from './Utils.js';
 

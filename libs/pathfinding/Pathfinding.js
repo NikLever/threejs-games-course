@@ -2,7 +2,7 @@ import {
 	Vector3,
 	Plane,
 	Triangle,
-} from '../three128/three.module.js';
+} from '../three137/three.module.js';
 
 import { Utils } from './Utils.js';
 import { AStar } from './AStar.js';

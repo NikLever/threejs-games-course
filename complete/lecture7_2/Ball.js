@@ -1,11 +1,11 @@
-import * as THREE from '../../libs/three128/three.module.js';
+import * as THREE from '../../libs/three137/three.module.js';
 import * as CANNON from '../../libs/cannon-es.js';
 
 
 class Ball{
     static RADIUS = 0.05715 / 2;
     static MASS = 0.17;
-    static CONTACT_MATERIAL = new CANNON.Material("ballMaterial");
+    static MATERIAL = new CANNON.Material("ballMaterial");
     
     constructor(game, x, z, id=0) {
         this.id = id;

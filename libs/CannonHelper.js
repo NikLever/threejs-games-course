@@ -1,4 +1,4 @@
-import * as THREE from './three128/three.module.js';
+import * as THREE from './three137/three.module.js';
 import * as CANNON from './cannon-es.js';
 
 class CannonHelper{

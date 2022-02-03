@@ -1,6 +1,6 @@
-import * as THREE from '../../libs/three128/three.module.js';
-import { GLTFLoader } from '../../libs/three128/GLTFLoader.js';
-import { RGBELoader } from '../../libs/three128/RGBELoader.js';
+import * as THREE from '../../libs/three137/three.module.js';
+import { GLTFLoader } from '../../libs/three137/GLTFLoader.js';
+import { RGBELoader } from '../../libs/three137/RGBELoader.js';
 import { NPCHandler } from './NPCHandler.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Pathfinding } from '../../libs/pathfinding/Pathfinding.js';
@@ -126,7 +126,7 @@ class Game{
     }
     
     setEnvironment(){
-        const loader = new RGBELoader().setDataType( THREE.UnsignedByteType ).setPath(this.assetsPath);
+        const loader = new RGBELoader().setPath(this.assetsPath);
         const pmremGenerator = new THREE.PMREMGenerator( this.renderer );
         pmremGenerator.compileEquirectangularShader();
         
