@@ -8,6 +8,7 @@ body,
     -webkit-user-select: none;
     user-select: none;
 }
+
 .xr-canvas {
     position: absolute;
     top: 0;
