@@ -1,7 +1,7 @@
 import {NPC} from './NPC.js';
-import {GLTFLoader} from '../../libs/three137/GLTFLoader.js';
-import {DRACOLoader} from '../../libs/three137/DRACOLoader.js';
-import {Skeleton, Raycaster} from '../../libs/three137/three.module.js';
+import {GLTFLoader} from 'three/addons/GLTFLoader.js';
+import {DRACOLoader} from 'three/addons/DRACOLoader.js';
+import {Skeleton, Raycaster} from 'three/addons/three.module.js';
 
 class NPCHandler{
     constructor( game ){
@@ -46,7 +46,7 @@ class NPCHandler{
     load(){
         const loader = new GLTFLoader( ).setPath(`${this.game.assetsPath}factory/`);
 		const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath( '../../libs/three137/draco/' );
+        dracoLoader.setDecoderPath( 'three/addons/draco/' );
         loader.setDRACOLoader( dracoLoader );
         this.loadingBar.visible = true;
 		

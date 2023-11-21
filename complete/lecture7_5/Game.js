@@ -1,8 +1,8 @@
-import * as THREE from '../../libs/three137/three.module.js';
+import * as THREE from 'three/addons/three.module.js';
 import * as CANNON from '../../libs/cannon-es.js';
-import { RGBELoader } from '../../libs/three137/RGBELoader.js';
-import { GLTFLoader } from '../../libs/three137/GLTFLoader.js';
-import { OrbitControls } from '../../libs/three137/OrbitControls.js';
+import { RGBELoader } from 'three/addons/RGBELoader.js';
+import { GLTFLoader } from 'three/addons/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Ball } from './Ball.js';
 import { WhiteBall } from './WhiteBall.js';

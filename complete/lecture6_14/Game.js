@@ -1,6 +1,6 @@
-import * as THREE from '../../libs/three137/three.module.js';
-import { GLTFLoader } from '../../libs/three137/GLTFLoader.js';
-import { RGBELoader } from '../../libs/three137/RGBELoader.js';
+import * as THREE from 'three/addons/three.module.js';
+import { GLTFLoader } from 'three/addons/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/RGBELoader.js';
 import { NPCHandler } from './NPCHandler.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Pathfinding } from '../../libs/pathfinding/Pathfinding.js';
@@ -8,10 +8,10 @@ import { User } from './User.js';
 import { Controller } from './Controller.js';
 import { BulletHandler } from './BulletHandler.js';
 import { UI } from './UI.js';
-import { EffectComposer } from '../../libs/three137/pp/EffectComposer.js';
-import { RenderPass } from '../../libs/three137/pp/RenderPass.js';
-import { ShaderPass } from '../../libs/three137/pp/ShaderPass.js';
-import { GammaCorrectionShader } from '../../libs/three137/pp/GammaCorrectionShader.js';
+import { EffectComposer } from 'three/addons/pp/EffectComposer.js';
+import { RenderPass } from 'three/addons/pp/RenderPass.js';
+import { ShaderPass } from 'three/addons/pp/ShaderPass.js';
+import { GammaCorrectionShader } from 'three/addons/pp/GammaCorrectionShader.js';
 import { Tween } from '../../libs/Toon3D.js';
 import { SFX } from '../../libs/SFX.js';
 

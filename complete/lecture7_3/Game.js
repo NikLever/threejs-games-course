@@ -1,9 +1,9 @@
-import * as THREE from '../../libs/three137/three.module.js';
+import * as THREE from 'three/addons/three.module.js';
 import * as CANNON from '../../libs/cannon-es.js';
 import { CannonHelper  } from '../../libs/CannonHelper.js';
 import { Table } from './Table.js';
 import { Ball } from './Ball.js';
-import { OrbitControls } from '../../libs/three137/OrbitControls.js';
+import { OrbitControls } from 'three/addons/OrbitControls.js';
 
  class Game{
    constructor(){

@@ -9,9 +9,9 @@ import { Group,
          Mesh,
 		 BufferGeometry,
 		 Line
-		} from '../../libs/three137/three.module.js';
-import { GLTFLoader } from '../../libs/three137/GLTFLoader.js';
-import { DRACOLoader } from '../../libs/three137/DRACOLoader.js';
+		} from 'three/addons/three.module.js';
+import { GLTFLoader } from 'three/addons/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/DRACOLoader.js';
 
 class User{
     constructor(game, pos, heading){
@@ -124,7 +124,7 @@ class User{
     load(){
     	const loader = new GLTFLoader( ).setPath(`${this.game.assetsPath}factory/`);
 		const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath( '../../libs/three137/draco/' );
+        dracoLoader.setDecoderPath( 'three/addons/draco/' );
         loader.setDRACOLoader( dracoLoader );
         
         // Load a glTF resource

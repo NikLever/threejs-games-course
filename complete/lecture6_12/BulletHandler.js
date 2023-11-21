@@ -5,7 +5,7 @@ import {
         Raycaster, 
         Vector3, 
         Quaternion
-    } from '../../libs/three137/three.module.js';
+    } from 'three/addons/three.module.js';
 import { sphereIntersectsCylinder } from '../../libs/Collisions.js';
 
 class BulletHandler{
