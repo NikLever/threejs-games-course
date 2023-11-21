@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three137/three.module.js';
-import { OrbitControls } from '../../libs/three137/OrbitControls.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 class App{
 	constructor(){
@@ -26,7 +26,7 @@ class App{
 		container.appendChild( this.renderer.domElement );
 		
         //Replace Box with Circle, Cone, Cylinder, Dodecahedron, Icosahedron, Octahedron, Plane, Sphere, Tetrahedron, Torus or TorusKnot
-        const geometry = new THREE.TorusKnotBufferGeometry(); 
+        const geometry = new THREE.TorusKnotGeometry(); 
         
         const material = new THREE.MeshBasicMaterial( { color: 0xFF0000 });
 

@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three137/three.module.js';
-import { OrbitControls } from '../../libs/three137/OrbitControls.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 class App{
 	constructor(){
@@ -15,7 +15,7 @@ class App{
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.3);
 		this.scene.add(ambient);
         
-        const light = new THREE.DirectionalLight();
+        const light = new THREE.DirectionalLight(0xFFFFFF, 3);
         light.position.set( 0.2, 1, 1);
         this.scene.add(light);
 			
@@ -24,7 +24,7 @@ class App{
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 		container.appendChild( this.renderer.domElement );
 		
-        const geometry = new THREE.BoxBufferGeometry();
+        const geometry = new THREE.BoxGeometry();
         const material = new THREE.MeshStandardMaterial( { color: 0xFF0000 });
 
         this.mesh = new THREE.Mesh( geometry, material );
