@@ -7,9 +7,9 @@ import { Group,
          AnimationMixer, 
          SphereGeometry, 
          MeshBasicMaterial, 
-         Mesh } from 'three/addons/three.module.js';
-import { GLTFLoader } from 'three/addons/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/DRACOLoader.js';
+         Mesh } from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 class User{
     constructor(game, pos, heading){
@@ -83,7 +83,7 @@ class User{
     load(){
     	const loader = new GLTFLoader( ).setPath(`${this.game.assetsPath}factory/`);
 		const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath( 'three/addons/draco/' );
+        dracoLoader.setDecoderPath( '../../libs/three/examples/jsm/libs/draco/' );
         loader.setDRACOLoader( dracoLoader );
         
         // Load a glTF resource

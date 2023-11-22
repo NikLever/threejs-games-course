@@ -1,6 +1,6 @@
-import * as THREE from 'three/addons/three.module.js';
-import { GLTFLoader } from 'three/addons/GLTFLoader.js';
-import { RGBELoader } from 'three/addons/RGBELoader.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { NPCHandler } from './NPCHandler.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Pathfinding } from '../../libs/pathfinding/Pathfinding.js';
@@ -8,10 +8,10 @@ import { User } from './User.js';
 import { Controller } from './Controller.js';
 import { BulletHandler } from './BulletHandler.js';
 import { UI } from './UI.js';
-import { EffectComposer } from 'three/addons/pp/EffectComposer.js';
-import { RenderPass } from 'three/addons/pp/RenderPass.js';
-import { ShaderPass } from 'three/addons/pp/ShaderPass.js';
-import { GammaCorrectionShader } from 'three/addons/pp/GammaCorrectionShader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { GammaCorrectionShader } from 'three/addons/shaders/GammaCorrectionShader.js';
 import { Tween } from '../../libs/Toon3D.js';
 import { SFX } from '../../libs/SFX.js';
 
@@ -40,7 +40,7 @@ class Game{
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 		this.scene.add(ambient);
 
-        const light = new THREE.DirectionalLight();
+        const light = new THREE.DirectionalLight(0xFFFFFF, 3);
         light.position.set( 4, 20, 20 );
 		light.target.position.set(-2, 0, 0);
 		light.castShadow = true;
@@ -59,8 +59,7 @@ class Game{
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
+		this.renderer.setSize( window.innerWidth, window.innerHeight )
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
 		

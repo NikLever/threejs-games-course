@@ -1,4 +1,4 @@
-import * as THREE from 'three/addons/three.module.js';
+import * as THREE from 'three';
 
 class NPC{
 	constructor(options){

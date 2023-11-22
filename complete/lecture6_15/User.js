@@ -10,9 +10,9 @@ import { Group,
 		 BufferGeometry,
 		 Line,
 		 LoopOnce
-		} from 'three/addons/three.module.js';
-import { GLTFLoader } from 'three/addons/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/DRACOLoader.js';
+		} from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { SFX } from '../../libs/SFX.js';
 
 class User{
@@ -145,7 +145,7 @@ class User{
     load(){
     	const loader = new GLTFLoader( ).setPath(`${this.game.assetsPath}factory/`);
 		const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath( 'three/addons/draco/' );
+        dracoLoader.setDecoderPath( '../../libs/three/examples/jsm/libs/draco/' );
         loader.setDRACOLoader( dracoLoader );
         
         // Load a glTF resource

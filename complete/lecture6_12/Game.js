@@ -1,6 +1,6 @@
-import * as THREE from 'three/addons/three.module.js';
-import { GLTFLoader } from 'three/addons/GLTFLoader.js';
-import { RGBELoader } from 'three/addons/RGBELoader.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { NPCHandler } from './NPCHandler.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Pathfinding } from '../../libs/pathfinding/Pathfinding.js';
@@ -33,7 +33,7 @@ class Game{
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 		this.scene.add(ambient);
 
-        const light = new THREE.DirectionalLight();
+        const light = new THREE.DirectionalLight(0xFFFFFF, 3);
         light.position.set( 4, 20, 20 );
 		light.target.position.set(-2, 0, 0);
 		light.castShadow = true;
@@ -53,7 +53,6 @@ class Game{
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
 		

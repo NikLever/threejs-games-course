@@ -1,7 +1,7 @@
-import * as THREE from 'three/addons/three.module.js';
+import * as THREE from 'three';
 import * as CANNON from '../../libs/cannon-es.js';
-import { RGBELoader } from 'three/addons/RGBELoader.js';
-import { GLTFLoader } from 'three/addons/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/OrbitControls.js';
 import { CannonHelper } from '../../libs/CannonHelper.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';

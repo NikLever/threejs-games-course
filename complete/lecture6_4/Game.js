@@ -1,8 +1,8 @@
-import * as THREE from 'three/addons/three.module.js';
-import { GLTFLoader } from 'three/addons/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/DRACOLoader.js';
-import { RGBELoader } from 'three/addons/RGBELoader.js';
-import { OrbitControls } from 'three/addons/OrbitControls.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 
 class Game{
@@ -27,13 +27,13 @@ class Game{
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 		this.scene.add(ambient);
 
-        const light = new THREE.DirectionalLight();
+        const light = new THREE.DirectionalLight(0xFFFFFF, 3);
         light.position.set( 0.2, 1, 1 );
+		this.scene.add(light);
 			
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
         
@@ -74,7 +74,7 @@ class Game{
     loadNPC(){
     	const loader = new GLTFLoader( ).setPath(`${this.assetsPath}factory/`);
 		const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath( 'three/addons/draco/' );
+        dracoLoader.setDecoderPath( '../../libs/three/examples/jsm/libs/draco/' );
         loader.setDRACOLoader( dracoLoader );
         this.loadingBar.visible = true;
 		
