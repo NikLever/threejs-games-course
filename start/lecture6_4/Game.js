@@ -27,13 +27,13 @@ class Game{
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 		this.scene.add(ambient);
 
-        const light = new THREE.DirectionalLight();
+        const light = new THREE.DirectionalLight(0xFFFFFF, 3);
         light.position.set( 0.2, 1, 1 );
 			
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        ;
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
         

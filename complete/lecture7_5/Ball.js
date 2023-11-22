@@ -56,7 +56,7 @@ class Ball{
     }
 
     createMesh (scene) {
-        const geometry = new THREE.SphereBufferGeometry(Ball.RADIUS, 16, 16);
+        const geometry = new THREE.SphereGeometry(Ball.RADIUS, 16, 16);
         const material = new THREE.MeshStandardMaterial({
             metalness: 0.0,
             roughness: 0.1,

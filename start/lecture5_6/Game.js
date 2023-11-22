@@ -35,7 +35,7 @@ class Game{
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        ;
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
         

@@ -25,7 +25,7 @@ class App{
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        ;
         this.renderer.physicallyCorrectLights = true;
         container.appendChild( this.renderer.domElement );
 		this.setEnvironment();

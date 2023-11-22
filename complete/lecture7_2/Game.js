@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import * as CANNON from '../../libs/cannon-es.js';
 import { CannonHelper } from '../../libs/CannonHelper.js';
-import { OrbitControls } from 'three/addons/OrbitControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Ball } from './Ball.js';
 import { Table } from './Table.js';
 
@@ -25,7 +25,7 @@ import { Table } from './Table.js';
     const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.3);
     this.scene.add(ambient);
     
-    const light = new THREE.DirectionalLight();
+    const light = new THREE.DirectionalLight(0xFFFFFF, 3);
     light.position.set( 0.2, 1, 1);
     light.castShadow = true;
     this.scene.add(light);

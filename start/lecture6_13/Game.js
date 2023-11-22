@@ -34,7 +34,7 @@ class Game{
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
 		this.scene.add(ambient);
 
-        const light = new THREE.DirectionalLight();
+        const light = new THREE.DirectionalLight(0xFFFFFF, 3);
         light.position.set( 4, 20, 20 );
 		light.target.position.set(-2, 0, 0);
 		light.castShadow = true;
@@ -54,7 +54,7 @@ class Game{
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        ;
 		container.appendChild( this.renderer.domElement );
         this.setEnvironment();
 		

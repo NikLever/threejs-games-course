@@ -29,7 +29,7 @@ import { OrbitControls } from '../../libs/three137/OrbitControls.js';
 		const ambient = new THREE.HemisphereLight(0x0d0d0d, 0x020202, 0.01);
 		this.scene.add(ambient);
         
-    const light = new THREE.DirectionalLight();
+    const light = new THREE.DirectionalLight(0xFFFFFF, 3);
     light.position.set( 0.2, 1, 1);
     light.castShadow = true;
     this.scene.add(light);

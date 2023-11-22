@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import * as CANNON from '../../libs/cannon-es.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/OrbitControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Ball } from './Ball.js';
 import { WhiteBall } from './WhiteBall.js';
@@ -59,7 +59,7 @@ class Game{
         this.renderer.shadowMap.enabled = true;
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        ;
         this.renderer.physicallyCorrectLights = true;
         container.appendChild( this.renderer.domElement );
         

@@ -37,7 +37,7 @@ class WhiteBall extends Ball{
     }
 
     createIntersectionDot() {
-        const geometry = new THREE.SphereBufferGeometry(0.01, 4, 4);
+        const geometry = new THREE.SphereGeometry(0.01, 4, 4);
         const material = new THREE.MeshBasicMaterial({opacity: 0.5, transparent: true, color: 0xffff00});
         return new THREE.Mesh(geometry, material);
     }
