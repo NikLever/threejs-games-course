@@ -1,5 +1,5 @@
-import { Group, Vector3 } from '../../libs/three137/three.module.js';
-import { GLTFLoader } from '../../libs/three137/GLTFLoader.js';
+import { Group, Vector3 } from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 class Obstacles{
     constructor(game){

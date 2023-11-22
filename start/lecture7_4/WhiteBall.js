@@ -1,5 +1,5 @@
 import { Ball } from './Ball.js';
-import * as THREE from '../../libs/three137/three.module.js';
+import * as THREE from 'three';
 
 class WhiteBall extends Ball{
     constructor(game, x, z){

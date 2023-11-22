@@ -1,7 +1,7 @@
-import * as THREE from '../../libs/three126/three.module.js';
-import { GLTFLoader } from '../../libs/three126/GLTFLoader.js';
-import { RGBELoader } from '../../libs/three126/RGBELoader.js';
-import { OrbitControls } from '../../libs/three126/OrbitControls.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 
 class App{
@@ -18,7 +18,7 @@ class App{
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.5);
 		this.scene.add(ambient);
         
-        const light = new THREE.DirectionalLight( 0xFFFFFF, 1.5 );
+        const light = new THREE.DirectionalLight( 0xFFFFFF, 3 );
         light.position.set( 0.2, 1, 1);
         this.scene.add(light);
 			

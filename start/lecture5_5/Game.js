@@ -1,5 +1,5 @@
-import * as THREE from '../../libs/three137/three.module.js';
-import { RGBELoader } from '../../libs/three137/RGBELoader.js';
+import * as THREE from 'three';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { LoadingBar } from '../../libs/LoadingBar.js';
 import { Plane } from './Plane.js';
 import { Obstacles } from './Obstacles.js';
@@ -30,6 +30,10 @@ class Game{
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
         ambient.position.set( 0.5, 1, 0.25 );
 		this.scene.add(ambient);
+
+        const light = new THREE.DirectionalLight(0xffffff, 3);
+        ambient.position.set( 0.5, 1, 0.25 );
+		this.scene.add(light);
 			
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
 		this.renderer.setPixelRatio( window.devicePixelRatio );

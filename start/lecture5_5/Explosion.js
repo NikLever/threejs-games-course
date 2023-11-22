@@ -1,4 +1,4 @@
-import { IcosahedronGeometry, TextureLoader, ShaderMaterial, Mesh, ShaderChunk } from '../../libs/three137/three.module.js';
+import { IcosahedronGeometry, TextureLoader, ShaderMaterial, Mesh, ShaderChunk } from 'three';
 import { noise } from '../../libs/Noise.js';
 import { Tween } from '../../libs/Toon3D.js';
 
